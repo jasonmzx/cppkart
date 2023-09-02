@@ -9,6 +9,14 @@
 #include "rendering/VBO.h"
 #include "rendering/EBO.h"
 #include "rendering/Camera.h"
+#include "rendering/Texture.h"
+
+//For Texturing:
+
+#include<filesystem>
+namespace fs = std::filesystem;
+
+#include<stb/stb_image.h>
 
 #define WinWidth 1800
 #define WinHeight 1000
@@ -73,6 +81,12 @@ int main(int ArgCount, char **Args)
   EBO1.Unbind();
 
   GLuint uniID = glGetUniformLocation(shaderProgram.ID, "scale");
+
+	std::string texPath = "../src/ressources/";
+
+	// Texture
+	Texture brickTex((texPath + "brick.png").c_str(), GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
+	brickTex.texUnit(shaderProgram, "tex0", 0);
 
   float rotation = 0.0f;
   double prevTime = SDL_GetTicks();
@@ -154,6 +168,8 @@ int main(int ArgCount, char **Args)
     // Assigns a value to the uniform; NOTE: Must always be done after activating the Shader Program
     glUniform1f(uniID, 0.5f);
 
+    brickTex.Bind();
+
     // Bind the VAO so OpenGL knows to use it
     VAO1.Bind();
     // Draw primitives, number of indices, datatype of indices, index of indices
@@ -166,6 +182,9 @@ int main(int ArgCount, char **Args)
   VAO1.Delete();
   VBO1.Delete();
   EBO1.Delete();
+
+  brickTex.Delete();
+
   shaderProgram.Delete();
 
   return 0;
