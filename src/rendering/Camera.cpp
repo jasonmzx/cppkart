@@ -21,3 +21,86 @@ void Camera::Matrix(float FOVdeg, float nearPlane, float farPlane, Shader& shade
 	// Exports the camera matrix to the Vertex Shader
 	glUniformMatrix4fv(glGetUniformLocation(shader.ID, uniform), 1, GL_FALSE, glm::value_ptr(projection * view));
 }
+
+void Camera::Inputs(SDL_Window* window)
+{
+    // Handles key inputs
+    const Uint8* keyState = SDL_GetKeyboardState(NULL);
+
+    if (keyState[SDL_SCANCODE_W])
+    {
+		Position += speed * Orientation;
+    }
+    if (keyState[SDL_SCANCODE_A])
+    {
+        Position += speed * -glm::normalize(glm::cross(Orientation, Up));
+    }
+    if (keyState[SDL_SCANCODE_S])
+    {
+        Position += speed * -Orientation;
+    }
+    if (keyState[SDL_SCANCODE_D])
+    {
+        Position += speed * glm::normalize(glm::cross(Orientation, Up));
+    }
+    if (keyState[SDL_SCANCODE_SPACE])
+    {
+        Position += speed * Up;
+    }
+    if (keyState[SDL_SCANCODE_LCTRL])
+    {
+        Position += speed * -Up;
+    }
+    if (keyState[SDL_SCANCODE_LSHIFT])
+    {
+        speed = 0.4f;
+    }
+    else
+    {
+        speed = 0.1f;
+    }
+
+    // Handles mouse inputs
+    int mouseX, mouseY;
+    Uint32 mouseState = SDL_GetMouseState(&mouseX, &mouseY);
+
+    if (mouseState & SDL_BUTTON(SDL_BUTTON_LEFT))
+    {
+        // Hides mouse cursor
+        SDL_ShowCursor(SDL_DISABLE);
+
+        // Prevents camera from jumping on the first click
+        if (firstClick)
+        {
+            SDL_WarpMouseInWindow(window, width / 2, height / 2);
+            firstClick = false;
+        }
+
+        // Normalizes and shifts the coordinates of the cursor such that they begin in the middle of the screen
+        // and then "transforms" them into degrees 
+        float rotX = sensitivity * (float)(mouseY - (height / 2)) / height;
+        float rotY = sensitivity * (float)(mouseX - (width / 2)) / width;
+
+        // Calculates upcoming vertical change in the Orientation
+        glm::vec3 newOrientation = glm::rotate(Orientation, glm::radians(-rotX), glm::normalize(glm::cross(Orientation, Up)));
+
+        // Decides whether or not the next vertical Orientation is legal or not
+        if (abs(glm::angle(newOrientation, Up) - glm::radians(90.0f)) <= glm::radians(85.0f))
+        {
+            Orientation = newOrientation;
+        }
+
+        // Rotates the Orientation left and right
+        Orientation = glm::rotate(Orientation, glm::radians(-rotY), Up);
+
+        // Sets mouse cursor to the middle of the screen so that it doesn't end up roaming around
+        SDL_WarpMouseInWindow(window, width / 2, height / 2);
+    }
+    else
+    {
+        // Unhides cursor since the camera is not looking around anymore
+        SDL_ShowCursor(SDL_ENABLE);
+        // Makes sure the next time the camera looks around it doesn't jump
+        firstClick = true;
+    }
+}

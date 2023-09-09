@@ -8,6 +8,9 @@
 #include<glm/gtx/rotate_vector.hpp>
 #include<glm/gtx/vector_angle.hpp>
 
+//For User Input on Windows
+#include<SDL.h>
+
 #include"shaderClass.h"
 
 class Camera
@@ -34,5 +37,7 @@ public:
 
 	// Updates and exports the camera matrix to the Vertex Shader
 	void Matrix(float FOVdeg, float nearPlane, float farPlane, Shader& shader, const char* uniform);
+	
+	void Inputs(SDL_Window* window);
 };
 #endif

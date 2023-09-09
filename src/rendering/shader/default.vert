@@ -13,19 +13,14 @@ out vec3 color;
 // Outputs the texture coordinates to the fragment shader
 out vec2 texCoord;
 
-// Controls the scale of the vertices
-uniform float scale;
-
-// Inputs the matrices needed for 3D viewing with perspective
-uniform mat4 model;
-uniform mat4 view;
-uniform mat4 proj;
+// Imports the camera matrix from the main function
+uniform mat4 camMatrix;
 
 
 void main()
 {
 	// Outputs the positions/coordinates of all vertices
-	gl_Position = proj * view * model * vec4(aPos, 1.0);
+	gl_Position = camMatrix * vec4(aPos, 1.0);
 	// Assigns the colors from the Vertex Data to "color"
 	color = aColor;
 	// Assigns the texture coordinates from the Vertex Data to "texCoord"
