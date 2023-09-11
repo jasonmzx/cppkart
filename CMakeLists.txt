@@ -4,12 +4,23 @@ project(cppkart)
 find_package(SDL2 REQUIRED)
 find_package(OpenGL REQUIRED)
 
+# External Libraries
 
 include_directories(src/glad/include src)
 add_executable(cppkart
 src/glad/src/glad.c
 src/stb/stb_image.h
 src/stb/stb.cpp
+
+#### Project Source Code: ####
+
+#Core Engine Imports:
+src/engine_core/XJZoomEngine.h
+src/engine_core/XJZoomEngine.cpp
+
+#Core Engine; Managers Imports:
+src/engine_core/managers/SceneManager.h
+src/engine_core/managers/SceneManager.cpp
 
 src/main.cpp 
 src/rendering/EBO.cpp 

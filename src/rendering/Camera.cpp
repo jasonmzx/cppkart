@@ -47,11 +47,11 @@ void Camera::Inputs(SDL_Window* window)
     {
         Position += speed * Up;
     }
-    if (keyState[SDL_SCANCODE_LCTRL])
+    if (keyState[SDL_SCANCODE_LSHIFT])
     {
         Position += speed * -Up;
     }
-    if (keyState[SDL_SCANCODE_LSHIFT])
+    if (keyState[SDL_SCANCODE_LCTRL])
     {
         speed = 0.4f;
     }
@@ -63,6 +63,8 @@ void Camera::Inputs(SDL_Window* window)
     // Handles mouse inputs
     int mouseX, mouseY;
     Uint32 mouseState = SDL_GetMouseState(&mouseX, &mouseY);
+
+	//Trackpad just doesn't work...
 
     if (mouseState & SDL_BUTTON(SDL_BUTTON_LEFT))
     {
