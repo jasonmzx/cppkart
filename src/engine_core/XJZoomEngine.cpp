@@ -13,6 +13,12 @@
 #include "rendering/Camera.h"
 #include "rendering/Texture.h"
 
+#include "rendering/FrustumCull.h"
+
+//CORE Imports:
+
+#include "engine_core/managers/SceneManager.h"
+
 //For Texturing:
 
 #include<filesystem>
@@ -61,6 +67,9 @@ void XJZoomEngine::Run()
   // In this case the viewport goes from x = 0, y = 0, to x = 800, y = 800
   glViewport(0, 0, WinWidth, WinHeight);
 
+  //Load Managers:
+  SceneManager sceneManager;
+
   // Generates Shader object using shaders default.vert and default.frag
   Shader shaderProgram("../src/rendering/shader/default.vert", "../src/rendering/shader/default.frag");
 
@@ -98,8 +107,11 @@ void XJZoomEngine::Run()
   // Creates camera object
   Camera camera(WinWidth, WinHeight, glm::vec3(0.0f, 0.0f, 2.0f));
 
-  //!
+  //Scene Culling:
 
+  FrustumCull frustumCuller;
+
+  //#### MAIN GAME LOOP THAT ENGINE IS RUNNING:
   while (Running)
   {
     SDL_Event Event;
@@ -147,21 +159,35 @@ void XJZoomEngine::Run()
 
     // Bind the VAO so OpenGL knows to use it
     VAO1.Bind();
-    // Draw primitives, number of indices, datatype of indices, index of indices
-    glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
-    // Swap the back buffer with the front buffer
-    SDL_GL_SwapWindow(Window);
-
     // Handles camera inputs
     camera.Inputs(Window);
     // Updates and exports the camera matrix to the Vertex Shader
     camera.Matrix(45.0f, 0.1f, 100.0f, shaderProgram, "camMatrix");
+
+    frustumCuller.Update(camera.viewProjection); 
+
+  glm::vec3 boxMin = {-0.5 , 0 , -0.5};
+  glm::vec3 boxMax = {0.5 , 0.8 , 0.5};
+   
+    if(frustumCuller.IsBoxVisible(boxMin, boxMax)) {
+glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
+    
+    } else {
+      printf("Not visible...");
+    }
+      // Draw primitives, number of indices, datatype of indices, index of indices
+    //glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
+    
+    // Swap the back buffer with the front buffer
+    SDL_GL_SwapWindow(Window);
+
 
 
   glm::vec3 cameraPosition = camera.Position;
   printf("Camera Position: (%.2f, %.2f, %.2f)\n", cameraPosition.x, cameraPosition.y, cameraPosition.z);
 
   }
+  //#### MAIN GAME LOOP THAT ENGINE IS RUNNING: (end)
 
   // Delete all the objects we've created
   VAO1.Delete();

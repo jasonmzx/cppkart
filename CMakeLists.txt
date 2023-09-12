@@ -29,6 +29,9 @@ src/rendering/VBO.cpp
 src/rendering/shaderClass.cpp
 src/rendering/Camera.cpp
 
+src/rendering/FrustumCull.h
+src/rendering/FrustumCull.cpp
+
 src/rendering/Texture.h
 src/rendering/Texture.cpp
 
