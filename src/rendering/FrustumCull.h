@@ -3,18 +3,34 @@
 
 #include<glm/glm.hpp>
 
+
+struct Plane
+{
+float a, b, c, d;
+};
+
+
+enum Halfspace
+{
+NEGATIVE = -1,
+ON_PLANE = 0,
+POSITIVE = 1,
+};
+
+void NormalizePlane(Plane & plane);
+float DistanceToPoint(const Plane & plane, const glm::vec3 & pt);
+Halfspace ClassifyPoint(const Plane & plane, const glm::vec3 & pt);
+void ExtractPlanesGL(Plane* p_planes, const glm::mat4& comboMatrix, bool normalize);
+
 class FrustumCull {
 public:
-    enum Plane {
-        TOP = 0, BOTTOM, LEFT, RIGHT, NEARP, FARP
-    };
 
 private:
-    glm::vec4 planes[6];
+    Plane planes[6];
 
 public:
     void Update(const glm::mat4& mat); // Extract frustum planes from a view-projection matrix
-    bool IsBoxVisible(const glm::vec3& min, const glm::vec3& max) const; // Check if a bounding box is within the frustum
+    bool IsBoxVisible(const glm::vec3& AABB_Point) const; // Check if a bounding box is within the frustum
 };
 
 #endif

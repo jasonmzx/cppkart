@@ -169,7 +169,7 @@ void XJZoomEngine::Run()
   glm::vec3 boxMin = {-0.5 , 0 , -0.5};
   glm::vec3 boxMax = {0.5 , 0.8 , 0.5};
    
-    if(frustumCuller.IsBoxVisible(boxMin, boxMax)) {
+    if(frustumCuller.IsBoxVisible(boxMin)) {
 glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
     
     } else {
