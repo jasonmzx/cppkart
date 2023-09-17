@@ -30,21 +30,18 @@ void terrainMapLoader(std::vector<GLuint>& indices_vec, std::vector<GLfloat>& ve
             indices_vec.push_back(y*width+(x+1));
             indices_vec.push_back((y+1)*width+(x+1));
 
-
-
             int raw_img_index = (y * width + x) * 4; // Each pixel has 4 channels (RGBA)
 
             // Access the RGBA components of the pixel
     unsigned char color_c = image[raw_img_index];
-    float normalized_color = static_cast<float>(color_c) / 512.0f;
-
+    float normalized_color = static_cast<float>(color_c) / 255.0f;
 
             //X: 
             vertices_vec.push_back(static_cast<GLfloat>(x)/width);
             //Y:
             vertices_vec.push_back(static_cast<GLfloat>(normalized_color));
             //Z:
-            vertices_vec.push_back(static_cast<GLfloat>(y)/width);
+            vertices_vec.push_back(static_cast<GLfloat>(y)/width); //Not multiplying by height, as I dont want to stretch the proportions
             //
             for (int i = 0; i < 5; ++i) {
                 vertices_vec.push_back(static_cast<GLuint>(0.0f));

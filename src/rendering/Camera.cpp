@@ -18,10 +18,10 @@ void Camera::Matrix(float FOVdeg, float nearPlane, float farPlane, Shader& shade
 	// Adds perspective to the scene
 	projection = glm::perspective(glm::radians(FOVdeg), (float)width / height, nearPlane, farPlane);
 
-    viewProjection = view * projection;
+    viewProjection = projection * view;
 
 	// Exports the camera matrix to the Vertex Shader
-	glUniformMatrix4fv(glGetUniformLocation(shader.ID, uniform), 1, GL_FALSE, glm::value_ptr(projection * view));
+	glUniformMatrix4fv(glGetUniformLocation(shader.ID, uniform), 1, GL_FALSE, glm::value_ptr(viewProjection));
 }
 
 void Camera::Inputs(SDL_Window* window)
@@ -98,7 +98,7 @@ void Camera::Inputs(SDL_Window* window)
         Orientation = glm::rotate(Orientation, glm::radians(-rotY), Up);
 
         // Sets mouse cursor to the middle of the screen so that it doesn't end up roaming around
-        SDL_WarpMouseInWindow(window, width / 2, height / 2);
+        //SDL_WarpMouseInWindow(window, width / 2, height / 2);
     }
     else
     {

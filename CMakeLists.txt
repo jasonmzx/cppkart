@@ -3,6 +3,7 @@ project(cppkart)
 
 find_package(SDL2 REQUIRED)
 find_package(OpenGL REQUIRED)
+find_package(Bullet REQUIRED)
 
 # External Libraries
 

@@ -1,9 +1,9 @@
 #include "FrustumCull.h"
 #include <iostream>
 
-//https://www.gamedevs.org/uploads/fast-extraction-viewing-frustum-planes-from-world-view-projection-matrix.pdf
+// https://www.gamedevs.org/uploads/fast-extraction-viewing-frustum-planes-from-world-view-projection-matrix.pdf
 
-void NormalizePlane(Plane & plane)
+void NormalizePlane(Plane &plane)
 {
     float mag;
     mag = sqrt(plane.a * plane.a + plane.b * plane.b + plane.c * plane.c);
@@ -14,26 +14,28 @@ void NormalizePlane(Plane & plane)
     plane.d = plane.d / mag;
 }
 
-float DistanceToPoint(const Plane & plane, const glm::vec3 & pt)
+float DistanceToPoint(const Plane &plane, const glm::vec3 &pt)
 {
-return plane.a*pt.x + plane.b*pt.y + plane.c*pt.z + plane.d;
+    return plane.a * pt.x + plane.b * pt.y + plane.c * pt.z + plane.d;
 }
 
-Halfspace ClassifyPoint(const Plane & plane, const glm::vec3 & pt)
+Halfspace ClassifyPoint(const Plane &plane, const glm::vec3 &pt)
 {
-float d;
-d = plane.a*pt.x + plane.b*pt.y + plane.c*pt.z + plane.d;
-if (d < 0) return NEGATIVE;
-if (d > 0) return POSITIVE;
-return ON_PLANE;
+    float d;
+    d = plane.a * pt.x + plane.b * pt.y + plane.c * pt.z + plane.d;
+    if (d < 0)
+        return NEGATIVE;
+    if (d > 0)
+        return POSITIVE;
+    return ON_PLANE;
 }
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp> // for glm::inverseTranspose
 
 void ExtractPlanesGL(
-    Plane* p_planes,
-    const glm::mat4& comboMatrix,
+    Plane *p_planes,
+    const glm::mat4 &comboMatrix,
     bool normalize)
 {
     // Left clipping plane
@@ -84,23 +86,26 @@ void ExtractPlanesGL(
     }
 }
 
-
-void FrustumCull::Update(const glm::mat4& viewProjectionMatrix) {
+void FrustumCull::Update(const glm::mat4 &viewProjectionMatrix)
+{
     // Extract the planes from the view-projection matrix
     ExtractPlanesGL(planes, viewProjectionMatrix, true);
 }
 
-bool FrustumCull::IsBoxVisible(const glm::vec3& AABB_Point) const {
+bool FrustumCull::IsBoxVisible(const glm::vec3 &AABB_Point) const
+{
     // Check if the point is inside or partially inside the frustum
 
     // Initialize a count for how many planes the point is in front of
     int inFrontCount = 0;
 
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < 6; i++)
+    {
         Halfspace result = ClassifyPoint(planes[i], AABB_Point);
 
         // If the point is behind any plane, it is outside the frustum
-        if (result == NEGATIVE) {
+        if (result == NEGATIVE)
+        {
             return true;
         }
     }

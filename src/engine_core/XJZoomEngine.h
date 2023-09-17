@@ -21,8 +21,6 @@
 #include "engine_core/managers/SceneManager.h"
 
 //For Texturing:
-#include<filesystem>
-namespace fs = std::filesystem;
 #include<stb/stb_image.h>
 
 
@@ -30,7 +28,6 @@ class XJZoomEngine {
 
 public:
     void Run();
-private:
     void Init();
 };
 

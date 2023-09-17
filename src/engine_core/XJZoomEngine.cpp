@@ -21,8 +21,33 @@
 //         2, 3, 4,
 //         3, 0, 4};
 
+GLfloat boxVertices[] = {
+    // Position (x, y, z)   Color (r, g, b)   Texture coordinates (s, t)
+    -0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+    0.5f, -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+    0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+    -0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+    -0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+    0.5f, -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+    0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+    -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f};
+
+// Define the indices for the BOX
+GLuint boxIndices[] = {
+    0, 1, 2, 2, 3, 0,
+    4, 5, 6, 6, 7, 4,
+    0, 1, 5, 5, 4, 0,
+    2, 3, 7, 7, 6, 2,
+    1, 2, 6, 6, 5, 1,
+    0, 3, 7, 7, 4, 0};
+
 std::vector<GLfloat> vertices = {};
 std::vector<GLuint> indices = {};
+
+//Terrain Scale matrix
+
+glm::mat4 terrainModelMatrix = glm::scale(glm::vec3(10.0f, 1.0f, 10.0f));
+glm::mat4 boxModelMatrix = glm::scale(glm::vec3(0.5f));
 
 void XJZoomEngine::Run()
 {
@@ -30,6 +55,11 @@ void XJZoomEngine::Run()
   uint32_t WindowFlags = SDL_WINDOW_OPENGL;
   SDL_Window *Window = SDL_CreateWindow("OpenGL Test", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WinWidth, WinHeight, WindowFlags);
   assert(Window);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
   SDL_GLContext Context = SDL_GL_CreateContext(Window);
 
   gladLoadGLLoader(SDL_GL_GetProcAddress);
@@ -37,20 +67,20 @@ void XJZoomEngine::Run()
   int32_t Running = 1;
   int32_t FullScreen = 0;
 
-  // Introduce the window into the current context
-  // Load GLAD so it configures OpenGL
-  gladLoadGL();
   // Specify the viewport of OpenGL in the Window
   // In this case the viewport goes from x = 0, y = 0, to x = 800, y = 800
   glViewport(0, 0, WinWidth, WinHeight);
 
-  //Load Managers:
+
+  // Load Managers:
   SceneManager sceneManager;
 
   terrainMapLoader(indices, vertices);
 
   // Generates Shader object using shaders default.vert and default.frag
   Shader shaderProgram("../src/rendering/shader/default.vert", "../src/rendering/shader/default.frag");
+
+  auto modelMatrixLocation = glGetUniformLocation(shaderProgram.ID, "modelMatrix");
 
   // Generates Vertex Array Object and binds it
   VAO VAO1;
@@ -70,13 +100,31 @@ void XJZoomEngine::Run()
   VBO1.Unbind();
   EBO1.Unbind();
 
+  //!
+  VAO VAO2;
+  VAO2.Bind();
+
+  // Generates a second Vertex Buffer Object and links it to boxVertices
+  VBO VBO2(boxVertices, sizeof(boxVertices));
+  // Generates a second Element Buffer Object and links it to boxIndices
+  EBO EBO2(boxIndices, sizeof(boxIndices));
+
+  // Links VBO attributes such as coordinates and colors to VAO2
+  VAO2.LinkAttrib(VBO2, 0, 3, GL_FLOAT, 8 * sizeof(float), (void *)0);
+  VAO2.LinkAttrib(VBO2, 1, 3, GL_FLOAT, 8 * sizeof(float), (void *)(3 * sizeof(float)));
+  VAO2.LinkAttrib(VBO2, 2, 2, GL_FLOAT, 8 * sizeof(float), (void *)(6 * sizeof(float)));
+  // Unbind all to prevent accidentally modifying them
+  VAO2.Unbind();
+  VBO2.Unbind();
+  EBO2.Unbind();
+
   GLuint uniID = glGetUniformLocation(shaderProgram.ID, "scale");
 
-	std::string texPath = "../src/ressources/";
+  std::string texPath = "../src/ressources/";
 
-	// Texture
-	Texture brickTex((texPath + "brick.png").c_str(), GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
-	brickTex.texUnit(shaderProgram, "tex0", 0);
+  // Texture
+  Texture brickTex((texPath + "brick.png").c_str(), GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
+  brickTex.texUnit(shaderProgram, "tex0", 0);
 
   double prevTime = SDL_GetTicks();
 
@@ -86,11 +134,11 @@ void XJZoomEngine::Run()
   // Creates camera object
   Camera camera(WinWidth, WinHeight, glm::vec3(0.0f, 0.0f, 2.0f));
 
-  //Scene Culling:
+  // Scene Culling:
 
   FrustumCull frustumCuller;
 
-  //#### MAIN GAME LOOP THAT ENGINE IS RUNNING:
+  // #### MAIN GAME LOOP THAT ENGINE IS RUNNING:
   while (Running)
   {
     SDL_Event Event;
@@ -123,7 +171,7 @@ void XJZoomEngine::Run()
         Running = 0;
       }
     }
-    
+
     // Specify the color of the background
     glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
     // Clean the back buffer and depth buffer
@@ -131,7 +179,7 @@ void XJZoomEngine::Run()
     // Tell OpenGL which Shader Program we want to use
     shaderProgram.Activate();
 
-    //Other rendering logic...
+    // Other rendering logic...
 
     // Assigns a value to the uniform; NOTE: Must always be done after activating the Shader Program
     brickTex.Bind();
@@ -143,19 +191,26 @@ void XJZoomEngine::Run()
     // Updates and exports the camera matrix to the Vertex Shader
     camera.Matrix(45.0f, 0.1f, 100.0f, shaderProgram, "camMatrix");
 
-    frustumCuller.Update(camera.viewProjection); 
-   
+    frustumCuller.Update(camera.viewProjection);
+
     // if(frustumCuller.IsBoxVisible(boxMin)) {}
+    
+    //Draw Terrain:
+    glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(terrainModelMatrix));
     glDrawElements(GL_TRIANGLES, (sizeof(GLuint) * indices.size()) / sizeof(int), GL_UNSIGNED_INT, 0);
+
+    VAO2.Bind();
+    glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(boxModelMatrix));
+    glDrawElements(GL_TRIANGLES, (sizeof(boxIndices)) / sizeof(int), GL_UNSIGNED_INT, 0);
+
+    
+    
     
     // Swap the back buffer with the front buffer
     SDL_GL_SwapWindow(Window);
 
-
-
-  glm::vec3 cameraPosition = camera.Position;
-  printf("Camera Position: (%.2f, %.2f, %.2f)\n", cameraPosition.x, cameraPosition.y, cameraPosition.z);
-
+    glm::vec3 cameraPosition = camera.Position;
+    printf("Camera Position: (%.2f, %.2f, %.2f)\n", cameraPosition.x, cameraPosition.y, cameraPosition.z);
   }
 
   // Delete all the objects we've created
@@ -166,4 +221,9 @@ void XJZoomEngine::Run()
   brickTex.Delete();
 
   shaderProgram.Delete();
+}
+
+void XJZoomEngine::Init()
+{
+  // SDL_ShowSimpleMessageBox(0, "hello", "cppkart", nullptr);
 }
