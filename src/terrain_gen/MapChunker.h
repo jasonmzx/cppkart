@@ -6,6 +6,6 @@
 #include <vector>
 #include <glad/glad.h>
 
-void terrainMapLoader(GLuint* indices, GLfloat* vertices);
+void terrainMapLoader(std::vector<GLuint>& indices_vec, std::vector<GLfloat>& vertices_vec);
 
 #endif

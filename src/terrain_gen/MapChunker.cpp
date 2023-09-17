@@ -1,8 +1,7 @@
 
 #include "MapChunker.h"
 
-void terrainMapLoader(GLuint &indices, GLfloat &vertices) {
-
+void terrainMapLoader(std::vector<GLuint>& indices_vec, std::vector<GLfloat>& vertices_vec) {
 
      const char* filename = "../src/ressources/16-bit-terrain-map.png";
     int width, height, channels;
@@ -14,11 +13,6 @@ void terrainMapLoader(GLuint &indices, GLfloat &vertices) {
         std::cerr << "Error loading image: " << stbi_failure_reason() << std::endl;
     }
 
-    //GLuint indices[height * width * 3]; //Per Vertex, 3 indices
-    //GLfloat vertices[height * width];
-    std::vector<GLuint> indices_vec = {};
-    std::vector<GLfloat> vertices_vec = {};
-
     std::cout << "Image SIZE: H- " << height << "px, W- " << width << "px " << std::endl;
 
     // Iterate through the pixels
@@ -26,20 +20,29 @@ void terrainMapLoader(GLuint &indices, GLfloat &vertices) {
     
         for (int x = 0; x < width; ++x) {
 
+            //Triangle 1 / 2 (per unit)
             indices_vec.push_back(y*width+x);
             indices_vec.push_back((y+1)*width+x);
             indices_vec.push_back(y*width+(x+1));
 
+            //Triangle 2 / 2 (per unit)
+            indices_vec.push_back((y+1)*width+x);
+            indices_vec.push_back(y*width+(x+1));
+            indices_vec.push_back((y+1)*width+(x+1));
+
+
+
             int raw_img_index = (y * width + x) * 4; // Each pixel has 4 channels (RGBA)
 
             // Access the RGBA components of the pixel
-            unsigned char color_c = image[raw_img_index];
-            float normalized_color = int(color_c) / 255;
+    unsigned char color_c = image[raw_img_index];
+    float normalized_color = static_cast<float>(color_c) / 512.0f;
+
 
             //X: 
             vertices_vec.push_back(static_cast<GLfloat>(x)/width);
             //Y:
-            vertices_vec.push_back(normalized_color);
+            vertices_vec.push_back(static_cast<GLfloat>(normalized_color));
             //Z:
             vertices_vec.push_back(static_cast<GLfloat>(y)/width);
             //
@@ -48,10 +51,6 @@ void terrainMapLoader(GLuint &indices, GLfloat &vertices) {
             }
         }
     }
-    //HERE 
-    // Copy vector elements to the arrays
-    std::copy(indices_vec.begin(), indices_vec.end(), indices);
-    std::copy(vertices_vec.begin(), vertices_vec.end(), vertices);
     
     std::cout << "Parsed the terrain?" << std::endl;
 

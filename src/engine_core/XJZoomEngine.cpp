@@ -3,23 +3,26 @@
 #define WinWidth 1800
 #define WinHeight 1000
 
-GLfloat vertices[] =
-    { //     COORDINATES     /        COLORS      /   TexCoord  //
-        -0.5f, 0.0f, 0.5f, 0.83f, 0.70f, 0.44f, 0.0f, 0.0f,
-        -0.5f, 0.0f, -0.5f, 0.83f, 0.70f, 0.44f, 5.0f, 0.0f,
-        0.5f, 0.0f, -0.5f, 0.83f, 0.70f, 0.44f, 0.0f, 0.0f,
-        0.5f, 0.0f, 0.5f, 0.83f, 0.70f, 0.44f, 5.0f, 0.0f,
-        0.0f, 0.8f, 0.0f, 0.92f, 0.86f, 0.76f, 2.5f, 5.0f};
+// GLfloat vertices[] =
+//     { //     COORDINATES     /        COLORS      /   TexCoord  //
+//         -0.5f, 0.0f, 0.5f, 0.83f, 0.70f, 0.44f, 0.0f, 0.0f,
+//         -0.5f, 0.0f, -0.5f, 0.83f, 0.70f, 0.44f, 5.0f, 0.0f,
+//         0.5f, 0.0f, -0.5f, 0.83f, 0.70f, 0.44f, 0.0f, 0.0f,
+//         0.5f, 0.0f, 0.5f, 0.83f, 0.70f, 0.44f, 5.0f, 0.0f,
+//         0.0f, 0.8f, 0.0f, 0.92f, 0.86f, 0.76f, 2.5f, 5.0f};
 
-// Indices for vertices order
-GLuint indices[] =
-    {
-        0, 1, 2,
-        0, 2, 3,
-        0, 1, 4,
-        1, 2, 4,
-        2, 3, 4,
-        3, 0, 4};
+// // Indices for vertices order
+// GLuint indices[] =
+//     {
+//         0, 1, 2,
+//         0, 2, 3,
+//         0, 1, 4,
+//         1, 2, 4,
+//         2, 3, 4,
+//         3, 0, 4};
+
+std::vector<GLfloat> vertices = {};
+std::vector<GLuint> indices = {};
 
 void XJZoomEngine::Run()
 {
@@ -44,6 +47,8 @@ void XJZoomEngine::Run()
   //Load Managers:
   SceneManager sceneManager;
 
+  terrainMapLoader(indices, vertices);
+
   // Generates Shader object using shaders default.vert and default.frag
   Shader shaderProgram("../src/rendering/shader/default.vert", "../src/rendering/shader/default.frag");
 
@@ -52,9 +57,9 @@ void XJZoomEngine::Run()
   VAO1.Bind();
 
   // Generates Vertex Buffer Object and links it to vertices
-  VBO VBO1(vertices, sizeof(vertices));
+  VBO VBO1(vertices.data(), sizeof(GLfloat) * vertices.size());
   // Generates Element Buffer Object and links it to indices
-  EBO EBO1(indices, sizeof(indices));
+  EBO EBO1(indices.data(), sizeof(GLuint) * indices.size());
 
   // Links VBO attributes such as coordinates and colors to VAO
   VAO1.LinkAttrib(VBO1, 0, 3, GL_FLOAT, 8 * sizeof(float), (void *)0);
@@ -86,13 +91,6 @@ void XJZoomEngine::Run()
   FrustumCull frustumCuller;
 
   //#### MAIN GAME LOOP THAT ENGINE IS RUNNING:
-
-//load terrain beofre game loop:
-  //#### MAIN GAME LOOP THAT ENGINE IS RUNNING: (end)
-  terrainMapLoader(indices, vertices);
-
-
-
   while (Running)
   {
     SDL_Event Event;
@@ -148,7 +146,7 @@ void XJZoomEngine::Run()
     frustumCuller.Update(camera.viewProjection); 
    
     // if(frustumCuller.IsBoxVisible(boxMin)) {}
-    glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, (sizeof(GLuint) * indices.size()) / sizeof(int), GL_UNSIGNED_INT, 0);
     
     // Swap the back buffer with the front buffer
     SDL_GL_SwapWindow(Window);
