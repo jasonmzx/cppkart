@@ -1,6 +1,8 @@
 #include "FrustumCull.h"
 #include <iostream>
 
+//https://www.gamedevs.org/uploads/fast-extraction-viewing-frustum-planes-from-world-view-projection-matrix.pdf
+
 void NormalizePlane(Plane & plane)
 {
     float mag;
@@ -34,8 +36,6 @@ void ExtractPlanesGL(
     const glm::mat4& comboMatrix,
     bool normalize)
 {
-    std::cout << "Extracting Planes for Frustum" << std::endl;
-
     // Left clipping plane
     p_planes[0].a = comboMatrix[3][0] + comboMatrix[0][0];
     p_planes[0].b = comboMatrix[3][1] + comboMatrix[0][1];
@@ -87,7 +87,7 @@ void ExtractPlanesGL(
 
 void FrustumCull::Update(const glm::mat4& viewProjectionMatrix) {
     // Extract the planes from the view-projection matrix
-    ExtractPlanesGL(planes, viewProjectionMatrix, false);
+    ExtractPlanesGL(planes, viewProjectionMatrix, true);
 }
 
 bool FrustumCull::IsBoxVisible(const glm::vec3& AABB_Point) const {
@@ -99,17 +99,12 @@ bool FrustumCull::IsBoxVisible(const glm::vec3& AABB_Point) const {
     for (int i = 0; i < 6; i++) {
         Halfspace result = ClassifyPoint(planes[i], AABB_Point);
 
-        // If the point is in front of the plane, increment the count
-        if (result == POSITIVE) {
-            inFrontCount++;
-        }
-
         // If the point is behind any plane, it is outside the frustum
         if (result == NEGATIVE) {
-            return false;
+            return true;
         }
     }
 
     // If the point is in front of at least one plane, it is partially inside the frustum
-    return inFrontCount > 0;
+    return false;
 }

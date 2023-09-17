@@ -1,31 +1,5 @@
 #include "XJZoomEngine.h"
 
-#include <stdio.h>
-#include <stdint.h>
-#include <assert.h>
-#include <SDL2/SDL.h>
-#include <glad/glad.h>
-
-#include "rendering/shaderClass.h"
-#include "rendering/VAO.h"
-#include "rendering/VBO.h"
-#include "rendering/EBO.h"
-#include "rendering/Camera.h"
-#include "rendering/Texture.h"
-
-#include "rendering/FrustumCull.h"
-
-//CORE Imports:
-
-#include "engine_core/managers/SceneManager.h"
-
-//For Texturing:
-
-#include<filesystem>
-namespace fs = std::filesystem;
-
-#include<stb/stb_image.h>
-
 #define WinWidth 1800
 #define WinHeight 1000
 
@@ -112,6 +86,13 @@ void XJZoomEngine::Run()
   FrustumCull frustumCuller;
 
   //#### MAIN GAME LOOP THAT ENGINE IS RUNNING:
+
+//load terrain beofre game loop:
+  //#### MAIN GAME LOOP THAT ENGINE IS RUNNING: (end)
+  terrainMapLoader(indices, vertices);
+
+
+
   while (Running)
   {
     SDL_Event Event;
@@ -165,18 +146,9 @@ void XJZoomEngine::Run()
     camera.Matrix(45.0f, 0.1f, 100.0f, shaderProgram, "camMatrix");
 
     frustumCuller.Update(camera.viewProjection); 
-
-  glm::vec3 boxMin = {-0.5 , 0 , -0.5};
-  glm::vec3 boxMax = {0.5 , 0.8 , 0.5};
    
-    if(frustumCuller.IsBoxVisible(boxMin)) {
-glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
-    
-    } else {
-      printf("Not visible...");
-    }
-      // Draw primitives, number of indices, datatype of indices, index of indices
-    //glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
+    // if(frustumCuller.IsBoxVisible(boxMin)) {}
+    glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
     
     // Swap the back buffer with the front buffer
     SDL_GL_SwapWindow(Window);
@@ -187,7 +159,6 @@ glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
   printf("Camera Position: (%.2f, %.2f, %.2f)\n", cameraPosition.x, cameraPosition.y, cameraPosition.z);
 
   }
-  //#### MAIN GAME LOOP THAT ENGINE IS RUNNING: (end)
 
   // Delete all the objects we've created
   VAO1.Delete();

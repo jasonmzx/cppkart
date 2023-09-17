@@ -22,6 +22,10 @@ src/engine_core/XJZoomEngine.cpp
 src/engine_core/managers/SceneManager.h
 src/engine_core/managers/SceneManager.cpp
 
+#Terrain / Map Generator & Chunking Imports:
+src/terrain_gen/MapChunker.h
+src/terrain_gen/MapChunker.cpp
+
 src/main.cpp 
 src/rendering/EBO.cpp 
 src/rendering/VAO.cpp 
