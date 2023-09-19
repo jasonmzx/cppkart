@@ -98,7 +98,7 @@ void Camera::Inputs(SDL_Window* window)
         Orientation = glm::rotate(Orientation, glm::radians(-rotY), Up);
 
         // Sets mouse cursor to the middle of the screen so that it doesn't end up roaming around
-        //SDL_WarpMouseInWindow(window, width / 2, height / 2);
+        SDL_WarpMouseInWindow(window, width / 2, height / 2);
     }
     else
     {

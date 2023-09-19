@@ -7,7 +7,7 @@ find_package(Bullet REQUIRED)
 
 # External Libraries
 
-include_directories(src/glad/include src)
+include_directories(src/glad/include src ${BULLET_INCLUDE_DIRS})
 add_executable(cppkart
 src/glad/src/glad.c
 src/stb/stb_image.h
@@ -42,5 +42,4 @@ src/rendering/Texture.cpp
 
 )
 
-
-target_link_libraries(cppkart PRIVATE SDL2::SDL2 OpenGL::GL)
+target_link_libraries(cppkart PRIVATE SDL2::SDL2 OpenGL::GL ${BULLET_LIBRARIES})

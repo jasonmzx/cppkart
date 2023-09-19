@@ -1,5 +1,7 @@
 #include "XJZoomEngine.h"
-
+#include <bullet/btBulletCollisionCommon.h>
+#include <bullet/btBulletDynamicsCommon.h>
+#include <bullet/BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h>
 #define WinWidth 1800
 #define WinHeight 1000
 
@@ -51,6 +53,16 @@ glm::mat4 boxModelMatrix = glm::scale(glm::vec3(0.5f));
 
 void XJZoomEngine::Run()
 {
+
+// Initialize Bullet Physics
+btBroadphaseInterface* broadphase = new btDbvtBroadphase();
+btDefaultCollisionConfiguration* collisionConfiguration = new btDefaultCollisionConfiguration();
+btCollisionDispatcher* dispatcher = new btCollisionDispatcher(collisionConfiguration);
+btSequentialImpulseConstraintSolver* solver = new btSequentialImpulseConstraintSolver();
+btDiscreteDynamicsWorld* dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
+
+// Set gravity for the world
+dynamicsWorld->setGravity(btVector3(0.0f, -10.0f, 0.0f));
 
   uint32_t WindowFlags = SDL_WINDOW_OPENGL;
   SDL_Window *Window = SDL_CreateWindow("OpenGL Test", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WinWidth, WinHeight, WindowFlags);
@@ -202,9 +214,6 @@ void XJZoomEngine::Run()
     VAO2.Bind();
     glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(boxModelMatrix));
     glDrawElements(GL_TRIANGLES, (sizeof(boxIndices)) / sizeof(int), GL_UNSIGNED_INT, 0);
-
-    
-    
     
     // Swap the back buffer with the front buffer
     SDL_GL_SwapWindow(Window);
