@@ -44,15 +44,9 @@ glm::mat4 boxModelMatrix = glm::scale(glm::vec3(0.5f));
 void XJZoomEngine::Run()
 {
 
-// Initialize Bullet Physics
-btBroadphaseInterface* broadphase = new btDbvtBroadphase();
-btDefaultCollisionConfiguration* collisionConfiguration = new btDefaultCollisionConfiguration();
-btCollisionDispatcher* dispatcher = new btCollisionDispatcher(collisionConfiguration);
-btSequentialImpulseConstraintSolver* solver = new btSequentialImpulseConstraintSolver();
-btDiscreteDynamicsWorld* dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
+//* ### Bullet Physics World Singleton Insanciation ###
 
-// Set gravity for the world
-dynamicsWorld->setGravity(btVector3(0.0f, -10.0f, 0.0f));
+PhysicsWorldSingleton* physicsWorld = PhysicsWorldSingleton::getInstance();
 
 //! ############################################################
 //! TODO: PULL ALL OF THIS INTO A VEHICLE PHYSICS ENTITY CLASS #
@@ -82,13 +76,13 @@ btVector3 vehicleInertia(0, 0, 0);
 vehicleChassisShape->calculateLocalInertia(vehicleMass, vehicleInertia);
 btRigidBody::btRigidBodyConstructionInfo vehicleRigidBodyCI(vehicleMass, vehicleMotionState, vehicleChassisShape, vehicleInertia);
 vehicleRigidBody = new btRigidBody(vehicleRigidBodyCI);
-dynamicsWorld->addRigidBody(vehicleRigidBody);
+physicsWorld->dynamicsWorld->addRigidBody(vehicleRigidBody);
 
 // Raycaster and the actual vehicle
-vehicleRayCaster = new btDefaultVehicleRaycaster(dynamicsWorld);
+vehicleRayCaster = new btDefaultVehicleRaycaster(physicsWorld->dynamicsWorld);
 vehicle = new btRaycastVehicle(tuning, vehicleRigidBody, vehicleRayCaster);
 vehicleRigidBody->setActivationState(DISABLE_DEACTIVATION);
-dynamicsWorld->addVehicle(vehicle);
+physicsWorld->dynamicsWorld->addVehicle(vehicle);
 
 // Wheel configuration
 btVector3 wheelDirection = btVector3(0, -1, 0);
@@ -128,7 +122,6 @@ float vehicleSteering = 0.0;
 float steeringIncrement = 0.04;
 float steeringClamp = 0.3;
 float brakeForce = 0.0;
-
 
 //! ############################################################
 //! TODO: PULL ALL OF THIS INTO A VEHICLE PHYSICS ENTITY CLASS #
@@ -248,7 +241,6 @@ float brakeForce = 0.0;
           break;
         case SDLK_w:
           engineForce = 1000.0;
-          printf("GASS!");
           break;
         default:
           break;
@@ -259,8 +251,13 @@ float brakeForce = 0.0;
         Running = 0;
       }
     }
+
+    //! Remove this and put into vehicle manager class eventually
     vehicle->applyEngineForce(engineForce, 2);
     vehicle->applyEngineForce(engineForce, 3);
+
+    physicsWorld->dynamicsWorld->stepSimulation(1.0f / 60.0f);
+    printf("Current Engine Force: %.2f\n", engineForce);
 
     // Specify the color of the background
     glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
@@ -298,13 +295,13 @@ float brakeForce = 0.0;
 
     glm::vec3 cameraPosition = camera.Position;
     //printf("Camera Position: (%.2f, %.2f, %.2f)\n", cameraPosition.x, cameraPosition.y, cameraPosition.z);
+// Get the vehicle's rigid body's velocity (in world coordinates)
+btVector3 velocity = vehicleRigidBody->getLinearVelocity();
 
-    btVector3 velocity = vehicleRigidBody->getLinearVelocity();
+// Get the vehicle's forward direction
+btVector3 vehicleTransform = vehicleRigidBody->getWorldTransform().getBasis().getColumn(2); // Assuming Z-axis is forward. Adjust if different.
 
-  // Get the vehicle's forward direction
-  btVector3 vehicleTransform = vehicleRigidBody->getWorldTransform().getBasis().getColumn(2); // Assuming Z-axis is forward. Adjust if different.
-
-  printf("Vehicle Velocity: %.2f, %.2f, %.2f | Direction: %.2f, %.2f, %.2f\n",
+printf("Vehicle Velocity (XYZ): %.2f, %.2f, %.2f | Direction: %.2f, %.2f, %.2f\n",
        velocity.getX(), velocity.getY(), velocity.getZ(),
        vehicleTransform.getX(), vehicleTransform.getY(), vehicleTransform.getZ());
   }

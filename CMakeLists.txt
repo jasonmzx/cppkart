@@ -20,6 +20,10 @@ src/engine_core/XJZoomEngine.h
 src/engine_core/XJZoomEngine.cpp
 
 #Core Engine; Managers Imports:
+
+src/engine_core/singletons/PhysicsWorldSingleton.h
+src/engine_core/singletons/PhysicsWorldSingleton.cpp
+
 src/engine_core/managers/SceneManager.h
 src/engine_core/managers/SceneManager.cpp
 

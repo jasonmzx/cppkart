@@ -17,6 +17,9 @@
 
 #include "terrain_gen/MapChunker.h"
 
+// Physics stuff:
+#include "singletons/PhysicsWorldSingleton.h"
+
 //CORE Imports:
 #include "engine_core/managers/SceneManager.h"
 
