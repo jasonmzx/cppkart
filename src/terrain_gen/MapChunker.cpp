@@ -34,7 +34,7 @@ void terrainMapLoader(std::vector<GLuint>& indices_vec, std::vector<GLfloat>& ve
 
             // Access the RGBA components of the pixel
     unsigned char color_c = image[raw_img_index];
-    float normalized_color = static_cast<float>(color_c) / ( 255.0f*4.0f);
+    float normalized_color = static_cast<float>(color_c) / ( 255.0f*0.75f);
 
             //X: 
             vertices_vec.push_back(static_cast<GLfloat>(x)/width);

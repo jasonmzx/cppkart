@@ -1,0 +1,6 @@
+#ifndef VEHICLEENTITIY_CLASS_H
+#define VEHICLEENTITIY_CLASS_H
+
+
+
+#endif

@@ -27,6 +27,10 @@ src/engine_core/managers/SceneManager.cpp
 src/terrain_gen/MapChunker.h
 src/terrain_gen/MapChunker.cpp
 
+#Entities
+src/engine_core/entities/VehicleEntity.h 
+src/engine_core/entities/VehicleEntity.cpp
+
 src/main.cpp 
 src/rendering/EBO.cpp 
 src/rendering/VAO.cpp 

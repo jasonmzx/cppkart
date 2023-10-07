@@ -1,27 +1,17 @@
 #include "XJZoomEngine.h"
+
+//Bullet Physics Engine Imports:
+
 #include <bullet/btBulletCollisionCommon.h>
 #include <bullet/btBulletDynamicsCommon.h>
 #include <bullet/BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h>
+#include <bullet/BulletDynamics/Vehicle/btRaycastVehicle.h>
+
+//Windowing consts
+
 #define WinWidth 1800
 #define WinHeight 1000
 
-// GLfloat vertices[] =
-//     { //     COORDINATES     /        COLORS      /   TexCoord  //
-//         -0.5f, 0.0f, 0.5f, 0.83f, 0.70f, 0.44f, 0.0f, 0.0f,
-//         -0.5f, 0.0f, -0.5f, 0.83f, 0.70f, 0.44f, 5.0f, 0.0f,
-//         0.5f, 0.0f, -0.5f, 0.83f, 0.70f, 0.44f, 0.0f, 0.0f,
-//         0.5f, 0.0f, 0.5f, 0.83f, 0.70f, 0.44f, 5.0f, 0.0f,
-//         0.0f, 0.8f, 0.0f, 0.92f, 0.86f, 0.76f, 2.5f, 5.0f};
-
-// // Indices for vertices order
-// GLuint indices[] =
-//     {
-//         0, 1, 2,
-//         0, 2, 3,
-//         0, 1, 4,
-//         1, 2, 4,
-//         2, 3, 4,
-//         3, 0, 4};
 
 GLfloat boxVertices[] = {
     // Position (x, y, z)   Color (r, g, b)   Texture coordinates (s, t)
@@ -64,6 +54,89 @@ btDiscreteDynamicsWorld* dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher,
 // Set gravity for the world
 dynamicsWorld->setGravity(btVector3(0.0f, -10.0f, 0.0f));
 
+//! ############################################################
+//! TODO: PULL ALL OF THIS INTO A VEHICLE PHYSICS ENTITY CLASS #
+//! ############################################################
+
+//Definitions of Vehicle physics elements:
+
+btRigidBody* vehicleRigidBody;
+btVehicleRaycaster* vehicleRayCaster;
+btRaycastVehicle* vehicle;
+
+//Vehicle tuning:
+btRaycastVehicle::btVehicleTuning tuning;
+tuning.m_suspensionStiffness = 20.0f;
+tuning.m_suspensionCompression = 0.83f;
+tuning.m_suspensionDamping = 0.88f;
+tuning.m_maxSuspensionTravelCm = 500.0f;
+tuning.m_frictionSlip = 10.5f;
+tuning.m_maxSuspensionForce = 6000.0f;
+
+
+// Vehicle setup
+btCollisionShape* vehicleChassisShape = new btBoxShape(btVector3(1.0f, 0.5f, 2.0f));
+btDefaultMotionState* vehicleMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 3, 0)));
+btScalar vehicleMass = 800;
+btVector3 vehicleInertia(0, 0, 0);
+vehicleChassisShape->calculateLocalInertia(vehicleMass, vehicleInertia);
+btRigidBody::btRigidBodyConstructionInfo vehicleRigidBodyCI(vehicleMass, vehicleMotionState, vehicleChassisShape, vehicleInertia);
+vehicleRigidBody = new btRigidBody(vehicleRigidBodyCI);
+dynamicsWorld->addRigidBody(vehicleRigidBody);
+
+// Raycaster and the actual vehicle
+vehicleRayCaster = new btDefaultVehicleRaycaster(dynamicsWorld);
+vehicle = new btRaycastVehicle(tuning, vehicleRigidBody, vehicleRayCaster);
+vehicleRigidBody->setActivationState(DISABLE_DEACTIVATION);
+dynamicsWorld->addVehicle(vehicle);
+
+// Wheel configuration
+btVector3 wheelDirection = btVector3(0, -1, 0);
+btVector3 wheelAxle = btVector3(-1, 0, 0);
+btScalar suspensionRestLength = 0.6;
+btScalar wheelRadius = 0.5;
+btScalar wheelWidth = 0.4;
+btScalar suspensionStiffness = 20.0;
+btScalar dampingRelaxation = 2.3;
+btScalar dampingCompression = 4.4;
+btScalar frictionSlip = 1000;
+btScalar rollInfluence = 0.1;
+
+// Add wheels to the vehicle
+for (int i = 0; i < 4; i++)
+{
+    bool isFrontWheel = i < 2;
+    vehicle->addWheel(
+        btVector3(0, 1, i == 0 || i == 3 ? 1.2 : -1.2),
+        wheelDirection,
+        wheelAxle,
+        suspensionRestLength,
+        wheelRadius,
+        tuning,
+        isFrontWheel);
+    btWheelInfo& wheel = vehicle->getWheelInfo(i);
+    wheel.m_suspensionStiffness = suspensionStiffness;
+    wheel.m_wheelsDampingRelaxation = dampingRelaxation;
+    wheel.m_wheelsDampingCompression = dampingCompression;
+    wheel.m_frictionSlip = frictionSlip;
+    wheel.m_rollInfluence = rollInfluence;
+}
+
+//Vehicle control:
+float engineForce = 0.0;
+float vehicleSteering = 0.0;
+float steeringIncrement = 0.04;
+float steeringClamp = 0.3;
+float brakeForce = 0.0;
+
+
+//! ############################################################
+//! TODO: PULL ALL OF THIS INTO A VEHICLE PHYSICS ENTITY CLASS #
+//! ############################################################
+
+
+
+//* ########## WINDOWING STUFF ############
   uint32_t WindowFlags = SDL_WINDOW_OPENGL;
   SDL_Window *Window = SDL_CreateWindow("OpenGL Test", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WinWidth, WinHeight, WindowFlags);
   assert(Window);
@@ -112,7 +185,6 @@ dynamicsWorld->setGravity(btVector3(0.0f, -10.0f, 0.0f));
   VBO1.Unbind();
   EBO1.Unbind();
 
-  //!
   VAO VAO2;
   VAO2.Bind();
 
@@ -174,6 +246,10 @@ dynamicsWorld->setGravity(btVector3(0.0f, -10.0f, 0.0f));
             SDL_SetWindowFullscreen(Window, WindowFlags);
           }
           break;
+        case SDLK_w:
+          engineForce = 1000.0;
+          printf("GASS!");
+          break;
         default:
           break;
         }
@@ -183,6 +259,8 @@ dynamicsWorld->setGravity(btVector3(0.0f, -10.0f, 0.0f));
         Running = 0;
       }
     }
+    vehicle->applyEngineForce(engineForce, 2);
+    vehicle->applyEngineForce(engineForce, 3);
 
     // Specify the color of the background
     glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
@@ -219,7 +297,16 @@ dynamicsWorld->setGravity(btVector3(0.0f, -10.0f, 0.0f));
     SDL_GL_SwapWindow(Window);
 
     glm::vec3 cameraPosition = camera.Position;
-    printf("Camera Position: (%.2f, %.2f, %.2f)\n", cameraPosition.x, cameraPosition.y, cameraPosition.z);
+    //printf("Camera Position: (%.2f, %.2f, %.2f)\n", cameraPosition.x, cameraPosition.y, cameraPosition.z);
+
+    btVector3 velocity = vehicleRigidBody->getLinearVelocity();
+
+  // Get the vehicle's forward direction
+  btVector3 vehicleTransform = vehicleRigidBody->getWorldTransform().getBasis().getColumn(2); // Assuming Z-axis is forward. Adjust if different.
+
+  printf("Vehicle Velocity: %.2f, %.2f, %.2f | Direction: %.2f, %.2f, %.2f\n",
+       velocity.getX(), velocity.getY(), velocity.getZ(),
+       vehicleTransform.getX(), vehicleTransform.getY(), vehicleTransform.getZ());
   }
 
   // Delete all the objects we've created
