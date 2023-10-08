@@ -5,7 +5,7 @@ find_package(SDL2 REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(Bullet REQUIRED)
 
-# External Libraries
+# External Source Libraries
 
 include_directories(src/glad/include src ${BULLET_INCLUDE_DIRS})
 add_executable(cppkart
@@ -24,8 +24,14 @@ src/engine_core/XJZoomEngine.cpp
 src/engine_core/singletons/PhysicsWorldSingleton.h
 src/engine_core/singletons/PhysicsWorldSingleton.cpp
 
+### Bullet Physics Models for Entites
+src/engine_core/bullet_models/VehiclePhysics.h
+src/engine_core/bullet_models/VehiclePhysics.cpp
+
 src/engine_core/managers/SceneManager.h
 src/engine_core/managers/SceneManager.cpp
+
+
 
 #Terrain / Map Generator & Chunking Imports:
 src/terrain_gen/MapChunker.h
@@ -34,6 +40,9 @@ src/terrain_gen/MapChunker.cpp
 #Entities
 src/engine_core/entities/VehicleEntity.h 
 src/engine_core/entities/VehicleEntity.cpp
+
+
+# Main Imports for Rendering
 
 src/main.cpp 
 src/rendering/EBO.cpp 

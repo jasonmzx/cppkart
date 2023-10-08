@@ -1,7 +1,10 @@
 #include "VehicleEntity.h"
 
+VehicleEntity::VehicleEntity() {
+    // The vehiclePhysics object is automatically instantiated when a VehicleEntity is created
+}
 
-//TODO: Move Actually make this a good init fn (edit tuning params, etc...)
-void VehicleEntity::Initialize () {}
 
-void VehicleEntity::Update () {}
+VehiclePhysics& VehicleEntity::GetPhysics() {
+    return vehiclePhysics;
+}

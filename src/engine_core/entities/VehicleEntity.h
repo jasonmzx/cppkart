@@ -1,19 +1,17 @@
-#ifndef VEHICLEENTITIY_CLASS_H
-#define VEHICLEENTITIY_CLASS_H
+#ifndef VEHICLEENTITY_CLASS_H
+#define VEHICLEENTITY_CLASS_H
 
-//Bullet Physics Engine Imports:
-
-#include <bullet/btBulletCollisionCommon.h>
-#include <bullet/btBulletDynamicsCommon.h>
-#include <bullet/BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h>
-#include <bullet/BulletDynamics/Vehicle/btRaycastVehicle.h>
-
+#include "engine_core/bullet_models/VehiclePhysics.h"
 
 class VehicleEntity {
+private:
+    VehiclePhysics vehiclePhysics;
 
 public:
-    void Initialize();
-    void Update();
+    VehicleEntity();
+
+    // Getter for direct access to VehiclePhysics
+    VehiclePhysics& GetPhysics();
 };
 
 #endif

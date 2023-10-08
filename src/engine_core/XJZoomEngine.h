@@ -17,6 +17,11 @@
 
 #include "terrain_gen/MapChunker.h"
 
+//Entity Imports
+
+#include "engine_core/entities/VehicleEntity.h"
+
+
 // Physics stuff:
 #include "singletons/PhysicsWorldSingleton.h"
 
