@@ -57,13 +57,13 @@ VehicleEntity vehicle;
 
   TerrainPhysics terrain(width, length, heightData, minHeight, maxHeight);
 
-  // Add terrain to physics world
-    physicsWorld->dynamicsWorld->addRigidBody(terrain.GetRigidBody());
+  //* Add terrain to physics world
+  physicsWorld->dynamicsWorld->addRigidBody(terrain.GetRigidBody());
     
 
 //* ########## WINDOWING STUFF ############
   uint32_t WindowFlags = SDL_WINDOW_OPENGL;
-  SDL_Window *Window = SDL_CreateWindow("OpenGL Test", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WinWidth, WinHeight, WindowFlags);
+  SDL_Window *Window = SDL_CreateWindow("XJZoom Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WinWidth, WinHeight, WindowFlags);
   assert(Window);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
@@ -229,18 +229,9 @@ VehicleEntity vehicle;
   //printf("Camera Position: (%.2f, %.2f, %.2f)\n", cameraPosition.x, cameraPosition.y, cameraPosition.z);
 
 
-
 // Get the vehicle's rigid body's velocity (in world coordinates)
+    vehicle.GetPhysics().getState();
 
-// btVector3 velocity = vehicleRigidBody->getLinearVelocity();
-
-// Get the vehicle's forward direction
-// btVector3 vehicleTransform = vehicleRigidBody->getWorldTransform().getBasis().getColumn(2); // Assuming Z-axis is forward. Adjust if different.
-
-// printf("Vehicle Velocity (XYZ): %.2f, %.2f, %.2f | Direction: %.2f, %.2f, %.2f\n",
-//        velocity.getX(), velocity.getY(), velocity.getZ(),
-//        vehicleTransform.getX(), vehicleTransform.getY(), vehicleTransform.getZ());
-  
   }
 
   // Delete all the objects we've created

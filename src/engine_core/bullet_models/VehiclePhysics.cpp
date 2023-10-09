@@ -95,3 +95,16 @@ btTransform VehiclePhysics::GetTransform() const {
     // Returns the current transform (position & rotation) of the vehicle
     return vehicleRigidBody->getWorldTransform();
 }
+
+void VehiclePhysics::getState() {
+
+ btVector3 velocity = vehicleRigidBody->getLinearVelocity();
+
+ //Get the vehicle's forward direction
+ btVector3 vehicleTransform = vehicleRigidBody->getWorldTransform().getBasis().getColumn(2); // Assuming Z-axis is forward. Adjust if different.
+
+ printf("Vehicle Velocity (XYZ): %.2f, %.2f, %.2f | Direction: %.2f, %.2f, %.2f\n",
+        velocity.getX(), velocity.getY(), velocity.getZ(),
+        vehicleTransform.getX(), vehicleTransform.getY(), vehicleTransform.getZ());
+  
+}
