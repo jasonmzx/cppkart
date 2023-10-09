@@ -25,6 +25,8 @@
 // Physics stuff:
 #include "singletons/PhysicsWorldSingleton.h"
 
+#include "engine_core/bullet_models/TerrainPhysics.h" //TODO: Remove and wrap in a TerrainEntity class
+
 //CORE Imports:
 #include "engine_core/managers/SceneManager.h"
 

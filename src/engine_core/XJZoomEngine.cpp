@@ -43,6 +43,23 @@ PhysicsWorldSingleton* physicsWorld = PhysicsWorldSingleton::getInstance();
 
 VehicleEntity vehicle;
 
+//Terrain Physics
+    int width;
+    int length;
+    std::vector<unsigned short> heightDataVec;  // Provide your actual height data here
+    btScalar minHeight;   // Minimum height in your dataset
+    btScalar maxHeight;   // Maximum height in your dataset
+
+  bool loadTerrainFromIMG = loadHeightfieldData("../src/ressources/track1.png", heightDataVec, width, length, minHeight, maxHeight);
+
+  unsigned short* heightData = new unsigned short[heightDataVec.size()];
+  std::copy(heightDataVec.begin(), heightDataVec.end(), heightData);
+
+  TerrainPhysics terrain(width, length, heightData, minHeight, maxHeight);
+
+  // Add terrain to physics world
+    physicsWorld->dynamicsWorld->addRigidBody(terrain.GetRigidBody());
+    
 
 //* ########## WINDOWING STUFF ############
   uint32_t WindowFlags = SDL_WINDOW_OPENGL;

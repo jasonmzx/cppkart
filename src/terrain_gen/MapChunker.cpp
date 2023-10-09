@@ -3,7 +3,7 @@
 
 void terrainMapLoader(std::vector<GLuint>& indices_vec, std::vector<GLfloat>& vertices_vec) {
 
-     const char* filename = "../src/ressources/16-bit-terrain-map.png";
+     const char* filename = "../src/ressources/track1.png";
     int width, height, channels;
 
     // Load the PNG image
@@ -52,4 +52,42 @@ void terrainMapLoader(std::vector<GLuint>& indices_vec, std::vector<GLfloat>& ve
     std::cout << "Parsed the terrain?" << std::endl;
 
     stbi_image_free(image); // Free the image data when done
+}
+
+bool loadHeightfieldData(const char* filename, std::vector<unsigned short>& heightData, int& width, int& length, btScalar& minHeight, btScalar& maxHeight) {
+
+    int channels;
+
+    // Load the PNG image
+    unsigned char* image = stbi_load(filename, &width, &length, &channels, STBI_rgb_alpha);
+
+    if (!image) {
+        std::cerr << "Error loading image: " << stbi_failure_reason() << std::endl;
+        return false;
+    }
+
+    std::cout << "Image SIZE: H- " << length << "px, W- " << width << "px " << std::endl;
+
+    unsigned short maxPixelValue = 0;
+    unsigned short minPixelValue = 65535; // 16-bit max value
+
+    // Iterate through the pixels to populate heightData and find minHeight/maxHeight
+    for (int y = 0; y < length; ++y) {
+        for (int x = 0; x < width; ++x) {
+            int raw_img_index = (y * width + x) * 4; // Each pixel has 4 channels (RGBA)
+            unsigned char color_c = image[raw_img_index];  // Assuming height is represented by the red channel
+
+            unsigned short heightValue = static_cast<unsigned short>(color_c) * 256 + image[raw_img_index + 1]; // 16-bit value from R and G channels
+            heightData.push_back(heightValue);
+
+            maxPixelValue = std::max(maxPixelValue, heightValue);
+            minPixelValue = std::min(minPixelValue, heightValue);
+        }
+    }
+
+    minHeight = static_cast<btScalar>(minPixelValue);
+    maxHeight = static_cast<btScalar>(maxPixelValue);
+
+    stbi_image_free(image);
+    return true;
 }
