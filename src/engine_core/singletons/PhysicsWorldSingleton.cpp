@@ -8,7 +8,7 @@ PhysicsWorldSingleton::PhysicsWorldSingleton() {
     dispatcher = new btCollisionDispatcher(collisionConfiguration);
     solver = new btSequentialImpulseConstraintSolver();
     dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
-    dynamicsWorld->setGravity(btVector3(0.0f, -10.0f, 0.0f));
+    dynamicsWorld->setGravity(btVector3(0.0f, -1.0f, 0.0f));
 }
 
 PhysicsWorldSingleton* PhysicsWorldSingleton::getInstance() {

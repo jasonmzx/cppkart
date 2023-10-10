@@ -14,7 +14,7 @@ VehiclePhysics::VehiclePhysics() {
 
 // Vehicle setup
     btCollisionShape* vehicleChassisShape = new btBoxShape(btVector3(1.0f, 0.5f, 2.0f));
-    btDefaultMotionState* vehicleMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 3, 0)));
+    btDefaultMotionState* vehicleMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0.5, 3, 0.5)));
     btScalar vehicleMass = 800;
     btVector3 vehicleInertia(0, 0, 0);
     vehicleChassisShape->calculateLocalInertia(vehicleMass, vehicleInertia);
@@ -41,24 +41,24 @@ VehiclePhysics::VehiclePhysics() {
     btScalar rollInfluence = 0.1;
 
 //TODO: Add wheels to the vehicle LOOK OVER THIS
-for (int i = 0; i < 4; i++)
-{
-    bool isFrontWheel = i < 2;
-    vehicle->addWheel(
-        btVector3(0, 1, i == 0 || i == 3 ? 1.2 : -1.2),
-        wheelDirection,
-        wheelAxle,
-        suspensionRestLength,
-        wheelRadius,
-        tuning,
-        isFrontWheel);
-    btWheelInfo& wheel = vehicle->getWheelInfo(i);
-    wheel.m_suspensionStiffness = suspensionStiffness;
-    wheel.m_wheelsDampingRelaxation = dampingRelaxation;
-    wheel.m_wheelsDampingCompression = dampingCompression;
-    wheel.m_frictionSlip = frictionSlip;
-    wheel.m_rollInfluence = rollInfluence;
-}
+// for (int i = 0; i < 4; i++)
+// {
+//     bool isFrontWheel = i < 2;
+//     vehicle->addWheel(
+//         btVector3(0, 1, i == 0 || i == 3 ? 1.2 : -1.2),
+//         wheelDirection,
+//         wheelAxle,
+//         suspensionRestLength,
+//         wheelRadius,
+//         tuning,
+//         isFrontWheel);
+//     btWheelInfo& wheel = vehicle->getWheelInfo(i);
+//     wheel.m_suspensionStiffness = suspensionStiffness;
+//     wheel.m_wheelsDampingRelaxation = dampingRelaxation;
+//     wheel.m_wheelsDampingCompression = dampingCompression;
+//     wheel.m_frictionSlip = frictionSlip;
+//     wheel.m_rollInfluence = rollInfluence;
+// }
 
     //Vehicle setup:
     engineForce = 0.0;
@@ -72,8 +72,11 @@ for (int i = 0; i < 4; i++)
 
 void VehiclePhysics::ApplyEngineForce(float force) {
     engineForce = force;
-    vehicle->applyEngineForce(engineForce, 2);
+
+    //Rear Wheel Drive?
+
     vehicle->applyEngineForce(engineForce, 3);
+    vehicle->applyEngineForce(engineForce, 4);
     //TODO: Add any Bullet physics code here that applies this force
 }
 
@@ -96,15 +99,12 @@ btTransform VehiclePhysics::GetTransform() const {
     return vehicleRigidBody->getWorldTransform();
 }
 
-void VehiclePhysics::getState() {
+void VehiclePhysics::printState() {
+   btVector3 velocity = vehicleRigidBody->getLinearVelocity();
+   btVector3 position = vehicleRigidBody->getWorldTransform().getOrigin();
 
- btVector3 velocity = vehicleRigidBody->getLinearVelocity();
-
- //Get the vehicle's forward direction
- btVector3 vehicleTransform = vehicleRigidBody->getWorldTransform().getBasis().getColumn(2); // Assuming Z-axis is forward. Adjust if different.
-
- printf("Vehicle Velocity (XYZ): %.2f, %.2f, %.2f | Direction: %.2f, %.2f, %.2f\n",
-        velocity.getX(), velocity.getY(), velocity.getZ(),
-        vehicleTransform.getX(), vehicleTransform.getY(), vehicleTransform.getZ());
+    printf("Vehicle Velocity (XYZ): %.2f, %.2f, %.2f | Position (XYZ): %.2f, %.2f, %.2f\n",
+           velocity.getX(), velocity.getY(), velocity.getZ(),
+           position.getX(), position.getY(), position.getZ());
   
 }

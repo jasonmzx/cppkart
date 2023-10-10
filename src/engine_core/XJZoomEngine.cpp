@@ -187,7 +187,20 @@ VehicleEntity vehicle;
   //! ### IMPORTANT, Allow the Physics Simulation to tick ###
     physicsWorld->dynamicsWorld->stepSimulation(1.0f / 60.0f);
     
+  //! PROTOTYPING: VEHICLE RENDERING CODE
+            // ### Update the box's model matrix to match the vehicle's transform ###
+        btTransform vehicleTransform = vehicle.GetPhysics().GetTransform();
 
+        btVector3 vehiclePosition = vehicleTransform.getOrigin();
+        btQuaternion vehicleRotation = vehicleTransform.getRotation();
+
+        glm::mat4 translation = glm::translate(glm::mat4(1.0f), glm::vec3(vehiclePosition.x(), vehiclePosition.y(), vehiclePosition.z()));
+        glm::mat4 rotation = glm::mat4_cast(glm::quat(vehicleRotation.w(), vehicleRotation.x(), vehicleRotation.y(), vehicleRotation.z()));
+
+        boxModelMatrix = translation * rotation;
+  //! PROTOTYPING: VEHICLE RENDERING CODE
+
+  
     // Specify the color of the background
     glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
     // Clean the back buffer and depth buffer
@@ -219,6 +232,7 @@ VehicleEntity vehicle;
     glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(boxModelMatrix));
     glDrawElements(GL_TRIANGLES, (sizeof(boxIndices)) / sizeof(int), GL_UNSIGNED_INT, 0);
     
+    
     // Swap the back buffer with the front buffer
     SDL_GL_SwapWindow(Window);
 
@@ -227,10 +241,8 @@ VehicleEntity vehicle;
   //! DEBUG PRINTING STUFF HERE:
 
   //printf("Camera Position: (%.2f, %.2f, %.2f)\n", cameraPosition.x, cameraPosition.y, cameraPosition.z);
-
-
-// Get the vehicle's rigid body's velocity (in world coordinates)
-    vehicle.GetPhysics().getState();
+  // Get the vehicle's rigid body's velocity (in world coordinates)
+    vehicle.GetPhysics().printState();
 
   }
 

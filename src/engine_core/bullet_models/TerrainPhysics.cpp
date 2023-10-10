@@ -11,7 +11,7 @@ TerrainPhysics::TerrainPhysics(int w, int l, unsigned short* data, btScalar minH
         1.0f,  // height scale
         minHeight,
         maxHeight,
-        2,     // upAxis = Z
+        1,     // upAxis, ( Z is 2 ), 1 is prolly Y
         PHY_SHORT, //Scalar Type (SHORT)
         false  // flipQuadEdges
     );

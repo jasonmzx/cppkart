@@ -24,7 +24,7 @@ public:
     void ApplyEngineForce(float force);
     void Steer(float value);
     void Brake(float force);
-    void getState();
+    void printState();
     void Update();  // For updating any vehicle logic, physics simulation steps, etc.
     btTransform GetTransform() const;  // Useful for rendering
 };
