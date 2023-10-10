@@ -14,9 +14,12 @@ private:
     PhysicsWorldSingleton();
     static PhysicsWorldSingleton* instance;
 
-    btBroadphaseInterface* broadphase;
-    btDefaultCollisionConfiguration* collisionConfiguration;
-    btCollisionDispatcher* dispatcher;
+    btBroadphaseInterface* broadphase; //Broad Phase when checking for Collisions
+
+    btDefaultCollisionConfiguration* collisionConfiguration; // Coupled with "dispatcher", the config is default for now...
+
+    btCollisionDispatcher* dispatcher; //Setting a Collision Algorithm 
+
     btSequentialImpulseConstraintSolver* solver;
 
 public:
