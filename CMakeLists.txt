@@ -35,7 +35,9 @@ src/engine_core/bullet_models/TerrainPhysics.cpp
 src/engine_core/managers/SceneManager.h
 src/engine_core/managers/SceneManager.cpp
 
-
+## Obj Model Loaders
+src/engine_core/loaders/ObjModel.h
+src/engine_core/loaders/ObjModel.cpp
 
 #Terrain / Map Generator & Chunking Imports:
 src/terrain_gen/MapChunker.h

@@ -41,25 +41,28 @@ VehiclePhysics::VehiclePhysics() {
     btScalar rollInfluence = 0.1;
 
 //TODO: Add wheels to the vehicle LOOK OVER THIS
-// for (int i = 0; i < 4; i++)
-// {
-//     bool isFrontWheel = i < 2;
-//     vehicle->addWheel(
-//         btVector3(0, 1, i == 0 || i == 3 ? 1.2 : -1.2),
-//         wheelDirection,
-//         wheelAxle,
-//         suspensionRestLength,
-//         wheelRadius,
-//         tuning,
-//         isFrontWheel);
-//     btWheelInfo& wheel = vehicle->getWheelInfo(i);
-//     wheel.m_suspensionStiffness = suspensionStiffness;
-//     wheel.m_wheelsDampingRelaxation = dampingRelaxation;
-//     wheel.m_wheelsDampingCompression = dampingCompression;
-//     wheel.m_frictionSlip = frictionSlip;
-//     wheel.m_rollInfluence = rollInfluence;
-// }
+for (int i = 0; i < 4; i++)
+{
+    bool isFrontWheel = i < 2;
+    vehicle->addWheel(
+        btVector3(0, 1.6, i == 0 || i == 3 ? 1.2 : -1.2),
+        wheelDirection,
+        wheelAxle,
+        suspensionRestLength,
+        wheelRadius,
+        tuning,
+        isFrontWheel);
+    btWheelInfo& wheel = vehicle->getWheelInfo(i);
+    wheel.m_suspensionStiffness = suspensionStiffness;
+    wheel.m_wheelsDampingRelaxation = dampingRelaxation;
+    wheel.m_wheelsDampingCompression = dampingCompression;
+    wheel.m_frictionSlip = frictionSlip;
+    wheel.m_rollInfluence = rollInfluence;
+}
 
+vehicleRigidBody->setActivationState(DISABLE_DEACTIVATION);
+    
+    
     //Vehicle setup:
     engineForce = 0.0;
     vehicleSteering = 0.0;
@@ -75,8 +78,8 @@ void VehiclePhysics::ApplyEngineForce(float force) {
 
     //Rear Wheel Drive?
 
+    vehicle->applyEngineForce(engineForce, 2);
     vehicle->applyEngineForce(engineForce, 3);
-    vehicle->applyEngineForce(engineForce, 4);
     //TODO: Add any Bullet physics code here that applies this force
 }
 
@@ -87,6 +90,9 @@ void VehiclePhysics::Steer(float value) {
 
 void VehiclePhysics::Brake(float force) {
     brakeForce = force;
+    vehicle->setBrake(brakeForce, 2);
+    vehicle->setBrake(brakeForce, 3);
+    
     //TODO: Add Bullet code here to apply brake
 }
 

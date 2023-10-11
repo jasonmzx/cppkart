@@ -34,6 +34,9 @@
 #include<stb/stb_image.h>
 
 
+//Model Loader
+#include "loaders/ObjModel.h"
+
 class XJZoomEngine {
 
 public:

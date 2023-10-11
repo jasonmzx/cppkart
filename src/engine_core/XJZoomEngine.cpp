@@ -24,6 +24,8 @@ GLuint boxIndices[] = {
     1, 2, 6, 6, 5, 1,
     0, 3, 7, 7, 4, 0};
 
+ObjModel firstCarModel = ObjModel("../src/ressources/first_car.obj");
+
 std::vector<GLfloat> vertices = {};
 std::vector<GLuint> indices = {};
 
@@ -76,7 +78,7 @@ VehicleEntity vehicle;
   TerrainPhysics terrain(width, length, heightData, minHeight, maxHeight);
 
   //* Add terrain to physics world
-  physicsWorld->dynamicsWorld->addRigidBody(terrain.GetRigidBody());
+  //physicsWorld->dynamicsWorld->addRigidBody(terrain.GetRigidBody());
     
 
 //* ########## WINDOWING STUFF ############
@@ -191,6 +193,9 @@ VehicleEntity vehicle;
         case SDLK_w:
             vehicle.GetPhysics().ApplyEngineForce(1000);
           break;
+        case SDLK_s:
+            vehicle.GetPhysics().Brake(1000);
+            break;
         default:
           break;
         }
