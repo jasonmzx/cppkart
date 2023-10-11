@@ -4,6 +4,7 @@ project(cppkart)
 find_package(SDL2 REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(Bullet REQUIRED)
+find_package(assimp REQUIRED)
 
 # External Source Libraries
 
@@ -65,4 +66,4 @@ src/rendering/Texture.cpp
 
 )
 
-target_link_libraries(cppkart PRIVATE SDL2::SDL2 OpenGL::GL ${BULLET_LIBRARIES})
+target_link_libraries(cppkart PRIVATE SDL2::SDL2 OpenGL::GL ${BULLET_LIBRARIES} assimp::assimp)

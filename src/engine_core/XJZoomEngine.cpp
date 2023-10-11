@@ -15,6 +15,7 @@ GLfloat boxVertices[] = {
     0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
     -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f};
 
+
 // Define the indices for the BOX
 GLuint boxIndices[] = {
     0, 1, 2, 2, 3, 0,
@@ -24,15 +25,19 @@ GLuint boxIndices[] = {
     1, 2, 6, 6, 5, 1,
     0, 3, 7, 7, 4, 0};
 
-ObjModel firstCarModel = ObjModel("../src/ressources/first_car.obj");
-
 std::vector<GLfloat> vertices = {};
 std::vector<GLuint> indices = {};
+
+ObjModel firstCarModel = ObjModel("../src/ressources/first_car.obj" );
+
+std::vector<GLfloat> Vvertices = firstCarModel.GetVertices();
+std::vector<GLuint> Vindices = firstCarModel.GetIndices();
+
 
 //Terrain Scale matrix
 
 glm::mat4 terrainModelMatrix = glm::scale(glm::vec3(10.0f, 1.0f, 10.0f));
-glm::mat4 boxModelMatrix = glm::scale(glm::vec3(0.5f));
+glm::mat4 boxModelMatrix = glm::scale(glm::vec3(0.25f));
 
 void XJZoomEngine::Run()
 {
@@ -75,7 +80,7 @@ VehicleEntity vehicle;
   unsigned short* heightData = new unsigned short[heightDataVec.size()];
   std::copy(heightDataVec.begin(), heightDataVec.end(), heightData);
 
-  TerrainPhysics terrain(width, length, heightData, minHeight, maxHeight);
+  //TerrainPhysics terrain(width, length, heightData, minHeight, maxHeight);
 
   //* Add terrain to physics world
   //physicsWorld->dynamicsWorld->addRigidBody(terrain.GetRigidBody());
@@ -110,6 +115,7 @@ VehicleEntity vehicle;
   // Generates Shader object using shaders default.vert and default.frag
   Shader shaderProgram("../src/rendering/shader/default.vert", "../src/rendering/shader/default.frag");
 
+  //*ModelMatrix for GLSL Shader
   auto modelMatrixLocation = glGetUniformLocation(shaderProgram.ID, "modelMatrix");
 
   // Generates Vertex Array Object and binds it
@@ -133,10 +139,13 @@ VehicleEntity vehicle;
   VAO VAO2;
   VAO2.Bind();
 
-  // Generates a second Vertex Buffer Object and links it to boxVertices
-  VBO VBO2(boxVertices, sizeof(boxVertices));
-  // Generates a second Element Buffer Object and links it to boxIndices
-  EBO EBO2(boxIndices, sizeof(boxIndices));
+  // // Generates a second Vertex Buffer Object and links it to boxVertices
+  // VBO VBO2(boxVertices, sizeof(boxVertices));
+  // // Generates a second Element Buffer Object and links it to boxIndices
+  // EBO EBO2(boxIndices, sizeof(boxIndices));
+
+  VBO VBO2(Vvertices.data(), sizeof(GLfloat) * Vvertices.size());
+  EBO EBO2(Vindices.data(), sizeof(GLuint) * Vindices.size());
 
   // Links VBO attributes such as coordinates and colors to VAO2
   VAO2.LinkAttrib(VBO2, 0, 3, GL_FLOAT, 8 * sizeof(float), (void *)0);
@@ -253,7 +262,7 @@ VehicleEntity vehicle;
 
     VAO2.Bind();
     glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(boxModelMatrix));
-    glDrawElements(GL_TRIANGLES, (sizeof(boxIndices)) / sizeof(int), GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, (sizeof(GLuint) * Vindices.size()) / sizeof(int), GL_UNSIGNED_INT, 0);
     
     
     // Swap the back buffer with the front buffer
