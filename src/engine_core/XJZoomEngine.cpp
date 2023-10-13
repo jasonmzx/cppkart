@@ -1,6 +1,6 @@
 #include "XJZoomEngine.h"
 
-//Windowing consts
+// Windowing consts
 #define WinWidth 1800
 #define WinHeight 1000
 
@@ -15,7 +15,6 @@ GLfloat boxVertices[] = {
     0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
     -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f};
 
-
 // Define the indices for the BOX
 GLuint boxIndices[] = {
     0, 1, 2, 2, 3, 0,
@@ -28,13 +27,12 @@ GLuint boxIndices[] = {
 std::vector<GLfloat> vertices = {};
 std::vector<GLuint> indices = {};
 
-ObjModel firstCarModel = ObjModel("../src/ressources/first_car.obj" );
+ObjModel firstCarModel = ObjModel("../src/ressources/first_car.obj");
 
 std::vector<GLfloat> Vvertices = firstCarModel.GetVertices();
 std::vector<GLuint> Vindices = firstCarModel.GetIndices();
 
-
-//Terrain Scale matrix
+// Terrain Scale matrix
 
 glm::mat4 terrainModelMatrix = glm::scale(glm::vec3(10.0f, 1.0f, 10.0f));
 glm::mat4 boxModelMatrix = glm::scale(glm::vec3(0.25f));
@@ -42,51 +40,49 @@ glm::mat4 boxModelMatrix = glm::scale(glm::vec3(0.25f));
 void XJZoomEngine::Run()
 {
 
-//* ### Bullet Physics World Singleton Insanciation ###
+  //* ### Bullet Physics World Singleton Insanciation ###
 
-PhysicsWorldSingleton* physicsWorld = PhysicsWorldSingleton::getInstance();
+  PhysicsWorldSingleton *physicsWorld = PhysicsWorldSingleton::getInstance();
 
+  //* ############ PROTOTYPE Collision Plane ############
 
-//* ############ PROTOTYPE Collision Plane ############
+  btTransform protoPlaneTransform;
+  protoPlaneTransform.setIdentity();
+  protoPlaneTransform.setOrigin(btVector3(0, 0, 0));
+  btStaticPlaneShape *plane = new btStaticPlaneShape(btVector3(0, 1, 0), btScalar(0));
 
-btTransform protoPlaneTransform;
-protoPlaneTransform.setIdentity();
-protoPlaneTransform.setOrigin(btVector3(0,0,0));
-btStaticPlaneShape* plane = new btStaticPlaneShape(btVector3(0,1,0), btScalar(0) );
+  // Create Motion shape:
+  btMotionState *motion = new btDefaultMotionState(protoPlaneTransform); //! He put btDefaultMotionShape
 
-//Create Motion shape:
-btMotionState* motion = new btDefaultMotionState(protoPlaneTransform); //! He put btDefaultMotionShape
+  btRigidBody::btRigidBodyConstructionInfo info(0.0, motion, plane);
+  info.m_friction = 0.6f;
+  btRigidBody *planeBody = new btRigidBody(info);
+  physicsWorld->dynamicsWorld->addRigidBody(planeBody);
 
-btRigidBody::btRigidBodyConstructionInfo info(0.0, motion, plane);
+  //* ############ PROTOTYPE Collision Plane ############
 
-btRigidBody* planeBody = new btRigidBody(info);
-physicsWorld->dynamicsWorld->addRigidBody(planeBody);
+  //* test inst of a vehicle
 
-//* ############ PROTOTYPE Collision Plane ############
+  VehicleEntity vehicle;
 
-//* test inst of a vehicle
-
-VehicleEntity vehicle;
-
-//Terrain Physics
-    int width;
-    int length;
-    std::vector<unsigned short> heightDataVec;  // Provide your actual height data here
-    btScalar minHeight;   // Minimum height in your dataset
-    btScalar maxHeight;   // Maximum height in your dataset
+  // Terrain Physics
+  int width;
+  int length;
+  std::vector<unsigned short> heightDataVec; // Provide your actual height data here
+  btScalar minHeight;                        // Minimum height in your dataset
+  btScalar maxHeight;                        // Maximum height in your dataset
 
   bool loadTerrainFromIMG = loadHeightfieldData("../src/ressources/track1.png", heightDataVec, width, length, minHeight, maxHeight);
 
-  unsigned short* heightData = new unsigned short[heightDataVec.size()];
+  unsigned short *heightData = new unsigned short[heightDataVec.size()];
   std::copy(heightDataVec.begin(), heightDataVec.end(), heightData);
 
-  //TerrainPhysics terrain(width, length, heightData, minHeight, maxHeight);
+  // TerrainPhysics terrain(width, length, heightData, minHeight, maxHeight);
 
   //* Add terrain to physics world
-  //physicsWorld->dynamicsWorld->addRigidBody(terrain.GetRigidBody());
-    
+  // physicsWorld->dynamicsWorld->addRigidBody(terrain.GetRigidBody());
 
-//* ########## WINDOWING STUFF ############
+  //* ########## WINDOWING STUFF ############
   uint32_t WindowFlags = SDL_WINDOW_OPENGL;
   SDL_Window *Window = SDL_CreateWindow("XJZoom Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WinWidth, WinHeight, WindowFlags);
   assert(Window);
@@ -105,7 +101,6 @@ VehicleEntity vehicle;
   // Specify the viewport of OpenGL in the Window
   // In this case the viewport goes from x = 0, y = 0, to x = 800, y = 800
   glViewport(0, 0, WinWidth, WinHeight);
-
 
   // Load Managers:
   SceneManager sceneManager;
@@ -144,8 +139,8 @@ VehicleEntity vehicle;
   // // Generates a second Element Buffer Object and links it to boxIndices
   // EBO EBO2(boxIndices, sizeof(boxIndices));
 
-  VBO VBO2(Vvertices.data(), sizeof(GLfloat) * Vvertices.size());
-  EBO EBO2(Vindices.data(), sizeof(GLuint) * Vindices.size());
+  VBO VBO2(boxVertices, sizeof(boxVertices));
+  EBO EBO2(boxIndices, sizeof(boxIndices));
 
   // Links VBO attributes such as coordinates and colors to VAO2
   VAO2.LinkAttrib(VBO2, 0, 3, GL_FLOAT, 8 * sizeof(float), (void *)0);
@@ -178,6 +173,12 @@ VehicleEntity vehicle;
   // #### MAIN GAME LOOP THAT ENGINE IS RUNNING:
   while (Running)
   {
+
+
+    //*Idle Forces when no keys are applied:
+
+    vehicle.GetPhysics().ApplyEngineForce(0);
+
     SDL_Event Event;
     while (SDL_PollEvent(&Event))
     {
@@ -199,12 +200,19 @@ VehicleEntity vehicle;
             SDL_SetWindowFullscreen(Window, WindowFlags);
           }
           break;
-        case SDLK_w:
-            vehicle.GetPhysics().ApplyEngineForce(1000);
+        case SDLK_UP:
+          vehicle.GetPhysics().ApplyEngineForce(5000);
+          printf("HIT\n");
           break;
-        case SDLK_s:
-            vehicle.GetPhysics().Brake(1000);
-            break;
+        case SDLK_DOWN:
+          vehicle.GetPhysics().ApplyEngineForce(-5000);
+          break;
+        case SDLK_RIGHT:
+          vehicle.GetPhysics().Steer(3.0);
+          break;
+        case SDLK_LEFT:
+          vehicle.GetPhysics().Steer(-3.0);
+          break;
         default:
           break;
         }
@@ -215,24 +223,22 @@ VehicleEntity vehicle;
       }
     }
 
-
-  //! ### IMPORTANT, Allow the Physics Simulation to tick ###
+    //! ### IMPORTANT, Allow the Physics Simulation to tick ###
     physicsWorld->dynamicsWorld->stepSimulation(1.0f / 60.0f);
-    
-  //! PROTOTYPING: VEHICLE RENDERING CODE
-            // ### Update the box's model matrix to match the vehicle's transform ###
-        btTransform vehicleTransform = vehicle.GetPhysics().GetTransform();
 
-        btVector3 vehiclePosition = vehicleTransform.getOrigin();
-        btQuaternion vehicleRotation = vehicleTransform.getRotation();
+    //! PROTOTYPING: VEHICLE RENDERING CODE
+    // ### Update the box's model matrix to match the vehicle's transform ###
+    btTransform vehicleTransform = vehicle.GetPhysics().GetTransform();
 
-        glm::mat4 translation = glm::translate(glm::mat4(1.0f), glm::vec3(vehiclePosition.x(), vehiclePosition.y(), vehiclePosition.z()));
-        glm::mat4 rotation = glm::mat4_cast(glm::quat(vehicleRotation.w(), vehicleRotation.x(), vehicleRotation.y(), vehicleRotation.z()));
+    btVector3 vehiclePosition = vehicleTransform.getOrigin();
+    btQuaternion vehicleRotation = vehicleTransform.getRotation();
 
-        boxModelMatrix = translation * rotation;
-  //! PROTOTYPING: VEHICLE RENDERING CODE
+    glm::mat4 translation = glm::translate(glm::mat4(1.0f), glm::vec3(vehiclePosition.x(), vehiclePosition.y(), vehiclePosition.z()));
+    glm::mat4 rotation = glm::mat4_cast(glm::quat(vehicleRotation.w(), vehicleRotation.x(), vehicleRotation.y(), vehicleRotation.z()));
 
-  
+    boxModelMatrix = translation * rotation;
+    //! PROTOTYPING: VEHICLE RENDERING CODE
+
     // Specify the color of the background
     glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
     // Clean the back buffer and depth buffer
@@ -248,34 +254,47 @@ VehicleEntity vehicle;
     // Bind the VAO so OpenGL knows to use it
     VAO1.Bind();
     // Handles camera inputs
-    camera.Inputs(Window);
-    // Updates and exports the camera matrix to the Vertex Shader
+    
+    //naive approach (hard offsets camera, bad for steering)
+    // camera.Position.x = vehiclePosition.x() + 0.5f;
+    // camera.Position.y = vehiclePosition.y() + 2.0f;
+    // camera.Position.z = vehiclePosition.z() - 3.0f;
+
+
+    //Smooth 
+    auto targetVec = glm::vec3(vehiclePosition.x() + 0.5f, vehiclePosition.y() + 2.0f, vehiclePosition.z() - 3.0f);
+    auto dirVec = targetVec - camera.Position;
+    if(glm::distance2(targetVec, camera.Position) > 0.02f)
+    camera.Position += dirVec * 0.03f;
+    camera.LookAt.x = vehiclePosition.x();
+    camera.LookAt.y = vehiclePosition.y();
+    camera.LookAt.z = vehiclePosition.z();
+    // camera.Inputs(Window);
+    //  Updates and exports the camera matrix to the Vertex Shader
     camera.Matrix(45.0f, 0.1f, 100.0f, shaderProgram, "camMatrix");
 
     frustumCuller.Update(camera.viewProjection);
 
     // if(frustumCuller.IsBoxVisible(boxMin)) {}
-    
-    //Draw Terrain:
+
+    // Draw Terrain:
     glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(terrainModelMatrix));
     glDrawElements(GL_TRIANGLES, (sizeof(GLuint) * indices.size()) / sizeof(int), GL_UNSIGNED_INT, 0);
 
     VAO2.Bind();
     glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(boxModelMatrix));
-    glDrawElements(GL_TRIANGLES, (sizeof(GLuint) * Vindices.size()) / sizeof(int), GL_UNSIGNED_INT, 0);
-    
-    
+    glDrawElements(GL_TRIANGLES, (sizeof(boxIndices)) / sizeof(int), GL_UNSIGNED_INT, 0);
+
     // Swap the back buffer with the front buffer
     SDL_GL_SwapWindow(Window);
 
     glm::vec3 cameraPosition = camera.Position;
-  
-  //! DEBUG PRINTING STUFF HERE:
 
-  //printf("Camera Position: (%.2f, %.2f, %.2f)\n", cameraPosition.x, cameraPosition.y, cameraPosition.z);
-  // Get the vehicle's rigid body's velocity (in world coordinates)
-    vehicle.GetPhysics().printState();
+    //! DEBUG PRINTING STUFF HERE:
 
+    // printf("Camera Position: (%.2f, %.2f, %.2f)\n", cameraPosition.x, cameraPosition.y, cameraPosition.z);
+    //  Get the vehicle's rigid body's velocity (in world coordinates)
+    //  vehicle.GetPhysics().printState();
   }
 
   // Delete all the objects we've created
@@ -287,7 +306,7 @@ VehicleEntity vehicle;
 
   shaderProgram.Delete();
 
-  //TODO: Delete the Physics World Singleton here
+  // TODO: Delete the Physics World Singleton here
 }
 
 void XJZoomEngine::Init()
