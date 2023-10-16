@@ -242,7 +242,6 @@ void XJZoomEngine::Run()
           break;
         case SDLK_UP:
           vehicle.GetPhysics().ApplyEngineForce(2500);
-          vehicle.GetPhysics().Steer(0);
           printf("HIT\n");
           break;
         case SDLK_DOWN:
@@ -292,13 +291,10 @@ void XJZoomEngine::Run()
         float wY = wheelinfo.m_worldTransform.getOrigin().getY();
 
         float wZ = wheelinfo.m_worldTransform.getOrigin().getZ();
-        
-
-        printf("%d XYZ: %.2f, %.2f, %.2f \n", i, wX, wY, wZ);
 
         glm::mat4 wheelTranslation = glm::translate(glm::mat4(1.0f), glm::vec3(wX,wY,wZ));
 
-           // Rotation using GLM
+      //Get Rotation using GLM
       btQuaternion wheelRotationQuat = wheelinfo.m_worldTransform.getRotation();
       glm::quat glmQuat(wheelRotationQuat.getW(), wheelRotationQuat.getX(), wheelRotationQuat.getY(), wheelRotationQuat.getZ());
       glm::mat4 wheelRotation = glm::toMat4(glmQuat);
@@ -368,6 +364,7 @@ void XJZoomEngine::Run()
     VAO3.Bind();
     glBindTexture(GL_TEXTURE_2D, carTexID);
 
+  //Render Same Wheel, but at respective Model Matrix per Wheel 
     for (const glm::mat4& wheelMatrix : wheelMatrices)
     {
         glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(wheelMatrix));

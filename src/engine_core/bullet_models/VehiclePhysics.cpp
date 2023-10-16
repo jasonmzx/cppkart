@@ -42,35 +42,15 @@ VehiclePhysics::VehiclePhysics()
     btVector3 wheelDirection = btVector3(0, -1, 0);
     btVector3 wheelAxle = btVector3(-1, 0, 0);
     btScalar suspensionRestLength = 0.7;
-    btScalar wheelRadius = 0.15;
+    btScalar wheelRadius = 0.125;
     btScalar wheelWidth = 0.5;
     btScalar suspensionStiffness = 20.0;
     btScalar dampingRelaxation = 2.3;
-    btScalar dampingCompression = 4.4;
+    btScalar dampingCompression = 2.4;
     btScalar frictionSlip = 1.2;
-    btScalar rollInfluence = 1;
+    btScalar rollInfluence = 0.2;
 
-    // TODO: Add wheels to the vehicle LOOK OVER THIS
-    //  for (int i = 0; i < 4; i++)
-    //  {
-    //      bool isFrontWheel = i < 2;
-    //      vehicle->addWheel(
-    //          btVector3(0, 1.2, i == 0 || i == 3 ? 1.2 : -1.2),
-    //          wheelDirection,
-    //          wheelAxle,
-    //          suspensionRestLength,
-    //          wheelRadius,
-    //          tuning,
-    //          isFrontWheel);
-    //      btWheelInfo& wheel = vehicle->getWheelInfo(i);
-    //      wheel.m_suspensionStiffness = suspensionStiffness;
-    //      wheel.m_wheelsDampingRelaxation = dampingRelaxation;
-    //      wheel.m_wheelsDampingCompression = dampingCompression;
-    //      wheel.m_frictionSlip = frictionSlip;
-    //      wheel.m_rollInfluence = rollInfluence;
-    //  }
-
-    //* WHEELS!
+    //* Adding WHEELS to vehicle physics model !
 
     auto halfExtents = vehicleChassisShape->getHalfExtentsWithoutMargin();
     btScalar connectionHeight(2);
@@ -90,12 +70,15 @@ VehiclePhysics::VehiclePhysics()
     for (int i = 0; i < vehicle->getNumWheels(); i++)
     {
         btWheelInfo &wheel = vehicle->getWheelInfo(i);
-        wheel.m_suspensionStiffness = 50;
-        wheel.m_wheelsDampingCompression = btScalar(0.3) * 2 * btSqrt(wheel.m_suspensionStiffness); // btScalar(0.8);
-        wheel.m_wheelsDampingRelaxation = btScalar(0.5) * 2 * btSqrt(wheel.m_suspensionStiffness);  // 1;
+        wheel.m_suspensionStiffness = suspensionStiffness;
+         wheel.m_wheelsDampingRelaxation = dampingRelaxation;
+         wheel.m_wheelsDampingCompression = dampingCompression;
+        //wheel.m_wheelsDampingCompression = btScalar(0.3) * 2 * btSqrt(wheel.m_suspensionStiffness); // btScalar(0.8);
+        //wheel.m_wheelsDampingRelaxation = btScalar(0.5) * 2 * btSqrt(wheel.m_suspensionStiffness);  // 1;
+        
         // Larger friction slips will result in better handling
-        wheel.m_frictionSlip = btScalar(1.2);
-        wheel.m_rollInfluence = 1;
+        wheel.m_frictionSlip = frictionSlip;
+        wheel.m_rollInfluence = rollInfluence;
     }
 
     vehicleRigidBody->setActivationState(DISABLE_DEACTIVATION);
@@ -113,7 +96,7 @@ void VehiclePhysics::ApplyEngineForce(float force)
 {
     engineForce = force;
 
-    // Rear Wheel Drive?
+    // Rear Wheel Drive
 
     vehicle->applyEngineForce(engineForce, 2);
     vehicle->applyEngineForce(engineForce, 3);
@@ -122,10 +105,10 @@ void VehiclePhysics::ApplyEngineForce(float force)
 
 void VehiclePhysics::Steer(float value)
 {
+    //Steer with front wheels
     vehicleSteering = value;
     vehicle->setSteeringValue(value, 0);
     vehicle->setSteeringValue(value, 1);
-    // TODO: Add Bullet code here to apply this steering value
 }
 
 void VehiclePhysics::Brake(float force)
