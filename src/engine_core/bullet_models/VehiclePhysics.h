@@ -7,7 +7,6 @@ class VehiclePhysics {
 private:
     btRigidBody* vehicleRigidBody;
     btVehicleRaycaster* vehicleRayCaster;
-    btRaycastVehicle* vehicle;
 
     btRaycastVehicle::btVehicleTuning tuning;
 
@@ -19,6 +18,7 @@ private:
 
 public:
     VehiclePhysics();
+    btRaycastVehicle* vehicle;
 
     // Probably you'll need methods like:
     void ApplyEngineForce(float force);

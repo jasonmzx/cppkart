@@ -77,7 +77,7 @@ bool loadHeightfieldData(const char* filename, std::vector<unsigned short>& heig
             int raw_img_index = (y * width + x) * 4; // Each pixel has 4 channels (RGBA)
             unsigned char color_c = image[raw_img_index];  // Assuming height is represented by the red channel
 
-            unsigned short heightValue = static_cast<unsigned short>(color_c) * 256 + image[raw_img_index + 1]; // 16-bit value from R and G channels
+            unsigned short heightValue = static_cast<unsigned short>(color_c); // 16-bit value from R and G channels
             heightData.push_back(heightValue);
 
             maxPixelValue = std::max(maxPixelValue, heightValue);

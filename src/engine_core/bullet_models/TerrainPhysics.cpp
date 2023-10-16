@@ -11,14 +11,15 @@ TerrainPhysics::TerrainPhysics(int w, int l, unsigned short* data, btScalar minH
         1.0f,  // height scale
         minHeight,
         maxHeight,
-        1,     // upAxis, ( Z is 2 ), 1 is prolly Y
+        2,     // upAxis, ( Z is 2 ), 1 is prolly Y
         PHY_SHORT, //Scalar Type (SHORT)
         false  // flipQuadEdges
     );
 
     btTransform localTransform;
     localTransform.setIdentity();
-    localTransform.setOrigin(btVector3(-width/2, (maxHeight-minHeight)/2, -length/2));
+    //localTransform.setOrigin(btVector3(-width/2, (maxHeight-minHeight)/2, -length/2));
+    localTransform.setOrigin(btVector3(0,0,0));
     heightfieldShape->setLocalScaling(btVector3(1, 1, 1));  // Assuming no scaling
 
     btDefaultMotionState* terrainMotionState = new btDefaultMotionState(localTransform);

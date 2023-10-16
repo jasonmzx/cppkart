@@ -14,20 +14,25 @@ VehiclePhysics::VehiclePhysics()
     tuning.m_maxSuspensionForce = 6000.0f;
 
     // Vehicle setup
-    btBoxShape *vehicleChassisShape = new btBoxShape(btVector3(1.0f, 0.5f, 2.0f));
+    btBoxShape *vehicleChassisShape = new btBoxShape(btVector3(0.8f, 0.5f, 1.0f));
     btDefaultMotionState *vehicleMotionState = new btDefaultMotionState();
     btTransform localTransform;
     localTransform.setIdentity();
     localTransform.setOrigin(btVector3(0, 3, 0));
     vehicleMotionState->setWorldTransform(localTransform);
 
-    btScalar vehicleMass = 1200;
+    //* VEHICLE MASS !
+    btScalar vehicleMass = 750;
+
     btVector3 vehicleInertia(0, 0, 0);
     vehicleChassisShape->calculateLocalInertia(vehicleMass, vehicleInertia);
     btRigidBody::btRigidBodyConstructionInfo vehicleRigidBodyCI(vehicleMass, vehicleMotionState, vehicleChassisShape, vehicleInertia);
 
     vehicleRigidBody = new btRigidBody(vehicleRigidBodyCI);
     physicsWorld->dynamicsWorld->addRigidBody(vehicleRigidBody);
+
+    // vehicleRigidBody->getWorldTransform
+    // ^ use for rotation camera thingy
 
     // Raycaster and the actual vehicle
     vehicleRayCaster = new btDefaultVehicleRaycaster(physicsWorld->dynamicsWorld);
@@ -37,8 +42,8 @@ VehiclePhysics::VehiclePhysics()
     btVector3 wheelDirection = btVector3(0, -1, 0);
     btVector3 wheelAxle = btVector3(-1, 0, 0);
     btScalar suspensionRestLength = 0.7;
-    btScalar wheelRadius = 0.5;
-    btScalar wheelWidth = 0.4;
+    btScalar wheelRadius = 0.15;
+    btScalar wheelWidth = 0.5;
     btScalar suspensionStiffness = 20.0;
     btScalar dampingRelaxation = 2.3;
     btScalar dampingCompression = 4.4;
@@ -65,7 +70,8 @@ VehiclePhysics::VehiclePhysics()
     //      wheel.m_rollInfluence = rollInfluence;
     //  }
 
-    //* WHEEL
+    //* WHEELS!
+
     auto halfExtents = vehicleChassisShape->getHalfExtentsWithoutMargin();
     btScalar connectionHeight(2);
 

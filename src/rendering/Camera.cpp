@@ -1,37 +1,38 @@
-#include"Camera.h"
+#include "Camera.h"
 
 Camera::Camera(int width, int height, glm::vec3 position)
 {
-	Camera::width = width;
-	Camera::height = height;
-	Position = position;
+    Camera::width = width;
+    Camera::height = height;
+    Position = position;
 }
 
-void Camera::Matrix(float FOVdeg, float nearPlane, float farPlane, Shader& shader, const char* uniform)
+void Camera::Matrix(float FOVdeg, float nearPlane, float farPlane, Shader &shader, const char *uniform)
 {
-	// Initializes matrices since otherwise they will be the null matrix
-	glm::mat4 view = glm::mat4(1.0f);
-	glm::mat4 projection = glm::mat4(1.0f);
+    // Initializes matrices since otherwise they will be the null matrix
+    glm::mat4 view = glm::mat4(1.0f);
+    glm::mat4 projection = glm::mat4(1.0f);
 
-	// Makes camera look in the right direction from the right position
-	view = glm::lookAt(Position, LookAt, Up);
-	// Adds perspective to the scene
-	projection = glm::perspective(glm::radians(FOVdeg), (float)width / height, nearPlane, farPlane);
+    // Makes camera look in the right direction from the right position
+    view = glm::lookAt(Position, LookAt, Up);
+    // view = glm::lookAt(Position, Position + Orientation, Up);
+    //  Adds perspective to the scene
+    projection = glm::perspective(glm::radians(FOVdeg), (float)width / height, nearPlane, farPlane);
 
     viewProjection = projection * view;
 
-	// Exports the camera matrix to the Vertex Shader
-	glUniformMatrix4fv(glGetUniformLocation(shader.ID, uniform), 1, GL_FALSE, glm::value_ptr(viewProjection));
+    // Exports the camera matrix to the Vertex Shader
+    glUniformMatrix4fv(glGetUniformLocation(shader.ID, uniform), 1, GL_FALSE, glm::value_ptr(viewProjection));
 }
 
-void Camera::Inputs(SDL_Window* window)
+void Camera::Inputs(SDL_Window *window)
 {
     // Handles key inputs
-    const Uint8* keyState = SDL_GetKeyboardState(NULL);
+    const Uint8 *keyState = SDL_GetKeyboardState(NULL);
 
     if (keyState[SDL_SCANCODE_W])
     {
-		Position += speed * Orientation;
+        Position += speed * Orientation;
     }
     if (keyState[SDL_SCANCODE_A])
     {
@@ -66,7 +67,7 @@ void Camera::Inputs(SDL_Window* window)
     int mouseX, mouseY;
     Uint32 mouseState = SDL_GetMouseState(&mouseX, &mouseY);
 
-	//Trackpad just doesn't work...
+    // Trackpad just doesn't work...
 
     if (mouseState & SDL_BUTTON(SDL_BUTTON_LEFT))
     {
@@ -81,7 +82,7 @@ void Camera::Inputs(SDL_Window* window)
         }
 
         // Normalizes and shifts the coordinates of the cursor such that they begin in the middle of the screen
-        // and then "transforms" them into degrees 
+        // and then "transforms" them into degrees
         float rotX = sensitivity * (float)(mouseY - (height / 2)) / height;
         float rotY = sensitivity * (float)(mouseX - (width / 2)) / width;
 
