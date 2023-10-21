@@ -16,13 +16,17 @@ private:
     float steeringClamp;
     float brakeForce;
 
+    //Will make this slowly incr/decr for steer inputs
+    float currentSteer;
+
+
 public:
     VehiclePhysics();
     btRaycastVehicle* vehicle;
 
     // Probably you'll need methods like:
     void ApplyEngineForce(float force);
-    void Steer(float value);
+    void ApplySteer(float value);
     void Brake(float force);
     void printState();
     void Update();  // For updating any vehicle logic, physics simulation steps, etc.

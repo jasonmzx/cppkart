@@ -21,6 +21,11 @@
 
 #include "terrain_gen/MapChunker.h"
 
+
+//Renderable geoms
+
+#include "geometries/RenderableGeometry.h"
+
 //Entity Imports
 
 #include "engine_core/entities/VehicleEntity.h"

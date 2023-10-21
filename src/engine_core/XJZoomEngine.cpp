@@ -4,26 +4,6 @@
 #define WinWidth 1800
 #define WinHeight 1000
 
-GLfloat boxVertices[] = {
-    // Position (x, y, z)   Color (r, g, b)   Texture coordinates (s, t)
-    -0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-    0.5f, -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
-    0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-    -0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-    -0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-    0.5f, -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-    0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-    -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f};
-
-// Define the indices for the BOX
-GLuint boxIndices[] = {
-    0, 1, 2, 2, 3, 0,
-    4, 5, 6, 6, 7, 4,
-    0, 1, 5, 5, 4, 0,
-    2, 3, 7, 7, 6, 2,
-    1, 2, 6, 6, 5, 1,
-    0, 3, 7, 7, 4, 0};
-
 std::vector<GLfloat> vertices = {};
 std::vector<GLuint> indices = {};
 
@@ -50,7 +30,7 @@ void XJZoomEngine::Run()
   auto carTextureData = stbi_load("../src/ressources/first_car.png", &carTexWidth, &carTexHeight, &carTexChannels, STBI_rgb_alpha);
   assert(carTextureData);
 
-  //* ### Bullet Physics World Singleton Insanciation ###
+  //* ### Bullet Physics World Singleton Instanciation ###
 
   PhysicsWorldSingleton *physicsWorld = PhysicsWorldSingleton::getInstance();
 
@@ -69,9 +49,7 @@ void XJZoomEngine::Run()
   btRigidBody *planeBody = new btRigidBody(info);
   physicsWorld->dynamicsWorld->addRigidBody(planeBody);
 
-  //* ############ PROTOTYPE Collision Plane ############
-
-  //* test inst of a vehicle
+  //* ############ PROTOTYPE Collision Plane ^^^ ############
 
   VehicleEntity vehicle;
 
@@ -138,23 +116,29 @@ void XJZoomEngine::Run()
   //*ModelMatrix for GLSL Shader
   auto modelMatrixLocation = glGetUniformLocation(shaderProgram.ID, "modelMatrix");
 
-  // Generates Vertex Array Object and binds it
-  VAO VAO1;
-  VAO1.Bind();
+  // // Generates Vertex Array Object and binds it
+  // VAO VAO1;
+  // VAO1.Bind();
 
-  // Generates Vertex Buffer Object and links it to vertices
-  VBO VBO1(vertices.data(), sizeof(GLfloat) * vertices.size());
-  // Generates Element Buffer Object and links it to indices
-  EBO EBO1(indices.data(), sizeof(GLuint) * indices.size());
+  // // Generates Vertex Buffer Object and links it to vertices
+  // VBO VBO1(vertices.data(), sizeof(GLfloat) * vertices.size());
+  // // Generates Element Buffer Object and links it to indices
+  // EBO EBO1(indices.data(), sizeof(GLuint) * indices.size());
 
-  // Links VBO attributes such as coordinates and colors to VAO
-  VAO1.LinkAttrib(VBO1, 0, 3, GL_FLOAT, 8 * sizeof(float), (void *)0);
-  VAO1.LinkAttrib(VBO1, 1, 3, GL_FLOAT, 8 * sizeof(float), (void *)(3 * sizeof(float)));
-  VAO1.LinkAttrib(VBO1, 2, 2, GL_FLOAT, 8 * sizeof(float), (void *)(6 * sizeof(float)));
-  // Unbind all to prevent accidentally modifying them
-  VAO1.Unbind();
-  VBO1.Unbind();
-  EBO1.Unbind();
+  // // Links VBO attributes such as coordinates and colors to VAO
+  // VAO1.LinkAttrib(VBO1, 0, 3, GL_FLOAT, 8 * sizeof(float), (void *)0);
+  // VAO1.LinkAttrib(VBO1, 1, 3, GL_FLOAT, 8 * sizeof(float), (void *)(3 * sizeof(float)));
+  // VAO1.LinkAttrib(VBO1, 2, 2, GL_FLOAT, 8 * sizeof(float), (void *)(6 * sizeof(float)));
+  // // Unbind all to prevent accidentally modifying them
+  // VAO1.Unbind();
+  // VBO1.Unbind();
+  // EBO1.Unbind();
+
+
+  printf("Sizeof v: %d", vertices.size() );
+  printf("Sizeof i: %d", indices.size() );
+
+  RenderableGeometry geom1(vertices, indices);
 
   VAO VAO2;
   VAO2.Bind();
@@ -209,8 +193,8 @@ void XJZoomEngine::Run()
   // Creates camera object
   Camera camera(WinWidth, WinHeight, glm::vec3(0.0f, 0.0f, 2.0f));
 
-  //! NOT REALLY USED (yet)... Scene Culling:
-  FrustumCull frustumCuller;
+  //! NOT REALLY USED (yet)... Scene Culling, FIX IT LATER:
+  //FrustumCull frustumCuller;
 
   // #### MAIN GAME LOOP THAT ENGINE IS RUNNING:
   while (Running)
@@ -218,6 +202,7 @@ void XJZoomEngine::Run()
 
     //*Idle Forces when no keys are applied:
     vehicle.GetPhysics().ApplyEngineForce(0);
+    vehicle.GetPhysics().ApplySteer(0);
 
     SDL_Event Event;
     while (SDL_PollEvent(&Event))
@@ -241,17 +226,16 @@ void XJZoomEngine::Run()
           }
           break;
         case SDLK_UP:
-          vehicle.GetPhysics().ApplyEngineForce(2500);
-          printf("HIT\n");
+          vehicle.GetPhysics().ApplyEngineForce(7000);
           break;
         case SDLK_DOWN:
           vehicle.GetPhysics().ApplyEngineForce(-2500);
           break;
         case SDLK_RIGHT:
-          vehicle.GetPhysics().Steer(-0.3);
+          vehicle.GetPhysics().ApplySteer(-0.3);
           break;
         case SDLK_LEFT:
-          vehicle.GetPhysics().Steer(0.3);
+          vehicle.GetPhysics().ApplySteer(0.3);
           break;
         default:
           break;
@@ -285,23 +269,27 @@ void XJZoomEngine::Run()
     {
         btWheelInfo wheelinfo = vehicle.GetPhysics().vehicle->getWheelInfo(i);
       
-        //Get Translation (Positioning)
+        //* Get Translation (Positioning)
         float wX = wheelinfo.m_worldTransform.getOrigin().getX();
-
         float wY = wheelinfo.m_worldTransform.getOrigin().getY();
-
         float wZ = wheelinfo.m_worldTransform.getOrigin().getZ();
 
         glm::mat4 wheelTranslation = glm::translate(glm::mat4(1.0f), glm::vec3(wX,wY,wZ));
 
-      //Get Rotation using GLM
-      btQuaternion wheelRotationQuat = wheelinfo.m_worldTransform.getRotation();
-      glm::quat glmQuat(wheelRotationQuat.getW(), wheelRotationQuat.getX(), wheelRotationQuat.getY(), wheelRotationQuat.getZ());
-      glm::mat4 wheelRotation = glm::toMat4(glmQuat);
+        //* Extract only the rotation around the axle (e.g., Y-axis)
+        btTransform wheelTransform = wheelinfo.m_worldTransform;
+        btScalar yaw, pitch, roll;
+        wheelTransform.getBasis().getEulerZYX(yaw, pitch, roll);
 
-      // Full transformation matrix for the wheel
+    // Convert yaw to a quaternion (assuming yaw is around Y-axis)
+    glm::quat glmYawQuat = glm::angleAxis(glm::degrees(yaw), glm::vec3(0, -1, 0)); // Convert yaw from radians to degrees
+
+    glm::mat4 wheelRotation = glm::toMat4(glmYawQuat);
+
+    // Full transformation matrix for the wheel
       wheelMatrices.push_back(
-      wheelTranslation * wheelRotation * rotate90DEG_Adjustment * glm::scale(glm::vec3(0.25f))
+        wheelTranslation * wheelRotation * rotate90DEG_Adjustment * glm::scale(glm::vec3(0.25f))
+        //wheelTranslation * wheelRotation  * glm::scale(glm::vec3(0.25f))
       );
     }
 
@@ -319,15 +307,12 @@ void XJZoomEngine::Run()
     // Tell OpenGL which Shader Program we want to use
     shaderProgram.Activate();
 
-    // Other rendering logic...
-
     // Assigns a value to the uniform; NOTE: Must always be done after activating the Shader Program
     // brickTex.Bind();
 
-    // Handles camera inputs
+    //* ###### CAMERA #######
 
-    // naive approach (hard offsets camera, bad for steering)
-
+    //* naive approach (hard offsets camera, bad for steering)
     //  camera.Position.x = vehiclePosition.x() + 0.5f;
     //  camera.Position.y = vehiclePosition.y() + 2.0f;
     //  camera.Position.z = vehiclePosition.z() - 3.0f;
@@ -346,16 +331,12 @@ void XJZoomEngine::Run()
     //  Updates and exports the camera matrix to the Vertex Shader
     camera.Matrix(45.0f, 0.1f, 100.0f, shaderProgram, "camMatrix");
 
-    frustumCuller.Update(camera.viewProjection);
-
+    //frustumCuller.Update(camera.viewProjection);
     // if(frustumCuller.IsBoxVisible(boxMin)) {}
 
-
     // Bind the VAO so OpenGL knows to use it | Draw Terrain
-    VAO1.Bind();
-    glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(terrainModelMatrix));
-    glDrawElements(GL_TRIANGLES, (sizeof(GLuint) * indices.size()) / sizeof(int), GL_UNSIGNED_INT, 0);
-
+    geom1.Draw(modelMatrixLocation,terrainModelMatrix);
+    //Draw Vehicle Body with VAO2
     VAO2.Bind();
     glBindTexture(GL_TEXTURE_2D, carTexID);
     glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(vehicleModelMatrix));
@@ -388,9 +369,9 @@ void XJZoomEngine::Run()
   glDeleteTextures(1, &carTexID);
 
   // Delete all the objects we've created
-  VAO1.Delete();
-  VBO1.Delete();
-  EBO1.Delete();
+  // VAO1.Delete();
+  // VBO1.Delete();
+  // EBO1.Delete();
 
   // brickTex.Delete();
   shaderProgram.Delete();

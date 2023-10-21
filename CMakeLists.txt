@@ -32,9 +32,12 @@ src/engine_core/bullet_models/VehiclePhysics.cpp
 src/engine_core/bullet_models/TerrainPhysics.h
 src/engine_core/bullet_models/TerrainPhysics.cpp
 
-
 src/engine_core/managers/SceneManager.h
 src/engine_core/managers/SceneManager.cpp
+
+## GL Renderable classes
+src/engine_core/geometries/RenderableGeometry.h
+src/engine_core/geometries/RenderableGeometry.cpp
 
 ## Obj Model Loaders
 src/engine_core/loaders/ObjModel.h

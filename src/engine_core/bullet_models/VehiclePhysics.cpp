@@ -10,7 +10,7 @@ VehiclePhysics::VehiclePhysics()
     tuning.m_suspensionCompression = 0.83f;
     tuning.m_suspensionDamping = 0.88f;
     tuning.m_maxSuspensionTravelCm = 500.0f;
-    tuning.m_frictionSlip = 10.5f;
+    tuning.m_frictionSlip = 2.5f;
     tuning.m_maxSuspensionForce = 6000.0f;
 
     // Vehicle setup
@@ -22,7 +22,7 @@ VehiclePhysics::VehiclePhysics()
     vehicleMotionState->setWorldTransform(localTransform);
 
     //* VEHICLE MASS !
-    btScalar vehicleMass = 750;
+    btScalar vehicleMass = 1000;
 
     btVector3 vehicleInertia(0, 0, 0);
     vehicleChassisShape->calculateLocalInertia(vehicleMass, vehicleInertia);
@@ -34,20 +34,21 @@ VehiclePhysics::VehiclePhysics()
     // vehicleRigidBody->getWorldTransform
     // ^ use for rotation camera thingy
 
+    //*  
+    
     // Raycaster and the actual vehicle
     vehicleRayCaster = new btDefaultVehicleRaycaster(physicsWorld->dynamicsWorld);
     vehicle = new btRaycastVehicle(tuning, vehicleRigidBody, vehicleRayCaster);
 
-    // Wheel configuration
     btVector3 wheelDirection = btVector3(0, -1, 0);
     btVector3 wheelAxle = btVector3(-1, 0, 0);
-    btScalar suspensionRestLength = 0.7;
+    btScalar suspensionRestLength = 0.6;
     btScalar wheelRadius = 0.125;
-    btScalar wheelWidth = 0.5;
+    btScalar wheelWidth = 0.4;
     btScalar suspensionStiffness = 20.0;
-    btScalar dampingRelaxation = 2.3;
+    btScalar dampingRelaxation = 4.3;
     btScalar dampingCompression = 2.4;
-    btScalar frictionSlip = 1.2;
+    btScalar frictionSlip = 5;
     btScalar rollInfluence = 0.2;
 
     //* Adding WHEELS to vehicle physics model !
@@ -70,11 +71,15 @@ VehiclePhysics::VehiclePhysics()
     for (int i = 0; i < vehicle->getNumWheels(); i++)
     {
         btWheelInfo &wheel = vehicle->getWheelInfo(i);
-        wheel.m_suspensionStiffness = suspensionStiffness;
+        
+        // Larger 
+        //wheel.m_chassisConnectionPointCS = wheelConnectionPoint;
+        
+         wheel.m_suspensionStiffness = suspensionStiffness;
          wheel.m_wheelsDampingRelaxation = dampingRelaxation;
          wheel.m_wheelsDampingCompression = dampingCompression;
-        //wheel.m_wheelsDampingCompression = btScalar(0.3) * 2 * btSqrt(wheel.m_suspensionStiffness); // btScalar(0.8);
-        //wheel.m_wheelsDampingRelaxation = btScalar(0.5) * 2 * btSqrt(wheel.m_suspensionStiffness);  // 1;
+         wheel.m_wheelsDampingCompression = btScalar(0.3) * 2 * btSqrt(wheel.m_suspensionStiffness); // btScalar(0.8);
+         wheel.m_wheelsDampingRelaxation = btScalar(0.5) * 2 * btSqrt(wheel.m_suspensionStiffness);  // 1;
         
         // Larger friction slips will result in better handling
         wheel.m_frictionSlip = frictionSlip;
@@ -103,12 +108,13 @@ void VehiclePhysics::ApplyEngineForce(float force)
     // TODO: Add any Bullet physics code here that applies this force
 }
 
-void VehiclePhysics::Steer(float value)
+void VehiclePhysics::ApplySteer(float steerIncr)
 {
     //Steer with front wheels
-    vehicleSteering = value;
-    vehicle->setSteeringValue(value, 0);
-    vehicle->setSteeringValue(value, 1);
+    vehicleSteering = steerIncr;
+
+    vehicle->setSteeringValue(vehicleSteering, 2);
+    vehicle->setSteeringValue(vehicleSteering, 3);
 }
 
 void VehiclePhysics::Brake(float force)
