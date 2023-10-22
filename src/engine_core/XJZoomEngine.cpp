@@ -10,8 +10,8 @@ std::vector<GLuint> indices = {};
 ObjModel firstCarModel = ObjModel("../src/ressources/first_car.obj");
 ObjModel firstCarWheelModel = ObjModel("../src/ressources/first_car_wheel.obj");
 
-std::vector<GLfloat> Vvertices = firstCarModel.GetVertices();
-std::vector<GLuint> Vindices = firstCarModel.GetIndices();
+std::vector<GLfloat> playerVehicle_verts = firstCarModel.GetVertices();
+std::vector<GLuint> playerVehicle_indices = firstCarModel.GetIndices();
 
 std::vector<GLfloat> VW_vertices = firstCarWheelModel.GetVertices();
 std::vector<GLuint> VW_indices = firstCarWheelModel.GetIndices();
@@ -138,27 +138,21 @@ void XJZoomEngine::Run()
   printf("Sizeof v: %d", vertices.size() );
   printf("Sizeof i: %d", indices.size() );
 
-  RenderableGeometry geom1(vertices, indices);
 
-  VAO VAO2;
-  VAO2.Bind();
+  //* ####### Terrain Geometry Instance
 
-  VBO VBO2(Vvertices.data(), sizeof(GLfloat) * Vvertices.size());
-  EBO EBO2(Vindices.data(), sizeof(GLuint) * Vindices.size());
+  VAO VAO1; VAO1.Bind();
+  VBO VBO1(vertices); //Vertex Buffer Object ; links it to vertices
+  EBO EBO1(indices); //Element Buffer Object ; links it to indices
+  RenderableGeometry terrainGeom(&VAO1, &VBO1, &EBO1, vertices, indices);
 
-  // // Generates a second Vertex Buffer Object and links it to boxVertices
-  // VBO VBO2(boxVertices, sizeof(boxVertices));
-  // // Generates a second Element Buffer Object and links it to boxIndices
-  // EBO EBO2(boxIndices, sizeof(boxIndices));
 
-  // Links VBO attributes such as coordinates and colors to VAO2
-  VAO2.LinkAttrib(VBO2, 0, 3, GL_FLOAT, 8 * sizeof(float), (void *)0);
-  VAO2.LinkAttrib(VBO2, 1, 3, GL_FLOAT, 8 * sizeof(float), (void *)(3 * sizeof(float)));
-  VAO2.LinkAttrib(VBO2, 2, 2, GL_FLOAT, 8 * sizeof(float), (void *)(6 * sizeof(float)));
-  // Unbind all to prevent accidentally modifying them
-  VAO2.Unbind();
-  VBO2.Unbind();
-  EBO2.Unbind();
+  //* ####### Player Vehicle Geometry Instance
+
+  VAO VAO2; VAO2.Bind();
+  VBO VBO2(playerVehicle_verts);
+  EBO EBO2(playerVehicle_indices);
+  RenderableGeometry vehicleBodyGeom(&VAO2, &VBO2, &EBO2, playerVehicle_verts, playerVehicle_indices);
 
   //* Wheel
 
@@ -335,12 +329,12 @@ void XJZoomEngine::Run()
     // if(frustumCuller.IsBoxVisible(boxMin)) {}
 
     // Bind the VAO so OpenGL knows to use it | Draw Terrain
-    geom1.Draw(modelMatrixLocation,terrainModelMatrix);
-    //Draw Vehicle Body with VAO2
-    VAO2.Bind();
-    glBindTexture(GL_TEXTURE_2D, carTexID);
-    glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(vehicleModelMatrix));
-    glDrawElements(GL_TRIANGLES, (sizeof(GLuint) * Vindices.size()) / sizeof(int), GL_UNSIGNED_INT, 0);
+
+    //*############## OpenGL - Draw Calls ################
+
+    terrainGeom.Draw(modelMatrixLocation,terrainModelMatrix);
+    vehicleBodyGeom.Draw(modelMatrixLocation, vehicleModelMatrix);
+
 
     VAO3.Bind();
     glBindTexture(GL_TEXTURE_2D, carTexID);
