@@ -80,6 +80,7 @@ void XJZoomEngine::Run()
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
   SDL_GLContext Context = SDL_GL_CreateContext(Window);
+  double prevTime = SDL_GetTicks(); //Window Tick Rate (SDL thing)
 
   gladLoadGLLoader(SDL_GL_GetProcAddress);
 
@@ -93,6 +94,8 @@ void XJZoomEngine::Run()
   else if (carTexChannels == 3) carTexFormat = GL_RGB;
   else if (carTexChannels == 4) carTexFormat = GL_RGBA;
 
+  //* Some GL config..
+
   glTexImage2D(GL_TEXTURE_2D, 0, carTexFormat, carTexWidth, carTexHeight, 0, carTexFormat, GL_UNSIGNED_BYTE, carTextureData);
   glGenerateMipmap(GL_TEXTURE_2D);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -104,6 +107,7 @@ void XJZoomEngine::Run()
   // Specify the viewport of OpenGL in the Window
   // In this case the viewport goes from x = 0, y = 0, to x = 800, y = 800
   glViewport(0, 0, WinWidth, WinHeight);
+  glEnable(GL_DEPTH_TEST);
 
   // Load Managers:
   SceneManager sceneManager;
@@ -116,31 +120,8 @@ void XJZoomEngine::Run()
   //*ModelMatrix for GLSL Shader
   auto modelMatrixLocation = glGetUniformLocation(shaderProgram.ID, "modelMatrix");
 
-  // // Generates Vertex Array Object and binds it
-  // VAO VAO1;
-  // VAO1.Bind();
-
-  // // Generates Vertex Buffer Object and links it to vertices
-  // VBO VBO1(vertices.data(), sizeof(GLfloat) * vertices.size());
-  // // Generates Element Buffer Object and links it to indices
-  // EBO EBO1(indices.data(), sizeof(GLuint) * indices.size());
-
-  // // Links VBO attributes such as coordinates and colors to VAO
-  // VAO1.LinkAttrib(VBO1, 0, 3, GL_FLOAT, 8 * sizeof(float), (void *)0);
-  // VAO1.LinkAttrib(VBO1, 1, 3, GL_FLOAT, 8 * sizeof(float), (void *)(3 * sizeof(float)));
-  // VAO1.LinkAttrib(VBO1, 2, 2, GL_FLOAT, 8 * sizeof(float), (void *)(6 * sizeof(float)));
-  // // Unbind all to prevent accidentally modifying them
-  // VAO1.Unbind();
-  // VBO1.Unbind();
-  // EBO1.Unbind();
-
-
-  printf("Sizeof v: %d", vertices.size() );
-  printf("Sizeof i: %d", indices.size() );
-
 
   //* ####### Terrain Geometry Instance
-
   VAO VAO1; VAO1.Bind();
   VBO VBO1(vertices); //Vertex Buffer Object ; links it to vertices
   EBO EBO1(indices); //Element Buffer Object ; links it to indices
@@ -148,47 +129,30 @@ void XJZoomEngine::Run()
 
 
   //* ####### Player Vehicle Geometry Instance
-
   VAO VAO2; VAO2.Bind();
   VBO VBO2(playerVehicle_verts);
   EBO EBO2(playerVehicle_indices);
   RenderableGeometry vehicleBodyGeom(&VAO2, &VBO2, &EBO2, playerVehicle_verts, playerVehicle_indices);
 
-  //* Wheel
-
-  VAO VAO3;
-  VAO3.Bind();
-
-  VBO VBO3(VW_vertices.data(), sizeof(GLfloat) * VW_vertices.size());
-  EBO EBO3(VW_indices.data(), sizeof(GLuint) * VW_indices.size());
-
-  VAO3.LinkAttrib(VBO3, 0, 3, GL_FLOAT, 8 * sizeof(float), (void *)0);
-  VAO3.LinkAttrib(VBO3, 1, 3, GL_FLOAT, 8 * sizeof(float), (void *)(3 * sizeof(float)));
-  VAO3.LinkAttrib(VBO3, 2, 2, GL_FLOAT, 8 * sizeof(float), (void *)(6 * sizeof(float)));
-  // Unbind all to prevent accidentally modifying them
-  VAO3.Unbind();
-  VBO3.Unbind();
-  EBO3.Unbind();
+  //* ####### Wheel Geom Instance
+  VAO VAO3; VAO3.Bind();
+  VBO VBO3(VW_vertices);
+  EBO EBO3(VW_indices);
+  RenderableGeometry vehicleWheelGeom(&VAO3, &VBO3, &EBO3, VW_vertices, VW_indices);
 
 
   GLuint uniID = glGetUniformLocation(shaderProgram.ID, "scale");
 
   std::string texPath = "../src/ressources/";
 
-  // Texture
+  // !Texture, TODO ground texture, for terrain
   // Texture brickTex((texPath + "brick.png").c_str(), GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
   // brickTex.texUnit(shaderProgram, "tex0", 0);
-
-  double prevTime = SDL_GetTicks();
-
   // Enables the Depth Buffer
-  glEnable(GL_DEPTH_TEST);
+
 
   // Creates camera object
   Camera camera(WinWidth, WinHeight, glm::vec3(0.0f, 0.0f, 2.0f));
-
-  //! NOT REALLY USED (yet)... Scene Culling, FIX IT LATER:
-  //FrustumCull frustumCuller;
 
   // #### MAIN GAME LOOP THAT ENGINE IS RUNNING:
   while (Running)
@@ -325,9 +289,6 @@ void XJZoomEngine::Run()
     //  Updates and exports the camera matrix to the Vertex Shader
     camera.Matrix(45.0f, 0.1f, 100.0f, shaderProgram, "camMatrix");
 
-    //frustumCuller.Update(camera.viewProjection);
-    // if(frustumCuller.IsBoxVisible(boxMin)) {}
-
     // Bind the VAO so OpenGL knows to use it | Draw Terrain
 
     //*############## OpenGL - Draw Calls ################
@@ -335,39 +296,21 @@ void XJZoomEngine::Run()
     terrainGeom.Draw(modelMatrixLocation,terrainModelMatrix);
     vehicleBodyGeom.Draw(modelMatrixLocation, vehicleModelMatrix);
 
-
-    VAO3.Bind();
-    glBindTexture(GL_TEXTURE_2D, carTexID);
+    //! idk why i'm not binding textures and it's still workign...?
+    //glBindTexture(GL_TEXTURE_2D, carTexID);
 
   //Render Same Wheel, but at respective Model Matrix per Wheel 
-    for (const glm::mat4& wheelMatrix : wheelMatrices)
-    {
-        glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(wheelMatrix));
-        glDrawElements(GL_TRIANGLES, (sizeof(GLuint) * VW_indices.size()) / sizeof(int), GL_UNSIGNED_INT, 0);
-    }
-
-    VAO3.Unbind();
+    for ( glm::mat4 wheelMatrix : wheelMatrices)
+    { vehicleWheelGeom.Draw(modelMatrixLocation, wheelMatrix); }
 
     // Swap the back buffer with the front buffer
     SDL_GL_SwapWindow(Window);
 
     glm::vec3 cameraPosition = camera.Position;
-
-    //! DEBUG PRINTING STUFF HERE:
-
-    // printf("Camera Position: (%.2f, %.2f, %.2f)\n", cameraPosition.x, cameraPosition.y, cameraPosition.z);
-    //  Get the vehicle's rigid body's velocity (in world coordinates)
-    //  vehicle.GetPhysics().printState();
   }
 
   glDeleteTextures(1, &carTexID);
-
-  // Delete all the objects we've created
-  // VAO1.Delete();
-  // VBO1.Delete();
-  // EBO1.Delete();
-
-  // brickTex.Delete();
+  //brickTex.Delete();
   shaderProgram.Delete();
 
   // TODO: Delete the Physics World Singleton here
