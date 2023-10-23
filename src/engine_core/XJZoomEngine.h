@@ -29,7 +29,7 @@
 //Entity Imports
 
 #include "engine_core/entities/VehicleEntity.h"
-
+#include "engine_core/entities/SolidEntity.h"
 
 // Physics stuff:
 #include "singletons/PhysicsWorldSingleton.h"

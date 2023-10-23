@@ -51,6 +51,8 @@ src/terrain_gen/MapChunker.cpp
 src/engine_core/entities/VehicleEntity.h 
 src/engine_core/entities/VehicleEntity.cpp
 
+src/engine_core/entities/SolidEntity.h
+src/engine_core/entities/SolidEntity.cpp
 
 # Main Imports for Rendering
 

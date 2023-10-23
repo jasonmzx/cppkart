@@ -8,7 +8,7 @@ RenderableGeometry::RenderableGeometry(VAO* vaoPtr, VBO* vboPtr, EBO* eboPtr, co
 {
     _indices = indices;
     
-    printf("Amount of triangles: %zu", indices.size());
+    printf("Amount of triangles: %zu !\n", indices.size());
 
     // Use the dereference operator (*) to access members of objects through their pointers.
     vao->Bind();
