@@ -1,11 +1,10 @@
 #include "VehicleEntity.h"
 
-VehicleEntity::VehicleEntity(VAO* vaoPtr, VBO* vboPtr, EBO* eboPtr, 
-    const std::vector<GLfloat>& vehicleBodyVertices, const std::vector<GLuint>& vehicleBodyIndices,
-    const std::vector<GLfloat>& wheelVertices, const std::vector<GLuint>& wheelIndices)
+VehicleEntity::VehicleEntity(VAO* vaoPtr, VBO* vboPtr, EBO* eboPtr, const std::vector<GLfloat>& vehicleBodyVertices, const std::vector<GLuint>& vehicleBodyIndices,
+                            VAO* vaoPtr1, VBO* vboPtr1, EBO* eboPtr1, const std::vector<GLfloat>& wheelVertices, const std::vector<GLuint>& wheelIndices)
 : 
     vehicleGeometry(vaoPtr, vboPtr, eboPtr, vehicleBodyVertices, vehicleBodyIndices),
-    vehicleWheelGeometry(vaoPtr, vboPtr, eboPtr, wheelVertices, wheelIndices)
+    vehicleWheelGeometry(vaoPtr1, vboPtr1, eboPtr1, wheelVertices, wheelIndices)
 {
     // The vehiclePhysics object is automatically instantiated when a VehicleEntity is created
 }

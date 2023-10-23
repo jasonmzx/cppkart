@@ -7,7 +7,7 @@
 std::vector<GLfloat> vertices = {};
 std::vector<GLuint> indices = {};
 
-//TODO: remove this, just for prototyping of SolidEntity
+// TODO: remove this, just for prototyping of SolidEntity
 
 std::vector<GLfloat> boxVertices = {
     // Position (x, y, z)   Color (r, g, b)   Texture coordinates (s, t)
@@ -19,7 +19,7 @@ std::vector<GLfloat> boxVertices = {
     0.5f, -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f,
     0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
     -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f};
-  
+
 std::vector<GLuint> boxIndices = {
     0, 1, 2, 2, 3, 0,
     4, 5, 6, 6, 7, 4,
@@ -27,7 +27,6 @@ std::vector<GLuint> boxIndices = {
     2, 3, 7, 7, 6, 2,
     1, 2, 6, 6, 5, 1,
     0, 3, 7, 7, 4, 0};
-
 
 ObjModel firstCarModel = ObjModel("../src/ressources/first_car.obj");
 ObjModel firstCarWheelModel = ObjModel("../src/ressources/first_car_wheel.obj");
@@ -100,7 +99,7 @@ void XJZoomEngine::Run()
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
   SDL_GLContext Context = SDL_GL_CreateContext(Window);
-  double prevTime = SDL_GetTicks(); //Window Tick Rate (SDL thing)
+  double prevTime = SDL_GetTicks(); // Window Tick Rate (SDL thing)
 
   gladLoadGLLoader(SDL_GL_GetProcAddress);
 
@@ -110,9 +109,12 @@ void XJZoomEngine::Run()
 
   // Depending on the number of channels, pick the appropriate format
   GLenum carTexFormat;
-  if (carTexChannels == 1) carTexFormat = GL_RED;
-  else if (carTexChannels == 3) carTexFormat = GL_RGB;
-  else if (carTexChannels == 4) carTexFormat = GL_RGBA;
+  if (carTexChannels == 1)
+    carTexFormat = GL_RED;
+  else if (carTexChannels == 3)
+    carTexFormat = GL_RGB;
+  else if (carTexChannels == 4)
+    carTexFormat = GL_RGBA;
 
   //* Some GL config..
 
@@ -140,35 +142,32 @@ void XJZoomEngine::Run()
   //*ModelMatrix for GLSL Shader
   auto modelMatrixLocation = glGetUniformLocation(shaderProgram.ID, "modelMatrix");
 
-
   //* ####### Terrain Geometry Instance
-  VAO VAO1; VAO1.Bind();
-  VBO VBO1(vertices); //Vertex Buffer Object ; links it to vertices
-  EBO EBO1(indices); //Element Buffer Object ; links it to indices
-  //RenderableGeometry terrainGeom(&VAO1, &VBO1, &EBO1, vertices, indices);
-  
+  VAO VAO1;
+  VAO1.Bind();
+  VBO VBO1(vertices); // Vertex Buffer Object ; links it to vertices
+  EBO EBO1(indices);  // Element Buffer Object ; links it to indices
+  // RenderableGeometry terrainGeom(&VAO1, &VBO1, &EBO1, vertices, indices);
+
   //! test
   SolidEntity box1(&VAO1, &VBO1, &EBO1, boxVertices, boxIndices);
 
   //* ####### Player Vehicle Geometry Instance
-  VAO VAO2; VAO2.Bind();
+  VAO VAO2;
+  VAO2.Bind();
   VBO VBO2(playerVehicle_verts);
   EBO EBO2(playerVehicle_indices);
 
+  //* ####### Wheel Geom Instance
+  VAO VAO3;
+  VAO3.Bind();
+  VBO VBO3(VW_vertices);
+  EBO EBO3(VW_indices);
 
   //* #### Player Vehicle Instanciation:
 
-  VehicleEntity vehicle(&VAO2, &VBO2, &EBO2,
-      playerVehicle_verts, playerVehicle_indices,
-      VW_vertices, VW_indices
-  );
-
-  //* ####### Wheel Geom Instance
-  VAO VAO3; VAO3.Bind();
-  VBO VBO3(VW_vertices);
-  EBO EBO3(VW_indices);
-  RenderableGeometry vehicleWheelGeom(&VAO3, &VBO3, &EBO3, VW_vertices, VW_indices);
-
+  VehicleEntity vehicle(&VAO2, &VBO2, &EBO2, playerVehicle_verts, playerVehicle_indices,
+                        &VAO3, &VBO3, &EBO3, VW_vertices, VW_indices);
 
   GLuint uniID = glGetUniformLocation(shaderProgram.ID, "scale");
 
@@ -178,7 +177,6 @@ void XJZoomEngine::Run()
   // Texture brickTex((texPath + "brick.png").c_str(), GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
   // brickTex.texUnit(shaderProgram, "tex0", 0);
   // Enables the Depth Buffer
-
 
   // Creates camera object
   Camera camera(WinWidth, WinHeight, glm::vec3(0.0f, 0.0f, 2.0f));
@@ -248,42 +246,8 @@ void XJZoomEngine::Run()
     glm::mat4 rotation = glm::mat4_cast(glm::quat(vehicleRotation.w(), vehicleRotation.x(), vehicleRotation.y(), vehicleRotation.z()));
     glm::mat4 rotate90DEG_Adjustment = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-    //!!!Wheel Model Matrices
-    // std::vector<glm::mat4> wheelMatrices(4);
-
-    // //for (int i = 0; i < 1; i++)
-    //  for (int i = 0; i < vehicle.GetPhysics().vehicle->getNumWheels(); i++)
-    // {
-    //     btWheelInfo wheelinfo = vehicle.GetPhysics().vehicle->getWheelInfo(i);
-      
-    //     //* Get Translation (Positioning)
-    //     float wX = wheelinfo.m_worldTransform.getOrigin().getX();
-    //     float wY = wheelinfo.m_worldTransform.getOrigin().getY();
-    //     float wZ = wheelinfo.m_worldTransform.getOrigin().getZ();
-
-    //     glm::mat4 wheelTranslation = glm::translate(glm::mat4(1.0f), glm::vec3(wX,wY,wZ));
-
-    //     //* Extract only the rotation around the axle (e.g., Y-axis)
-    //     btTransform wheelTransform = wheelinfo.m_worldTransform;
-    //     btScalar yaw, pitch, roll;
-    //     wheelTransform.getBasis().getEulerZYX(yaw, pitch, roll);
-
-    // // Convert yaw to a quaternion (assuming yaw is around Y-axis)
-    // glm::quat glmYawQuat = glm::angleAxis(glm::degrees(yaw), glm::vec3(0, -1, 0)); // Convert yaw from radians to degrees
-
-    // glm::mat4 wheelRotation = glm::toMat4(glmYawQuat);
-
-    // // Full transformation matrix for the wheel
-    //   wheelMatrices.push_back(
-    //     wheelTranslation * wheelRotation * rotate90DEG_Adjustment * glm::scale(glm::vec3(0.25f))
-    //     //wheelTranslation * wheelRotation  * glm::scale(glm::vec3(0.25f))
-    //   );
-    // }
-
-
-  //
     vehicleModelMatrix = translation * rotation * rotate90DEG_Adjustment * glm::scale(glm::vec3(0.4f));
-    //WheelMatrix = translation * glm::scale(glm::vec3(0.25f));
+    // WheelMatrix = translation * glm::scale(glm::vec3(0.25f));
 
     //! PROTOTYPING: VEHICLE RENDERING CODE
 
@@ -307,36 +271,27 @@ void XJZoomEngine::Run()
     //* #### Smooth Camera (For Driving)
     auto targetVec = glm::vec3(vehiclePosition.x() + 0.4f, vehiclePosition.y() + 1.3f, vehiclePosition.z() - 2.4f);
     auto dirVec = targetVec - camera.Position;
-    if(glm::distance2(targetVec, camera.Position) > 0.02f)
-    camera.Position += dirVec * 0.03f;
+    if (glm::distance2(targetVec, camera.Position) > 0.02f)
+      camera.Position += dirVec * 0.03f;
     camera.LookAt.x = vehiclePosition.x();
     camera.LookAt.y = vehiclePosition.y();
     camera.LookAt.z = vehiclePosition.z();
 
-    //camera.Inputs(Window);
+    // camera.Inputs(Window);
 
     //  Updates and exports the camera matrix to the Vertex Shader
     camera.Matrix(45.0f, 0.1f, 100.0f, shaderProgram, "camMatrix");
 
-    // Bind the VAO so OpenGL knows to use it | Draw Terrain
-
     //*############## OpenGL - Draw Calls ################
 
-    //terrainGeom.Draw(modelMatrixLocation,terrainModelMatrix);
-    box1.geom.Draw(modelMatrixLocation,boxMtrxTest);
-
+    // terrainGeom.Draw(modelMatrixLocation,terrainModelMatrix);
+    box1.geom.Draw(modelMatrixLocation, boxMtrxTest);
     vehicle.GetGeometry().Draw(modelMatrixLocation, vehicleModelMatrix);
 
     //! idk why i'm not binding textures and it's still workign...?
-    //glBindTexture(GL_TEXTURE_2D, carTexID);
+    // glBindTexture(GL_TEXTURE_2D, carTexID);
 
-  //Render Same Wheel, but at respective Model Matrix per Wheel 
-   
-   //!!!
-    // for ( glm::mat4 wheelMatrix : wheelMatrices)
-    // { vehicleWheelGeom.Draw(modelMatrixLocation, wheelMatrix); }
-
-  vehicle.renderWheelGeometries(modelMatrixLocation);
+    vehicle.renderWheelGeometries(modelMatrixLocation);
 
     // Swap the back buffer with the front buffer
     SDL_GL_SwapWindow(Window);
@@ -345,7 +300,7 @@ void XJZoomEngine::Run()
   }
 
   glDeleteTextures(1, &carTexID);
-  //brickTex.Delete();
+  // brickTex.Delete();
   shaderProgram.Delete();
 
   // TODO: Delete the Physics World Singleton here
