@@ -31,6 +31,12 @@ std::vector<GLuint> boxIndices = {
 ObjModel firstCarModel = ObjModel("../src/ressources/first_car.obj");
 ObjModel firstCarWheelModel = ObjModel("../src/ressources/first_car_wheel.obj");
 
+ObjModel firstBuilding = ObjModel("../src/ressources/first_building.obj");
+
+std::vector<GLfloat> buildingVertices = firstBuilding.GetVertices();
+std::vector<GLuint> buildingIndices = firstBuilding.GetIndices();
+
+
 std::vector<GLfloat> playerVehicle_verts = firstCarModel.GetVertices();
 std::vector<GLuint> playerVehicle_indices = firstCarModel.GetIndices();
 
@@ -38,7 +44,7 @@ std::vector<GLfloat> VW_vertices = firstCarWheelModel.GetVertices();
 std::vector<GLuint> VW_indices = firstCarWheelModel.GetIndices();
 
 //*#### Terrain Scale Matrix:
-glm::mat4 terrainModelMatrix = glm::scale(glm::vec3(10.0f, 0.0f, 10.0f));
+glm::mat4 terrainModelMatrix = glm::scale(glm::vec3(1.0f, 1.0f, 1.0f));
 glm::mat4 boxMtrxTest = glm::scale(glm::vec3(100.0f, 4.0f, 100.0f));
 
 //*#### Vehicle & Wheel Matrix scaling:
@@ -145,12 +151,12 @@ void XJZoomEngine::Run()
   //* ####### Terrain Geometry Instance
   VAO VAO1;
   VAO1.Bind();
-  VBO VBO1(vertices); // Vertex Buffer Object ; links it to vertices
-  EBO EBO1(indices);  // Element Buffer Object ; links it to indices
-  // RenderableGeometry terrainGeom(&VAO1, &VBO1, &EBO1, vertices, indices);
+  VBO VBO1(buildingVertices); // Vertex Buffer Object ; links it to vertices
+  EBO EBO1(buildingIndices);  // Element Buffer Object ; links it to indices
+  //RenderableGeometry terrainGeom(&VAO1, &VBO1, &EBO1, buildingVertices, buildingIndices, terrainModelMatrix);
 
   //! test
-  SolidEntity box1(&VAO1, &VBO1, &EBO1, boxVertices, boxIndices);
+  SolidEntity box1(&VAO1, &VBO1, &EBO1, buildingVertices, buildingIndices, terrainModelMatrix);
 
   //* ####### Player Vehicle Geometry Instance
   VAO VAO2;
@@ -277,15 +283,21 @@ void XJZoomEngine::Run()
     camera.LookAt.y = vehiclePosition.y();
     camera.LookAt.z = vehiclePosition.z();
 
-    // camera.Inputs(Window);
+    camera.Inputs(Window);
 
     //  Updates and exports the camera matrix to the Vertex Shader
     camera.Matrix(45.0f, 0.1f, 100.0f, shaderProgram, "camMatrix");
 
     //*############## OpenGL - Draw Calls ################
 
-    // terrainGeom.Draw(modelMatrixLocation,terrainModelMatrix);
-    box1.geom.Draw(modelMatrixLocation, boxMtrxTest);
+
+    glm::mat4 buildTransl = glm::translate(glm::mat4(1.0f), glm::vec3(0,0,0.25));
+
+    terrainModelMatrix = buildTransl * terrainModelMatrix;
+
+    //terrainGeom.Draw(modelMatrixLocation,terrainModelMatrix);
+
+    box1.geom.Draw(modelMatrixLocation, terrainModelMatrix);
     vehicle.GetGeometry().Draw(modelMatrixLocation, vehicleModelMatrix);
 
     //! idk why i'm not binding textures and it's still workign...?

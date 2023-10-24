@@ -18,7 +18,7 @@ VehiclePhysics::VehiclePhysics()
     btDefaultMotionState *vehicleMotionState = new btDefaultMotionState();
     btTransform localTransform;
     localTransform.setIdentity();
-    localTransform.setOrigin(btVector3(0, 3, 0));
+    localTransform.setOrigin(btVector3(0, 3, 20));
     vehicleMotionState->setWorldTransform(localTransform);
 
     //* VEHICLE MASS !
