@@ -2,7 +2,7 @@
 
 // Windowing consts
 #define WinWidth 1800
-#define WinHeight 1000
+#define WinHeight 850
 
 std::vector<GLfloat> vertices = {};
 std::vector<GLuint> indices = {};
@@ -72,9 +72,11 @@ void XJZoomEngine::Run()
   btMotionState *motion = new btDefaultMotionState(protoPlaneTransform); //! He put btDefaultMotionShape
 
   btRigidBody::btRigidBodyConstructionInfo info(0.0, motion, plane);
-  info.m_friction = 0.6f;
+  info.m_friction = 2.0f;
+
   btRigidBody *planeBody = new btRigidBody(info);
   physicsWorld->dynamicsWorld->addRigidBody(planeBody);
+  
 
   //* ############ PROTOTYPE Collision Plane ^^^ ############
 
@@ -290,15 +292,12 @@ void XJZoomEngine::Run()
 
     //*############## OpenGL - Draw Calls ################
 
+    terrainModelMatrix = terrainModelMatrix;
 
-    glm::mat4 buildTransl = glm::translate(glm::mat4(1.0f), glm::vec3(0,0,0.25));
-
-    terrainModelMatrix = buildTransl * terrainModelMatrix;
-
-    //terrainGeom.Draw(modelMatrixLocation,terrainModelMatrix);
-
+    // terrainGeom.Draw(modelMatrixLocation,terrainModelMatrix);
     box1.geom.Draw(modelMatrixLocation, terrainModelMatrix);
     vehicle.GetGeometry().Draw(modelMatrixLocation, vehicleModelMatrix);
+    vehicle.GetPhysics().printState();  
 
     //! idk why i'm not binding textures and it's still workign...?
     // glBindTexture(GL_TEXTURE_2D, carTexID);

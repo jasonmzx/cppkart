@@ -10,15 +10,16 @@ VehiclePhysics::VehiclePhysics()
     tuning.m_suspensionCompression = 0.83f;
     tuning.m_suspensionDamping = 0.88f;
     tuning.m_maxSuspensionTravelCm = 500.0f;
-    tuning.m_frictionSlip = 2.5f;
+    tuning.m_frictionSlip = 0.0f;
     tuning.m_maxSuspensionForce = 6000.0f;
 
     // Vehicle setup
     btBoxShape *vehicleChassisShape = new btBoxShape(btVector3(0.8f, 0.5f, 1.0f));
     btDefaultMotionState *vehicleMotionState = new btDefaultMotionState();
     btTransform localTransform;
+
     localTransform.setIdentity();
-    localTransform.setOrigin(btVector3(0, 3, 20));
+    localTransform.setOrigin(btVector3(0, 1, -10));
     vehicleMotionState->setWorldTransform(localTransform);
 
     //* VEHICLE MASS !
@@ -43,12 +44,12 @@ VehiclePhysics::VehiclePhysics()
     btVector3 wheelDirection = btVector3(0, -1, 0);
     btVector3 wheelAxle = btVector3(-1, 0, 0);
     btScalar suspensionRestLength = 0.6;
-    btScalar wheelRadius = 0.125;
+    btScalar wheelRadius = 0.015;
     btScalar wheelWidth = 0.4;
     btScalar suspensionStiffness = 20.0;
     btScalar dampingRelaxation = 4.3;
     btScalar dampingCompression = 2.4;
-    btScalar frictionSlip = 5;
+    btScalar frictionSlip = 10;
     btScalar rollInfluence = 0.2;
 
     //* Adding WHEELS to vehicle physics model !
@@ -84,9 +85,15 @@ VehiclePhysics::VehiclePhysics()
         // Larger friction slips will result in better handling
         wheel.m_frictionSlip = frictionSlip;
         wheel.m_rollInfluence = rollInfluence;
+
     }
 
     vehicleRigidBody->setActivationState(DISABLE_DEACTIVATION);
+
+//! Experimental
+// vehicleRigidBody->setLinearVelocity(btVector3(0, 0, 0));
+// vehicleRigidBody->setAngularVelocity(btVector3(0, 0, 0));
+
     physicsWorld->dynamicsWorld->addVehicle(vehicle);
 
     // Vehicle setup:
@@ -113,8 +120,8 @@ void VehiclePhysics::ApplySteer(float steerIncr)
     //Steer with front wheels
     vehicleSteering = steerIncr;
 
-    vehicle->setSteeringValue(vehicleSteering, 2);
-    vehicle->setSteeringValue(vehicleSteering, 3);
+    vehicle->setSteeringValue(vehicleSteering, 0);
+    vehicle->setSteeringValue(vehicleSteering, 1);
 }
 
 void VehiclePhysics::Brake(float force)
@@ -145,16 +152,4 @@ void VehiclePhysics::printState()
     printf("Vehicle Velocity (XYZ): %.2f, %.2f, %.2f | Position (XYZ): %.2f, %.2f, %.2f\n",
            velocity.getX(), velocity.getY(), velocity.getZ(),
            position.getX(), position.getY(), position.getZ());
-
-    for (int i = 0; i < vehicle->getNumWheels(); i++)
-    {
-        btWheelInfo wheelinfo = vehicle->getWheelInfo(i);
-        float wX = wheelinfo.m_worldTransform.getOrigin().getX();
-
-        float wY = wheelinfo.m_worldTransform.getOrigin().getY();
-
-        float wZ = wheelinfo.m_worldTransform.getOrigin().getZ();
-
-        printf("%d XYZ: %.2f, %.2f, %.2f \n", i, wX, wY, wZ);
-    }
 }

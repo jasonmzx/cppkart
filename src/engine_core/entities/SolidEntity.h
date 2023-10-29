@@ -1,13 +1,13 @@
 #ifndef SOLIDENTITY_CLASS_H
 #define SOLIDENTITY_CLASS_H
 
-#include "engine_core/bullet_models/SolidShapePhysics.h"
+#include "engine_core/bullet_models/StaticTriangleMeshPhysics.h"
 #include "engine_core/geometries/RenderableGeometry.h"
 
 
 class SolidEntity {
 private:
-    SolidShapePhysics shapePhysics;
+    StaticTriangleMeshPhysics shapePhysics;
 
 public:
     RenderableGeometry geom;
