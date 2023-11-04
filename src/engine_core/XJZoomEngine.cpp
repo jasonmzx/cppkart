@@ -9,24 +9,35 @@ std::vector<GLuint> indices = {};
 
 // TODO: remove this, just for prototyping of SolidEntity
 
-std::vector<GLfloat> boxVertices = {
-    // Position (x, y, z)   Color (r, g, b)   Texture coordinates (s, t)
-    -0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-    0.5f, -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
-    0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-    -0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-    -0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-    0.5f, -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-    0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-    -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f};
+std::vector<GLfloat> rampVertices = {
+    // Bottom face vertices (unchanged)
+    -0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, // Vertex 0
+    0.5f, -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,  // Vertex 1
+    0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,   // Vertex 5
+    -0.5f, -0.5f, 0.5f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, // Vertex 4
 
-std::vector<GLuint> boxIndices = {
+    // Top face vertices (modified for ramp)
+    -0.5f, 0.0f, -0.5f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, // Vertex 3, shallow end
+    0.5f, 0.0f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f,  // Vertex 2, shallow end
+    0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,   // Vertex 6, high end
+    -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f  // Vertex 7, high end
+};
+
+std::vector<GLuint> rampIndices = {
+    // Bottom face (unchanged)
     0, 1, 2, 2, 3, 0,
-    4, 5, 6, 6, 7, 4,
+    // Back face (unchanged, becomes vertical face of ramp)
+    1, 5, 6, 6, 2, 1,
+    // Right face (unchanged)
+    2, 6, 7, 7, 3, 2,
+    // Left face (unchanged)
+    0, 3, 7, 7, 4, 0,
+    // Front face (unchanged, becomes inclined face of ramp)
     0, 1, 5, 5, 4, 0,
-    2, 3, 7, 7, 6, 2,
-    1, 2, 6, 6, 5, 1,
-    0, 3, 7, 7, 4, 0};
+    // Top face (modified, now forms the ramp)
+    3, 2, 6, 6, 7, 3
+};
+
 
 ObjModel firstCarModel = ObjModel("../src/ressources/first_car.obj");
 ObjModel firstCarWheelModel = ObjModel("../src/ressources/first_car_wheel.obj");
@@ -44,7 +55,7 @@ std::vector<GLfloat> VW_vertices = firstCarWheelModel.GetVertices();
 std::vector<GLuint> VW_indices = firstCarWheelModel.GetIndices();
 
 //*#### Terrain Scale Matrix:
-glm::mat4 terrainModelMatrix = glm::scale(glm::vec3(1.0f, 1.0f, 1.0f));
+glm::mat4 terrainModelMatrix = glm::scale(glm::vec3(100.0f, 100.0f, 100.0f));
 glm::mat4 boxMtrxTest = glm::scale(glm::vec3(100.0f, 4.0f, 100.0f));
 
 //*#### Vehicle & Wheel Matrix scaling:
@@ -124,15 +135,12 @@ void XJZoomEngine::Run()
   else if (carTexChannels == 4)
     carTexFormat = GL_RGBA;
 
-  //* Some GL config..
+  //* Some OpenGL config..
 
   glTexImage2D(GL_TEXTURE_2D, 0, carTexFormat, carTexWidth, carTexHeight, 0, carTexFormat, GL_UNSIGNED_BYTE, carTextureData);
   glGenerateMipmap(GL_TEXTURE_2D);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-  int32_t Running = 1;
-  int32_t FullScreen = 0;
 
   // Specify the viewport of OpenGL in the Window
   // In this case the viewport goes from x = 0, y = 0, to x = 800, y = 800
@@ -149,6 +157,7 @@ void XJZoomEngine::Run()
 
   //*ModelMatrix for GLSL Shader
   auto modelMatrixLocation = glGetUniformLocation(shaderProgram.ID, "modelMatrix");
+  GLint useTextureLocation = glGetUniformLocation(shaderProgram.ID, "useTexture");
 
   //* ####### Terrain Geometry Instance
   VAO VAO1;
@@ -172,14 +181,23 @@ void XJZoomEngine::Run()
   VBO VBO3(VW_vertices);
   EBO EBO3(VW_indices);
 
+  //* ####### 
+
+
+  VAO VAO4;
+  VAO4.Bind();
+  VBO VBO4(vertices);
+  EBO EBO4(indices);
+
+  RenderableGeometry terrainGeom(&VAO4, &VBO4, &EBO4, vertices, indices);
+
   //* #### Player Vehicle Instanciation:
 
   VehicleEntity vehicle(&VAO2, &VBO2, &EBO2, playerVehicle_verts, playerVehicle_indices,
                         &VAO3, &VBO3, &EBO3, VW_vertices, VW_indices);
 
-  GLuint uniID = glGetUniformLocation(shaderProgram.ID, "scale");
-
-  std::string texPath = "../src/ressources/";
+  //GLuint uniID = glGetUniformLocation(shaderProgram.ID, "scale");
+  //std::string texPath = "../src/ressources/";
 
   // !Texture, TODO ground texture, for terrain
   // Texture brickTex((texPath + "brick.png").c_str(), GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
@@ -189,13 +207,39 @@ void XJZoomEngine::Run()
   // Creates camera object
   Camera camera(WinWidth, WinHeight, glm::vec3(0.0f, 0.0f, 2.0f));
 
+  //Keyboard Input:
+  const Uint8 *state = SDL_GetKeyboardState(NULL);
+
+  //Application Window State
+  int32_t Running = 1;
+  int32_t FullScreen = 0;
+
+
   // #### MAIN GAME LOOP THAT ENGINE IS RUNNING:
   while (Running)
   {
 
-    //*Idle Forces when no keys are applied:
+    //* POLLING INPUTS for Multiple Keyboard Input and Handle Simultaneously
+
+  SDL_PumpEvents(); // Make sure we have the latest state
+  state = SDL_GetKeyboardState(NULL);
+
+  // Handling continuous key states rather than events
+  if (state[SDL_SCANCODE_UP]) {
+    vehicle.GetPhysics().ApplyEngineForce(1000);
+  } else if (state[SDL_SCANCODE_DOWN]) {
+    vehicle.GetPhysics().ApplyEngineForce(-2500);
+  } else {
     vehicle.GetPhysics().ApplyEngineForce(0);
+  }
+
+  if (state[SDL_SCANCODE_LEFT]) {
+    vehicle.GetPhysics().ApplySteer(0.13);
+  } else if (state[SDL_SCANCODE_RIGHT]) {
+    vehicle.GetPhysics().ApplySteer(-0.13);
+  } else {
     vehicle.GetPhysics().ApplySteer(0);
+  }
 
     SDL_Event Event;
     while (SDL_PollEvent(&Event))
@@ -217,18 +261,6 @@ void XJZoomEngine::Run()
           {
             SDL_SetWindowFullscreen(Window, WindowFlags);
           }
-          break;
-        case SDLK_UP:
-          vehicle.GetPhysics().ApplyEngineForce(7000);
-          break;
-        case SDLK_DOWN:
-          vehicle.GetPhysics().ApplyEngineForce(-2500);
-          break;
-        case SDLK_RIGHT:
-          vehicle.GetPhysics().ApplySteer(-0.3);
-          break;
-        case SDLK_LEFT:
-          vehicle.GetPhysics().ApplySteer(0.3);
           break;
         default:
           break;
@@ -271,12 +303,15 @@ void XJZoomEngine::Run()
 
     //* ###### CAMERA #######
 
+    bool DEBUG = true;
+
     //* naive approach (hard offsets camera, bad for steering)
     //  camera.Position.x = vehiclePosition.x() + 0.5f;
     //  camera.Position.y = vehiclePosition.y() + 2.0f;
     //  camera.Position.z = vehiclePosition.z() - 3.0f;
 
     //* #### Smooth Camera (For Driving)
+    if(!DEBUG) {
     auto targetVec = glm::vec3(vehiclePosition.x() + 0.4f, vehiclePosition.y() + 1.3f, vehiclePosition.z() - 2.4f);
     auto dirVec = targetVec - camera.Position;
     if (glm::distance2(targetVec, camera.Position) > 0.02f)
@@ -284,29 +319,38 @@ void XJZoomEngine::Run()
     camera.LookAt.x = vehiclePosition.x();
     camera.LookAt.y = vehiclePosition.y();
     camera.LookAt.z = vehiclePosition.z();
+    }
 
     camera.Inputs(Window);
 
     //  Updates and exports the camera matrix to the Vertex Shader
     camera.Matrix(45.0f, 0.1f, 100.0f, shaderProgram, "camMatrix");
+    //camera.Matrix(45.0f, 0.1f, 100.0f, terrainShaderProgram, "camMatrix");
+
 
     //*############## OpenGL - Draw Calls ################
-
-    terrainModelMatrix = terrainModelMatrix;
+    glUniform1i(useTextureLocation, GL_TRUE); 
 
     // terrainGeom.Draw(modelMatrixLocation,terrainModelMatrix);
-    box1.geom.Draw(modelMatrixLocation, terrainModelMatrix);
+    //box1.geom.Draw(modelMatrixLocation, terrainModelMatrix);
     vehicle.GetGeometry().Draw(modelMatrixLocation, vehicleModelMatrix);
-    vehicle.GetPhysics().printState();  
+ //   vehicle.GetPhysics().printState();  
 
     //! idk why i'm not binding textures and it's still workign...?
     // glBindTexture(GL_TEXTURE_2D, carTexID);
 
+
     vehicle.renderWheelGeometries(modelMatrixLocation);
+
+    glUniform1i(useTextureLocation, GL_FALSE); 
+
+
+    terrainGeom.Draw(modelMatrixLocation, terrainModelMatrix);
+
+
 
     // Swap the back buffer with the front buffer
     SDL_GL_SwapWindow(Window);
-
     glm::vec3 cameraPosition = camera.Position;
   }
 

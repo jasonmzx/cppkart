@@ -11,10 +11,16 @@ in vec2 texCoord;
 
 // Gets the Texture Unit from the main function
 uniform sampler2D tex0;
-
+// Uniform to switch between texture and solid color
+uniform bool useTexture;
 
 void main()
 {
-	//FragColor = vec4(color, 1.0);
-	FragColor = texture(tex0, texCoord);
+    if (useTexture) {
+        // Sample the texture if useTexture is true
+        FragColor = texture(tex0, texCoord);
+    } else {
+        // Output the solid color if useTexture is false
+		FragColor = vec4(color, 1.0); //texture(tex0, texCoord);
+    }
 }

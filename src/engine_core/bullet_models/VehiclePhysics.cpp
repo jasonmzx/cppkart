@@ -100,7 +100,7 @@ VehiclePhysics::VehiclePhysics()
     engineForce = 0.0;
     vehicleSteering = 0.0;
     steeringIncrement = 0.04;
-    steeringClamp = 0.3;
+    steeringClamp = 0.45;
     brakeForce = 0.0;
 }
 
@@ -117,12 +117,35 @@ void VehiclePhysics::ApplyEngineForce(float force)
 
 void VehiclePhysics::ApplySteer(float steerIncr)
 {
-    //Steer with front wheels
-    vehicleSteering = steerIncr;
+    if (steerIncr != 0)
+    {
+        // Increment or decrement steering based on steerIncr
+        vehicleSteering += steerIncr;
 
+        // Clamp the steering value to make sure it's within [-steeringClamp, steeringClamp]
+        if (vehicleSteering > steeringClamp) {
+            vehicleSteering = steeringClamp;
+        } else if (vehicleSteering < -steeringClamp) {
+            vehicleSteering = -steeringClamp;
+        }
+    }
+    else
+    {
+        // Tend the steering value back to zero if steerIncr is 0
+        if (vehicleSteering > steeringIncrement) {
+            vehicleSteering -= steeringIncrement;
+        } else if (vehicleSteering < -steeringIncrement) {
+            vehicleSteering += steeringIncrement;
+        } else {
+            vehicleSteering = 0; // Close enough to zero we can set it directly
+        }
+    }
+
+    // Apply the steering value to the front wheels
     vehicle->setSteeringValue(vehicleSteering, 0);
     vehicle->setSteeringValue(vehicleSteering, 1);
 }
+
 
 void VehiclePhysics::Brake(float force)
 {
@@ -149,7 +172,7 @@ void VehiclePhysics::printState()
     btVector3 velocity = vehicleRigidBody->getLinearVelocity();
     btVector3 position = vehicleRigidBody->getWorldTransform().getOrigin();
 
-    printf("Vehicle Velocity (XYZ): %.2f, %.2f, %.2f | Position (XYZ): %.2f, %.2f, %.2f\n",
+    printf("Vehicle Velocity (XYZ): %.2f, %.2f, %.2f | Position (XYZ): %.2f, %.2f, %.2f | Steer: %.2f \n",
            velocity.getX(), velocity.getY(), velocity.getZ(),
-           position.getX(), position.getY(), position.getZ());
+           position.getX(), position.getY(), position.getZ(), vehicle->getSteeringValue(0));
 }

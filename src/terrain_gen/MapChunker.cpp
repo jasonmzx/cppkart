@@ -39,7 +39,7 @@ void terrainMapLoader(std::vector<GLuint>& indices_vec, std::vector<GLfloat>& ve
             //X: 
             vertices_vec.push_back(static_cast<GLfloat>(x)/width);
             //Y:
-            vertices_vec.push_back(static_cast<GLfloat>(normalized_color));
+            vertices_vec.push_back(static_cast<GLfloat>(normalized_color/10));
             //Z:
             vertices_vec.push_back(static_cast<GLfloat>(y)/width); //Not multiplying by height, as I dont want to stretch the proportions
             //
