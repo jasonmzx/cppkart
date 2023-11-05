@@ -3,7 +3,7 @@
 
 void terrainMapLoader(std::vector<GLuint>& indices_vec, std::vector<GLfloat>& vertices_vec) {
 
-     const char* filename = "../src/ressources/track1.png";
+     const char* filename = "../src/ressources/track3.png";
     int width, height, channels;
 
     // Load the PNG image
@@ -17,18 +17,19 @@ void terrainMapLoader(std::vector<GLuint>& indices_vec, std::vector<GLfloat>& ve
 
     // Iterate through the pixels
     for (int y = 0; y < height; ++y) {
-    
         for (int x = 0; x < width; ++x) {
 
+        if (x < (width - 1) && y < (height - 1)) { //Prevent Wrapping of Indices
             //Triangle 1 / 2 (per unit)
-            indices_vec.push_back(y*width+x);
-            indices_vec.push_back((y+1)*width+x);
-            indices_vec.push_back(y*width+(x+1));
+            indices_vec.push_back(y * width + x);
+            indices_vec.push_back((y + 1) * width + x);
+            indices_vec.push_back(y * width + (x + 1));
 
             //Triangle 2 / 2 (per unit)
-            indices_vec.push_back((y+1)*width+x);
-            indices_vec.push_back(y*width+(x+1));
-            indices_vec.push_back((y+1)*width+(x+1));
+            indices_vec.push_back((y + 1) * width + x);
+            indices_vec.push_back(y * width + (x + 1));
+            indices_vec.push_back((y + 1) * width + (x + 1));
+        }
 
             int raw_img_index = (y * width + x) * 4; // Each pixel has 4 channels (RGBA)
 
@@ -39,7 +40,7 @@ void terrainMapLoader(std::vector<GLuint>& indices_vec, std::vector<GLfloat>& ve
             //X: 
             vertices_vec.push_back(static_cast<GLfloat>(x)/width);
             //Y:
-            vertices_vec.push_back(static_cast<GLfloat>(normalized_color/10));
+            vertices_vec.push_back(static_cast<GLfloat>(normalized_color/10)); //height vertical
             //Z:
             vertices_vec.push_back(static_cast<GLfloat>(y)/width); //Not multiplying by height, as I dont want to stretch the proportions
             //
