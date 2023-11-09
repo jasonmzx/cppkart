@@ -159,15 +159,15 @@ void XJZoomEngine::Run()
   auto modelMatrixLocation = glGetUniformLocation(shaderProgram.ID, "modelMatrix");
   GLint useTextureLocation = glGetUniformLocation(shaderProgram.ID, "useTexture");
 
+  //* Bullet Physics Rendering Debug Tool
+  BulletDebugDrawer* debugDrawer = new BulletDebugDrawer(shaderProgram.ID);
+
   //* ####### Terrain Geometry Instance
   VAO VAO1;
   VAO1.Bind();
   VBO VBO1(buildingVertices); // Vertex Buffer Object ; links it to vertices
   EBO EBO1(buildingIndices);  // Element Buffer Object ; links it to indices
   //RenderableGeometry terrainGeom(&VAO1, &VBO1, &EBO1, buildingVertices, buildingIndices, terrainModelMatrix);
-
-  //! test
-  SolidEntity box1(&VAO1, &VBO1, &EBO1, buildingVertices, buildingIndices, terrainModelMatrix);
 
   //* ####### Player Vehicle Geometry Instance
   VAO VAO2;
@@ -189,7 +189,8 @@ void XJZoomEngine::Run()
   VBO VBO4(vertices);
   EBO EBO4(indices);
 
-  RenderableGeometry terrainGeom(&VAO4, &VBO4, &EBO4, vertices, indices);
+  //RenderableGeometry terrainGeom(&VAO4, &VBO4, &EBO4, vertices, indices);
+  //SolidEntity TERRAIN(&VAO4, &VBO4, &EBO4, vertices, indices, terrainModelMatrix);
 
   //* #### Player Vehicle Instanciation:
 
@@ -213,6 +214,9 @@ void XJZoomEngine::Run()
   //Application Window State
   int32_t Running = 1;
   int32_t FullScreen = 0;
+
+
+  physicsWorld->dynamicsWorld->setDebugDrawer(debugDrawer);
 
 
   // #### MAIN GAME LOOP THAT ENGINE IS RUNNING:
@@ -275,6 +279,7 @@ void XJZoomEngine::Run()
     //! ### IMPORTANT, Allow the Physics Simulation to tick ###
     physicsWorld->dynamicsWorld->stepSimulation(1.0f / 60.0f);
 
+
     //! PROTOTYPING: VEHICLE RENDERING CODE
     // ### Update the box's model matrix to match the vehicle's transform ###
     btTransform vehicleTransform = vehicle.GetPhysics().GetTransform();
@@ -300,6 +305,9 @@ void XJZoomEngine::Run()
 
     // Assigns a value to the uniform; NOTE: Must always be done after activating the Shader Program
     // brickTex.Bind();
+
+    //debugDrawer->setDebugMode(btIDebugDraw::DBG_DrawWireframe);
+    physicsWorld->dynamicsWorld->debugDrawWorld();
 
     //* ###### CAMERA #######
 
@@ -332,7 +340,7 @@ void XJZoomEngine::Run()
     glUniform1i(useTextureLocation, GL_TRUE); 
 
     // terrainGeom.Draw(modelMatrixLocation,terrainModelMatrix);
-    //box1.geom.Draw(modelMatrixLocation, terrainModelMatrix);
+    
     vehicle.GetGeometry().Draw(modelMatrixLocation, vehicleModelMatrix);
  //   vehicle.GetPhysics().printState();  
 
@@ -344,10 +352,11 @@ void XJZoomEngine::Run()
 
     glUniform1i(useTextureLocation, GL_FALSE); 
 
+    //TERRAIN.geom.Draw(modelMatrixLocation, terrainModelMatrix);
 
-    terrainGeom.Draw(modelMatrixLocation, terrainModelMatrix);
+    //terrainGeom.Draw(modelMatrixLocation, terrainModelMatrix);
 
-
+   debugDrawer->flushLines();
 
     // Swap the back buffer with the front buffer
     SDL_GL_SwapWindow(Window);

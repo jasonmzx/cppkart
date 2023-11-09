@@ -36,6 +36,8 @@
 
 #include "engine_core/bullet_models/TerrainPhysics.h" //TODO: Remove and wrap in a TerrainEntity class
 
+#include "engine_core/geometries/BulletDebugDrawer.cpp"
+
 //CORE Imports:
 #include "engine_core/managers/SceneManager.h"
 

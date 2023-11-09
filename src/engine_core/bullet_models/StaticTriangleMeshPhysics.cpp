@@ -22,8 +22,10 @@ StaticTriangleMeshPhysics::StaticTriangleMeshPhysics(
 
     btBvhTriangleMeshShape* triangleShape = new btBvhTriangleMeshShape(mesh, true);
 
-    // Assuming you have the same transformation and motion state:
+        // Convert glm::mat4 to btTransform
     btTransform staticMeshTransform;
+    staticMeshTransform.setFromOpenGLMatrix(glm::value_ptr(modelMatrix));
+
     staticMeshTransform.setIdentity();
     staticMeshTransform.setOrigin(btVector3(0, 0, 0));
 
