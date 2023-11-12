@@ -36,9 +36,6 @@ src/engine_core/bullet_models/LowAbsVehicle.cpp
 src/engine_core/bullet_models/TerrainPhysics.h
 src/engine_core/bullet_models/TerrainPhysics.cpp
 
-src/engine_core/bullet_models/SolidShapePhysics.h
-src/engine_core/bullet_models/SolidShapePhysics.cpp
-
 src/engine_core/bullet_models/StaticTriangleMeshPhysics.h
 src/engine_core/bullet_models/StaticTriangleMeshPhysics.cpp
 

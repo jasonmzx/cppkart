@@ -14,7 +14,7 @@ VehiclePhysics::VehiclePhysics()
     tuning.m_maxSuspensionForce = 6000.0f;
 
     // Vehicle setup
-    btBoxShape *vehicleChassisShape = new btBoxShape(btVector3(0.8f, 0.5f, 5.0f));
+    btBoxShape *vehicleChassisShape = new btBoxShape(btVector3(0.8f, 0.5f, 1.0f));
     btDefaultMotionState *vehicleMotionState = new btDefaultMotionState();
     btTransform localTransform;
 

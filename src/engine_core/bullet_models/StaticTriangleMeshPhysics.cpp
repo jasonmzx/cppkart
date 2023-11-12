@@ -13,9 +13,13 @@ StaticTriangleMeshPhysics::StaticTriangleMeshPhysics(
     btTriangleMesh *mesh = new btTriangleMesh();
     for (size_t i = 0; i < indices.size(); i += 3)
     {
-        btVector3 vertex0(vertices[indices[i] * 3], vertices[indices[i] * 3 + 1], vertices[indices[i] * 3 + 2]);
-        btVector3 vertex1(vertices[indices[i + 1] * 3], vertices[indices[i + 1] * 3 + 1], vertices[indices[i + 1] * 3 + 2]);
-        btVector3 vertex2(vertices[indices[i + 2] * 3], vertices[indices[i + 2] * 3 + 1], vertices[indices[i + 2] * 3 + 2]);
+        // x y z r g b u v , 8
+        int VERT_LEN = 8;
+        GLuint idx0 = indices[i]; GLuint idx1 = indices[i+1]; GLuint idx2 = indices[i+2];
+        
+        btVector3 vertex0(vertices[idx0 * VERT_LEN], vertices[idx0 * VERT_LEN + 1], vertices[idx0 * VERT_LEN + 2]);
+        btVector3 vertex1(vertices[idx1 * VERT_LEN], vertices[idx1 * VERT_LEN + 1], vertices[idx1 * VERT_LEN + 2]);
+        btVector3 vertex2(vertices[idx2 * VERT_LEN], vertices[idx2 * VERT_LEN + 1], vertices[idx2 * VERT_LEN + 2]);
 
         mesh->addTriangle(vertex0, vertex1, vertex2);
     }

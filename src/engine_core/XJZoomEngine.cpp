@@ -9,34 +9,29 @@ std::vector<GLuint> indices = {};
 
 // TODO: remove this, just for prototyping of SolidEntity
 
-std::vector<GLfloat> rampVertices = {
-    // Bottom face vertices (unchanged)
-    -0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, // Vertex 0
-    0.5f, -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,  // Vertex 1
-    0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,   // Vertex 5
-    -0.5f, -0.5f, 0.5f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, // Vertex 4
+std::vector<GLfloat> pyramidVertices = {
+    // Base - square
+    -0.5f, 0.0f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, // Bottom left (0)
+    0.5f, 0.0f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,  // Bottom right (1)
+    0.5f, 0.0f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,   // Top right (2)
+    -0.5f, 0.0f, 0.5f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,  // Top left (3)
 
-    // Top face vertices (modified for ramp)
-    -0.5f, 0.0f, -0.5f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, // Vertex 3, shallow end
-    0.5f, 0.0f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f,  // Vertex 2, shallow end
-    0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,   // Vertex 6, high end
-    -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f  // Vertex 7, high end
+    // Apex of the pyramid
+    0.0f, 0.3f, 0.0f, 1.0f, 1.0f, 1.0f, 0.5f, 1.0f    // Apex (4)
 };
 
-std::vector<GLuint> rampIndices = {
-    // Bottom face (unchanged)
+
+std::vector<GLuint> pyramidIndices = {
+    // Base
     0, 1, 2, 2, 3, 0,
-    // Back face (unchanged, becomes vertical face of ramp)
-    1, 5, 6, 6, 2, 1,
-    // Right face (unchanged)
-    2, 6, 7, 7, 3, 2,
-    // Left face (unchanged)
-    0, 3, 7, 7, 4, 0,
-    // Front face (unchanged, becomes inclined face of ramp)
-    0, 1, 5, 5, 4, 0,
-    // Top face (modified, now forms the ramp)
-    3, 2, 6, 6, 7, 3
+
+    // Sides
+    0, 1, 4,  // Front face
+    1, 2, 4,  // Right face
+    2, 3, 4,  // Back face
+    3, 0, 4   // Left face
 };
+
 
 
 ObjModel firstCarModel = ObjModel("../src/ressources/first_car.obj");
@@ -53,6 +48,9 @@ std::vector<GLuint> playerVehicle_indices = firstCarModel.GetIndices();
 
 std::vector<GLfloat> VW_vertices = firstCarWheelModel.GetVertices();
 std::vector<GLuint> VW_indices = firstCarWheelModel.GetIndices();
+
+//*#### Bullet Debugger Scale Matrix:
+glm::mat4 bulletModelMatrix = glm::scale(glm::vec3(1.0f, 1.0f, 1.0f));
 
 //*#### Terrain Scale Matrix:
 glm::mat4 terrainModelMatrix = glm::scale(glm::vec3(0.25f, 0.25f, 0.25f));
@@ -102,8 +100,6 @@ void XJZoomEngine::Run()
 
   unsigned short *heightData = new unsigned short[heightDataVec.size()];
   std::copy(heightDataVec.begin(), heightDataVec.end(), heightData);
-
-  TerrainPhysics terrain(width, length, heightData, minHeight, maxHeight);
 
   //* Add terrain to physics world
   // physicsWorld->dynamicsWorld->addRigidBody(terrain.GetRigidBody());
@@ -192,7 +188,7 @@ void XJZoomEngine::Run()
   //RenderableGeometry terrainGeom(&VAO4, &VBO4, &EBO4, vertices, indices);
   //SolidEntity TERRAIN(&VAO4, &VBO4, &EBO4, vertices, indices, terrainModelMatrix);
 
-  SolidEntity BOX1(&VAO1, &VBO1, &EBO1, buildingVertices, buildingIndices, terrainModelMatrix);
+  SolidEntity BOX1(&VAO1, &VBO1, &EBO1, pyramidVertices, pyramidIndices, terrainModelMatrix);
 
   //* #### Player Vehicle Instanciation:
 
@@ -289,10 +285,9 @@ void XJZoomEngine::Run()
     btVector3 vehiclePosition = vehicleTransform.getOrigin();
     btQuaternion vehicleRotation = vehicleTransform.getRotation();
 
-    //Weird translation
+    //Position Translation
     glm::mat4 translation = glm::translate(glm::mat4(1.0f), glm::vec3(vehiclePosition.x(), vehiclePosition.y(), vehiclePosition.z()));
 
-    //glm::mat4 translation = glm::translate(glm::mat4(1.0f), glm::vec3(-vehiclePosition.z(), vehiclePosition.y(), vehiclePosition.x()));
     glm::mat4 rotation = glm::mat4_cast(glm::quat(vehicleRotation.w(), vehicleRotation.x(), vehicleRotation.y(), vehicleRotation.z()));
     glm::mat4 rotate90DEG_Adjustment = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
@@ -366,7 +361,7 @@ void XJZoomEngine::Run()
     //* Important: The Bullet Render Debug Drawer uses the Non-Textured Shader Option, therefore we need to re-set the model matrix before making the switch, or else
     //* the Bullet Debug Drawer will be hooked up to the last model Matrix, which will causes wonky debug overlay
 
-    glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(terrainModelMatrix));
+    glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(bulletModelMatrix));
 
 
     glUniform1i(useTextureLocation, GL_FALSE); 
