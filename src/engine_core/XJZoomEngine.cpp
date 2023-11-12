@@ -55,12 +55,12 @@ std::vector<GLfloat> VW_vertices = firstCarWheelModel.GetVertices();
 std::vector<GLuint> VW_indices = firstCarWheelModel.GetIndices();
 
 //*#### Terrain Scale Matrix:
-glm::mat4 terrainModelMatrix = glm::scale(glm::vec3(100.0f, 100.0f, 100.0f));
+glm::mat4 terrainModelMatrix = glm::scale(glm::vec3(0.25f, 0.25f, 0.25f));
 glm::mat4 boxMtrxTest = glm::scale(glm::vec3(100.0f, 4.0f, 100.0f));
 
 //*#### Vehicle & Wheel Matrix scaling:
 glm::mat4 WheelMatrix = glm::scale(glm::vec3(0.25f, 0.25f, 0.25f));
-glm::mat4 vehicleModelMatrix = glm::scale(glm::vec3(0.25f));
+glm::mat4 vehicleModelMatrix = glm::scale(glm::vec3(1.0f));
 
 void XJZoomEngine::Run()
 {
@@ -192,6 +192,8 @@ void XJZoomEngine::Run()
   //RenderableGeometry terrainGeom(&VAO4, &VBO4, &EBO4, vertices, indices);
   //SolidEntity TERRAIN(&VAO4, &VBO4, &EBO4, vertices, indices, terrainModelMatrix);
 
+  SolidEntity BOX1(&VAO1, &VBO1, &EBO1, buildingVertices, buildingIndices, terrainModelMatrix);
+
   //* #### Player Vehicle Instanciation:
 
   VehicleEntity vehicle(&VAO2, &VBO2, &EBO2, playerVehicle_verts, playerVehicle_indices,
@@ -287,7 +289,10 @@ void XJZoomEngine::Run()
     btVector3 vehiclePosition = vehicleTransform.getOrigin();
     btQuaternion vehicleRotation = vehicleTransform.getRotation();
 
+    //Weird translation
     glm::mat4 translation = glm::translate(glm::mat4(1.0f), glm::vec3(vehiclePosition.x(), vehiclePosition.y(), vehiclePosition.z()));
+
+    //glm::mat4 translation = glm::translate(glm::mat4(1.0f), glm::vec3(-vehiclePosition.z(), vehiclePosition.y(), vehiclePosition.x()));
     glm::mat4 rotation = glm::mat4_cast(glm::quat(vehicleRotation.w(), vehicleRotation.x(), vehicleRotation.y(), vehicleRotation.z()));
     glm::mat4 rotate90DEG_Adjustment = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
@@ -324,10 +329,13 @@ void XJZoomEngine::Run()
     auto dirVec = targetVec - camera.Position;
     if (glm::distance2(targetVec, camera.Position) > 0.02f)
       camera.Position += dirVec * 0.03f;
+    }
+
+    //Look at Vehicle:
+
     camera.LookAt.x = vehiclePosition.x();
     camera.LookAt.y = vehiclePosition.y();
     camera.LookAt.z = vehiclePosition.z();
-    }
 
     camera.Inputs(Window);
 
@@ -338,6 +346,10 @@ void XJZoomEngine::Run()
 
     //*############## OpenGL - Draw Calls ################
     glUniform1i(useTextureLocation, GL_TRUE); 
+    BOX1.geom.Draw(modelMatrixLocation, terrainModelMatrix);
+    
+    debugDrawer->flushLines();
+
 
     // terrainGeom.Draw(modelMatrixLocation,terrainModelMatrix);
     
@@ -350,17 +362,21 @@ void XJZoomEngine::Run()
 
     vehicle.renderWheelGeometries(modelMatrixLocation);
 
+
+    //* Important: The Bullet Render Debug Drawer uses the Non-Textured Shader Option, therefore we need to re-set the model matrix before making the switch, or else
+    //* the Bullet Debug Drawer will be hooked up to the last model Matrix, which will causes wonky debug overlay
+
+    glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(terrainModelMatrix));
+
+
     glUniform1i(useTextureLocation, GL_FALSE); 
 
     //TERRAIN.geom.Draw(modelMatrixLocation, terrainModelMatrix);
-
-    //terrainGeom.Draw(modelMatrixLocation, terrainModelMatrix);
-
-   debugDrawer->flushLines();
+    
 
     // Swap the back buffer with the front buffer
     SDL_GL_SwapWindow(Window);
-    glm::vec3 cameraPosition = camera.Position;
+    //glm::vec3 cameraPosition = camera.Position;
   }
 
   glDeleteTextures(1, &carTexID);

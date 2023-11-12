@@ -20,6 +20,7 @@ VehiclePhysics::VehiclePhysics()
 
     localTransform.setIdentity();
     localTransform.setOrigin(btVector3(0, 1, -10));
+    
     vehicleMotionState->setWorldTransform(localTransform);
 
     //* VEHICLE MASS !
