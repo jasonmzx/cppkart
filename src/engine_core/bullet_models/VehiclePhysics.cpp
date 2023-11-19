@@ -6,15 +6,15 @@ VehiclePhysics::VehiclePhysics()
     PhysicsWorldSingleton *physicsWorld = PhysicsWorldSingleton::getInstance();
 
     // Vehicle tuning:
-    tuning.m_suspensionStiffness = 20.0f;
+    tuning.m_suspensionStiffness = 90.0f;
     tuning.m_suspensionCompression = 0.83f;
     tuning.m_suspensionDamping = 0.88f;
-    tuning.m_maxSuspensionTravelCm = 500.0f;
-    tuning.m_frictionSlip = 0.0f;
+    tuning.m_maxSuspensionTravelCm = 100.0f;
+    tuning.m_frictionSlip = 10.5f;
     tuning.m_maxSuspensionForce = 6000.0f;
 
     // Vehicle setup
-    btBoxShape *vehicleChassisShape = new btBoxShape(btVector3(0.8f, 0.5f, 1.0f));
+    btBoxShape *vehicleChassisShape = new btBoxShape(btVector3(0.8f, 0.25f, 1.5f));
     btDefaultMotionState *vehicleMotionState = new btDefaultMotionState();
     btTransform localTransform;
 
@@ -43,11 +43,11 @@ VehiclePhysics::VehiclePhysics()
     vehicle = new btRaycastVehicle(tuning, vehicleRigidBody, vehicleRayCaster);
 
     btVector3 wheelDirection = btVector3(0, -1, 0);
-    btVector3 wheelAxle = btVector3(-1, 0, 0);
+    btVector3 wheelAxle = btVector3(-0.75, 0, 0); //used to be -1
     btScalar suspensionRestLength = 0.6;
-    btScalar wheelRadius = 0.015;
-    btScalar wheelWidth = 0.4;
-    btScalar suspensionStiffness = 20.0;
+    btScalar wheelRadius = 0.35;
+    btScalar wheelWidth = 0.3;
+    btScalar suspensionStiffness = 40.0;
     btScalar dampingRelaxation = 4.3;
     btScalar dampingCompression = 2.4;
     btScalar frictionSlip = 10;
@@ -56,19 +56,19 @@ VehiclePhysics::VehiclePhysics()
     //* Adding WHEELS to vehicle physics model !
 
     auto halfExtents = vehicleChassisShape->getHalfExtentsWithoutMargin();
-    btScalar connectionHeight(2);
+    btScalar connectionHeight(5);
 
     btVector3 wheelConnectionPoint(halfExtents.x() - wheelRadius, connectionHeight, halfExtents.z() - wheelWidth);
 
     // Adds the front wheels
-    vehicle->addWheel(wheelConnectionPoint * btVector3(1, 0, 1), wheelDirection, wheelAxle, suspensionRestLength, wheelRadius, tuning, true);
+    vehicle->addWheel(wheelConnectionPoint * btVector3(2, 0, 1), wheelDirection, wheelAxle, suspensionRestLength, wheelRadius, tuning, true);
 
-    vehicle->addWheel(wheelConnectionPoint * btVector3(-1, 0, 1), wheelDirection, wheelAxle, suspensionRestLength, wheelRadius, tuning, true);
+    vehicle->addWheel(wheelConnectionPoint * btVector3(-2, 0, 1), wheelDirection, wheelAxle, suspensionRestLength, wheelRadius, tuning, true);
 
     // Adds the rear wheels
-    vehicle->addWheel(wheelConnectionPoint * btVector3(1, 0, -1), wheelDirection, wheelAxle, suspensionRestLength, wheelRadius, tuning, false);
+    vehicle->addWheel(wheelConnectionPoint * btVector3(2, 0, -1), wheelDirection, wheelAxle, suspensionRestLength, wheelRadius, tuning, false);
 
-    vehicle->addWheel(wheelConnectionPoint * btVector3(-1, 0, -1), wheelDirection, wheelAxle, suspensionRestLength, wheelRadius, tuning, false);
+    vehicle->addWheel(wheelConnectionPoint * btVector3(-2, 0, -1), wheelDirection, wheelAxle, suspensionRestLength, wheelRadius, tuning, false);
 
     for (int i = 0; i < vehicle->getNumWheels(); i++)
     {

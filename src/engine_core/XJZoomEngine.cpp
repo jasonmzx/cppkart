@@ -53,7 +53,7 @@ std::vector<GLuint> VW_indices = firstCarWheelModel.GetIndices();
 glm::mat4 bulletModelMatrix = glm::scale(glm::vec3(1.0f, 1.0f, 1.0f));
 
 //*#### Terrain Scale Matrix:
-glm::mat4 terrainModelMatrix = glm::scale(glm::vec3(0.25f, 0.25f, 0.25f));
+glm::mat4 terrainModelMatrix = glm::scale(glm::vec3(10.0f, 10.0f, 10.0f));
 glm::mat4 boxMtrxTest = glm::scale(glm::vec3(100.0f, 4.0f, 100.0f));
 
 //*#### Vehicle & Wheel Matrix scaling:
@@ -341,12 +341,12 @@ void XJZoomEngine::Run()
 
     //*############## OpenGL - Draw Calls ################
     glUniform1i(useTextureLocation, GL_TRUE); 
-    BOX1.geom.Draw(modelMatrixLocation, terrainModelMatrix);
+    //BOX1.geom.Draw(modelMatrixLocation, terrainModelMatrix);
     
     debugDrawer->flushLines();
 
 
-    // terrainGeom.Draw(modelMatrixLocation,terrainModelMatrix);
+    //terrainGeom.Draw(modelMatrixLocation,terrainModelMatrix);
     
     vehicle.GetGeometry().Draw(modelMatrixLocation, vehicleModelMatrix);
  //   vehicle.GetPhysics().printState();  
