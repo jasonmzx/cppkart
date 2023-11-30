@@ -44,7 +44,7 @@ void VehicleEntity::renderWheelGeometries(GLuint modelMatrixLocation){
     }
 
     for ( glm::mat4 wheelMatrix : wheelMatrices)
-    { vehicleWheelGeometry.Draw(modelMatrixLocation, wheelMatrix); }
+    { vehicleWheelGeometry.Draw(modelMatrixLocation, wheelMatrix, NULL, false); }
 
 }
 

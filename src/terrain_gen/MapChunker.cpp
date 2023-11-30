@@ -3,7 +3,7 @@
 
 void terrainMapLoader(std::vector<GLuint>& indices_vec, std::vector<GLfloat>& vertices_vec) {
 
-     const char* filename = "../src/ressources/track3.png";
+     const char* filename = "../src/ressources/Map_A.png";
     int width, height, channels;
 
     // Load the PNG image
@@ -40,7 +40,7 @@ void terrainMapLoader(std::vector<GLuint>& indices_vec, std::vector<GLfloat>& ve
             //X: 
             vertices_vec.push_back(static_cast<GLfloat>(x)/width);
             //Y:
-            vertices_vec.push_back(static_cast<GLfloat>(normalized_color/10)); //height vertical
+            vertices_vec.push_back(static_cast<GLfloat>(normalized_color/1.5)); //height vertical
             //Z:
             vertices_vec.push_back(static_cast<GLfloat>(y)/width); //Not multiplying by height, as I dont want to stretch the proportions
             //

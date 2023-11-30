@@ -22,7 +22,7 @@ public:
     VBO* vbo;
     EBO* ebo;
     
-    void Draw(GLuint modelMatrixLocation, glm::mat4& modelMatrix);
+    void Draw(GLuint modelMatrixLocation, glm::mat4& modelMatrix, GLuint colorUniformLocation, bool debugTriangles);
 
 private:
     std::vector<GLuint> _indices; // Storing indices for use in the Draw function

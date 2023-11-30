@@ -53,7 +53,7 @@ std::vector<GLuint> VW_indices = firstCarWheelModel.GetIndices();
 glm::mat4 bulletModelMatrix = glm::scale(glm::vec3(1.0f, 1.0f, 1.0f));
 
 //*#### Terrain Scale Matrix:
-glm::mat4 terrainModelMatrix = glm::scale(glm::vec3(10.0f, 10.0f, 10.0f));
+glm::mat4 terrainModelMatrix = glm::scale(glm::vec3(100.0f, 100.0f, 100.0f));
 glm::mat4 boxMtrxTest = glm::scale(glm::vec3(100.0f, 4.0f, 100.0f));
 
 //*#### Vehicle & Wheel Matrix scaling:
@@ -96,10 +96,10 @@ void XJZoomEngine::Run()
   btScalar minHeight;                        // Minimum height in your dataset
   btScalar maxHeight;                        // Maximum height in your dataset
 
-  bool loadTerrainFromIMG = loadHeightfieldData("../src/ressources/track1.png", heightDataVec, width, length, minHeight, maxHeight);
+  // bool loadTerrainFromIMG = loadHeightfieldData("../src/ressources/Combine.png", heightDataVec, width, length, minHeight, maxHeight);
 
-  unsigned short *heightData = new unsigned short[heightDataVec.size()];
-  std::copy(heightDataVec.begin(), heightDataVec.end(), heightData);
+  // unsigned short *heightData = new unsigned short[heightDataVec.size()];
+  // std::copy(heightDataVec.begin(), heightDataVec.end(), heightData);
 
   //* Add terrain to physics world
   // physicsWorld->dynamicsWorld->addRigidBody(terrain.GetRigidBody());
@@ -185,7 +185,7 @@ void XJZoomEngine::Run()
   VBO VBO4(vertices);
   EBO EBO4(indices);
 
-  //RenderableGeometry terrainGeom(&VAO4, &VBO4, &EBO4, vertices, indices);
+  RenderableGeometry terrainGeom(&VAO4, &VBO4, &EBO4, vertices, indices);
   //SolidEntity TERRAIN(&VAO4, &VBO4, &EBO4, vertices, indices, terrainModelMatrix);
 
   SolidEntity BOX1(&VAO1, &VBO1, &EBO1, pyramidVertices, pyramidIndices, terrainModelMatrix);
@@ -311,7 +311,7 @@ void XJZoomEngine::Run()
 
     //* ###### CAMERA #######
 
-    bool DEBUG = false;
+    camera.DEBUG = false;
 
     //* naive approach (hard offsets camera, bad for steering)
     //  camera.Position.x = vehiclePosition.x() + 0.5f;
@@ -319,25 +319,28 @@ void XJZoomEngine::Run()
     //  camera.Position.z = vehiclePosition.z() - 3.0f;
 
     //* #### Smooth Camera (For Driving)
-    if(!DEBUG) {
+
+
+    if(!camera.DEBUG) {
     auto targetVec = glm::vec3(vehiclePosition.x() + 0.4f, vehiclePosition.y() + 1.3f, vehiclePosition.z() - 2.4f);
     auto dirVec = targetVec - camera.Position;
     if (glm::distance2(targetVec, camera.Position) > 0.02f)
       camera.Position += dirVec * 0.03f;
-    }
+
 
     //Look at Vehicle:
 
     camera.LookAt.x = vehiclePosition.x();
     camera.LookAt.y = vehiclePosition.y();
     camera.LookAt.z = vehiclePosition.z();
+    }
+
 
     camera.Inputs(Window);
 
     //  Updates and exports the camera matrix to the Vertex Shader
     camera.Matrix(45.0f, 0.1f, 100.0f, shaderProgram, "camMatrix");
     //camera.Matrix(45.0f, 0.1f, 100.0f, terrainShaderProgram, "camMatrix");
-
 
     //*############## OpenGL - Draw Calls ################
     glUniform1i(useTextureLocation, GL_TRUE); 
@@ -346,9 +349,9 @@ void XJZoomEngine::Run()
     debugDrawer->flushLines();
 
 
-    //terrainGeom.Draw(modelMatrixLocation,terrainModelMatrix);
+//    terrainGeom.Draw(modelMatrixLocation,terrainModelMatrix);
     
-    vehicle.GetGeometry().Draw(modelMatrixLocation, vehicleModelMatrix);
+    vehicle.GetGeometry().Draw(modelMatrixLocation, vehicleModelMatrix, NULL, false);
  //   vehicle.GetPhysics().printState();  
 
     //! idk why i'm not binding textures and it's still workign...?
@@ -358,15 +361,24 @@ void XJZoomEngine::Run()
     vehicle.renderWheelGeometries(modelMatrixLocation);
 
 
+    //! All Draw Calls below use no Texturing, and just Positonal coloring:
+
+    glUniform1i(useTextureLocation, GL_FALSE); 
+
+    GLint colorUniformLocation = glGetUniformLocation(shaderProgram.ID, "FragColor");
+
+    terrainGeom.Draw(modelMatrixLocation,terrainModelMatrix, colorUniformLocation, true);
+    //TERRAIN.geom.Draw(modelMatrixLocation, terrainModelMatrix, colorUniformLocation, true);
+
+
     //* Important: The Bullet Render Debug Drawer uses the Non-Textured Shader Option, therefore we need to re-set the model matrix before making the switch, or else
     //* the Bullet Debug Drawer will be hooked up to the last model Matrix, which will causes wonky debug overlay
+
 
     glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(bulletModelMatrix));
 
 
-    glUniform1i(useTextureLocation, GL_FALSE); 
 
-    //TERRAIN.geom.Draw(modelMatrixLocation, terrainModelMatrix);
     
 
     // Swap the back buffer with the front buffer

@@ -15,9 +15,11 @@ void Camera::Matrix(float FOVdeg, float nearPlane, float farPlane, Shader &shade
 
     // Makes camera look in the right direction from the right position
     
-    view = glm::lookAt(Position, LookAt, Up);
-    // view = glm::lookAt(Position, Position + Orientation, Up);
-    
+    if(!DEBUG) {
+      view = glm::lookAt(Position, LookAt, Up);
+    } else {
+     view = glm::lookAt(Position, Position + Orientation, Up);
+    }
     //  Adds perspective to the scene
     projection = glm::perspective(glm::radians(FOVdeg), (float)width / height, nearPlane, farPlane);
 
