@@ -111,8 +111,8 @@ void VehiclePhysics::ApplyEngineForce(float force)
 
     // Rear Wheel Drive
 
-    vehicle->applyEngineForce(engineForce, 2);
-    vehicle->applyEngineForce(engineForce, 3);
+    vehicle->applyEngineForce(engineForce, 0);
+    vehicle->applyEngineForce(engineForce, 1);
     // TODO: Add any Bullet physics code here that applies this force
 }
 

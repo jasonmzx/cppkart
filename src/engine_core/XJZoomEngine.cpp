@@ -311,7 +311,7 @@ void XJZoomEngine::Run()
 
     //* ###### CAMERA #######
 
-    bool DEBUG = true;
+    bool DEBUG = false;
 
     //* naive approach (hard offsets camera, bad for steering)
     //  camera.Position.x = vehiclePosition.x() + 0.5f;
