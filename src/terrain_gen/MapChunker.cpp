@@ -69,8 +69,9 @@ bool loadHeightfieldData(const char* filename, std::vector<unsigned short>& heig
 
     std::cout << "Image SIZE: H- " << length << "px, W- " << width << "px " << std::endl;
 
+    //! Initially set LOW & HIGH
     unsigned short maxPixelValue = 0;
-    unsigned short minPixelValue = 65535; // 16-bit max value
+    unsigned short minPixelValue = 65535; // 16-bit max value, 2^16-1
 
     // Iterate through the pixels to populate heightData and find minHeight/maxHeight
     for (int y = 0; y < length; ++y) {

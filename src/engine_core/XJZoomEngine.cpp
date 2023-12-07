@@ -84,7 +84,7 @@ void XJZoomEngine::Run()
   info.m_friction = 2.0f;
 
   btRigidBody *planeBody = new btRigidBody(info);
-  physicsWorld->dynamicsWorld->addRigidBody(planeBody);
+  //physicsWorld->dynamicsWorld->addRigidBody(planeBody);
   
 
   //* ############ PROTOTYPE Collision Plane ^^^ ############
@@ -96,13 +96,35 @@ void XJZoomEngine::Run()
   btScalar minHeight;                        // Minimum height in your dataset
   btScalar maxHeight;                        // Maximum height in your dataset
 
-  // bool loadTerrainFromIMG = loadHeightfieldData("../src/ressources/Combine.png", heightDataVec, width, length, minHeight, maxHeight);
+  bool loadTerrainFromIMG = loadHeightfieldData("../src/ressources/small_map.png", heightDataVec, width, length, minHeight, maxHeight);
 
-  // unsigned short *heightData = new unsigned short[heightDataVec.size()];
-  // std::copy(heightDataVec.begin(), heightDataVec.end(), heightData);
+   unsigned short *heightData = new unsigned short[heightDataVec.size()];
+   std::copy(heightDataVec.begin(), heightDataVec.end(), heightData);
 
   //* Add terrain to physics world
   // physicsWorld->dynamicsWorld->addRigidBody(terrain.GetRigidBody());
+
+
+    // //! gpt example
+
+    // // Define a small set of height data
+    // const int terrainWidth = 4;
+    // const int terrainLength = 4;
+    // unsigned short heightData[terrainWidth * terrainLength] = {
+    //     100, 120, 100, 90,
+    //     110, 130, 110, 100,
+    //     100, 120, 100, 90,
+    //     90, 110, 90, 80
+    // };
+
+    // Instantiate TerrainPhysics
+    TerrainPhysics terrain(width, length, heightData, 0, 100);
+
+    // Add the terrain to the dynamics world
+    physicsWorld->dynamicsWorld->addRigidBody(terrain.terrainRigidBody);
+
+  //!
+
 
   //* ########## WINDOWING STUFF ############
   uint32_t WindowFlags = SDL_WINDOW_OPENGL;
@@ -215,6 +237,8 @@ void XJZoomEngine::Run()
 
 
   physicsWorld->dynamicsWorld->setDebugDrawer(debugDrawer);
+
+
 
 
   // #### MAIN GAME LOOP THAT ENGINE IS RUNNING:
@@ -367,7 +391,7 @@ void XJZoomEngine::Run()
 
     GLint colorUniformLocation = glGetUniformLocation(shaderProgram.ID, "FragColor");
 
-    terrainGeom.Draw(modelMatrixLocation,terrainModelMatrix, colorUniformLocation, true);
+    terrainGeom.Draw(modelMatrixLocation,terrainModelMatrix, colorUniformLocation, false);
     //TERRAIN.geom.Draw(modelMatrixLocation, terrainModelMatrix, colorUniformLocation, true);
 
 

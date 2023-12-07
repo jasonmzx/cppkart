@@ -10,9 +10,9 @@
 
 class TerrainPhysics {
 private:
-    btRigidBody* terrainRigidBody;
 
 public:
+    btRigidBody* terrainRigidBody;
     TerrainPhysics(int width, int length, unsigned short* heightData, btScalar minHeight, btScalar maxHeight);
 };
 
