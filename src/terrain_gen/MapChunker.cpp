@@ -79,7 +79,7 @@ bool loadHeightfieldData(const char* filename, std::vector<unsigned short>& heig
             int raw_img_index = (y * width + x) * 4; // Each pixel has 4 channels (RGBA)
             unsigned char color_c = image[raw_img_index];  // Assuming height is represented by the red channel
 
-            unsigned short heightValue = static_cast<unsigned short>(color_c); // 16-bit value from R and G channels
+            unsigned short heightValue = static_cast<unsigned short>(color_c/10); // 16-bit value from R and G channels
             heightData.push_back(heightValue);
 
             maxPixelValue = std::max(maxPixelValue, heightValue);
@@ -91,5 +91,40 @@ bool loadHeightfieldData(const char* filename, std::vector<unsigned short>& heig
     maxHeight = static_cast<btScalar>(maxPixelValue);
 
     stbi_image_free(image);
+
+
+//! test code for smoothing
+    std::vector<unsigned short> originalHeightData = heightData;
+
+    // Define the neighborhood size for smoothing (3x3)
+    int neighborSize = 1; 
+
+    // Apply smoothing
+    for (int y = 0; y < length; ++y) {
+        for (int x = 0; x < width; ++x) {
+            int sum = 0;
+            int count = 0;
+
+            // Iterate over the neighborhood
+            for (int ny = -neighborSize; ny <= neighborSize; ++ny) {
+                for (int nx = -neighborSize; nx <= neighborSize; ++nx) {
+                    int newY = y + ny;
+                    int newX = x + nx;
+
+                    // Check if the neighbor is within the image bounds
+                    if (newY >= 0 && newY < length && newX >= 0 && newX < width) {
+                        sum += originalHeightData[newY * width + newX];
+                        ++count;
+                    }
+                }
+            }
+
+            // Set the smoothed height value
+            heightData[y * width + x] = sum / count;
+        }
+    }
+//! -------------------------
+
+
     return true;
 }

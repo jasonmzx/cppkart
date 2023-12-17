@@ -5,6 +5,8 @@ VehiclePhysics::VehiclePhysics()
 {
     PhysicsWorldSingleton *physicsWorld = PhysicsWorldSingleton::getInstance();
 
+    VEHICLE_SCALE = 1.5;
+
     // Vehicle tuning:
     tuning.m_suspensionStiffness = 90.0f;
     tuning.m_suspensionCompression = 0.83f;
@@ -14,12 +16,12 @@ VehiclePhysics::VehiclePhysics()
     tuning.m_maxSuspensionForce = 6000.0f;
 
     // Vehicle setup
-    btBoxShape *vehicleChassisShape = new btBoxShape(btVector3(0.8f, 0.25f, 1.5f));
+    btBoxShape *vehicleChassisShape = new btBoxShape(btVector3(1.6f * VEHICLE_SCALE, 0.5f * VEHICLE_SCALE, 3.0f * VEHICLE_SCALE));
     btDefaultMotionState *vehicleMotionState = new btDefaultMotionState();
     btTransform localTransform;
 
     localTransform.setIdentity();
-    localTransform.setOrigin(btVector3(20, 10, -10));
+    localTransform.setOrigin(btVector3(20, -45, -10));
     
     vehicleMotionState->setWorldTransform(localTransform);
 
@@ -43,10 +45,10 @@ VehiclePhysics::VehiclePhysics()
     vehicle = new btRaycastVehicle(tuning, vehicleRigidBody, vehicleRayCaster);
 
     btVector3 wheelDirection = btVector3(0, -1, 0);
-    btVector3 wheelAxle = btVector3(-0.75, 0, 0); //used to be -1
-    btScalar suspensionRestLength = 0.6;
-    btScalar wheelRadius = 0.35;
-    btScalar wheelWidth = 0.3;
+    btVector3 wheelAxle = btVector3(-1.0, 0, 0); //used to be -1
+    btScalar suspensionRestLength = 0.3;
+    btScalar wheelRadius = 1.5*VEHICLE_SCALE;
+    btScalar wheelWidth = 0.4*VEHICLE_SCALE;
     btScalar suspensionStiffness = 40.0;
     btScalar dampingRelaxation = 4.3;
     btScalar dampingCompression = 2.4;
@@ -58,7 +60,7 @@ VehiclePhysics::VehiclePhysics()
     auto halfExtents = vehicleChassisShape->getHalfExtentsWithoutMargin();
     btScalar connectionHeight(5);
 
-    btVector3 wheelConnectionPoint(halfExtents.x() - wheelRadius, connectionHeight, halfExtents.z() - wheelWidth);
+    btVector3 wheelConnectionPoint(halfExtents.x() - 0.4, connectionHeight, halfExtents.z() - 0.5);
 
     // Adds the front wheels
     vehicle->addWheel(wheelConnectionPoint * btVector3(2, 0, 1), wheelDirection, wheelAxle, suspensionRestLength, wheelRadius, tuning, true);

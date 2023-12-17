@@ -10,6 +10,8 @@ private:
 
     btRaycastVehicle::btVehicleTuning tuning;
 
+    btScalar VEHICLE_SCALE;
+
     float engineForce;
     float vehicleSteering;
     float steeringIncrement;

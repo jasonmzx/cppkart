@@ -252,7 +252,7 @@ void XJZoomEngine::Run()
 
   // Handling continuous key states rather than events
   if (state[SDL_SCANCODE_UP]) {
-    vehicle.GetPhysics().ApplyEngineForce(1000);
+    vehicle.GetPhysics().ApplyEngineForce(2000);
   } else if (state[SDL_SCANCODE_DOWN]) {
     vehicle.GetPhysics().ApplyEngineForce(-2500);
   } else {
@@ -346,7 +346,7 @@ void XJZoomEngine::Run()
 
 
     if(!camera.DEBUG) {
-    auto targetVec = glm::vec3(vehiclePosition.x() + 0.4f, vehiclePosition.y() + 1.3f, vehiclePosition.z() - 2.4f);
+    auto targetVec = glm::vec3(vehiclePosition.x() + 1.0f, vehiclePosition.y() + 3.0f, vehiclePosition.z() - 5.0f);
     auto dirVec = targetVec - camera.Position;
     if (glm::distance2(targetVec, camera.Position) > 0.02f)
       camera.Position += dirVec * 0.03f;
