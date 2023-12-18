@@ -89,17 +89,20 @@ void XJZoomEngine::Run()
 
   //* ############ PROTOTYPE Collision Plane ^^^ ############
 
-  // Terrain Physics
-  int width;
-  int length;
-  std::vector<unsigned short> heightDataVec; // Provide your actual height data here
-  btScalar minHeight;                        // Minimum height in your dataset
-  btScalar maxHeight;                        // Maximum height in your dataset
+// Terrain Physics
+int width;
+int length;
+std::vector<float> heightDataVec; // Updated to float
+btScalar minHeight;               
+btScalar maxHeight;               
 
-  bool loadTerrainFromIMG = loadHeightfieldData("../src/ressources/small_map.png", heightDataVec, width, length, minHeight, maxHeight);
+bool loadTerrainFromIMG = loadHeightfieldData("../src/ressources/small_map.png", heightDataVec, width, length, minHeight, maxHeight);
 
-   unsigned short *heightData = new unsigned short[heightDataVec.size()];
-   std::copy(heightDataVec.begin(), heightDataVec.end(), heightData);
+
+
+float *heightData = new float[heightDataVec.size()];
+std::copy(heightDataVec.begin(), heightDataVec.end(), heightData);
+
 
   //* Add terrain to physics world
   // physicsWorld->dynamicsWorld->addRigidBody(terrain.GetRigidBody());

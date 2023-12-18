@@ -9,7 +9,7 @@
 
 void terrainMapLoader(std::vector<GLuint>& indices_vec, std::vector<GLfloat>& vertices_vec);
 
-bool loadHeightfieldData(const char* filename, std::vector<unsigned short>& heightData, 
-                         int& width, int& length, btScalar& minHeight, btScalar& maxHeight);
+bool loadHeightfieldData(const char* filename, std::vector<float>& heightData, 
+                        int& width, int& length, btScalar& minHeight, btScalar& maxHeight);               
 
 #endif

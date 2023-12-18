@@ -1,13 +1,13 @@
 #include "TerrainPhysics.h"
 #include "engine_core/singletons/PhysicsWorldSingleton.h"
 
-TerrainPhysics::TerrainPhysics(int width, int length, unsigned short* heightData, btScalar minHeight, btScalar maxHeight) {
+TerrainPhysics::TerrainPhysics(int width, int length, float* heightData, btScalar minHeight, btScalar maxHeight) {
         // Define the scale - adjust as needed
         btVector3 scale(1.0f, 1.0f, 1.0f);
 
         // Create a heightfield terrain shape
         auto* terrainShape = new btHeightfieldTerrainShape(
-            width, length, heightData, 1.0, minHeight, maxHeight, 1, PHY_SHORT, false);
+            width, length, heightData, 1.0, minHeight, maxHeight, 1, PHY_FLOAT, false);
 
         // Set the local scaling
         //terrainShape->setLocalScaling(scale);
