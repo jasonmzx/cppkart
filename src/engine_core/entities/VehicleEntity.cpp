@@ -21,7 +21,7 @@ void VehicleEntity::renderWheelGeometries(GLuint modelMatrixLocation){
       
         //* Get Translation (Positioning)
         float wX = wheelinfo.m_worldTransform.getOrigin().getX();
-        float wY = wheelinfo.m_worldTransform.getOrigin().getY();
+        float wY = wheelinfo.m_worldTransform.getOrigin().getY()-1;
         float wZ = wheelinfo.m_worldTransform.getOrigin().getZ();
 
         glm::mat4 wheelTranslation = glm::translate(glm::mat4(1.0f), glm::vec3(wX,wY,wZ));
@@ -38,7 +38,7 @@ void VehicleEntity::renderWheelGeometries(GLuint modelMatrixLocation){
 
     // Full transformation matrix for the wheel
       wheelMatrices.push_back(
-        wheelTranslation * wheelRotation * rotate90DEG_Adjustment * glm::scale(glm::vec3(0.25f))
+        wheelTranslation * wheelRotation * rotate90DEG_Adjustment * glm::scale(glm::vec3(0.5f))
         //wheelTranslation * wheelRotation  * glm::scale(glm::vec3(0.25f))
       );
     }

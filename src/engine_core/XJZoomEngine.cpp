@@ -2,7 +2,7 @@
 
 // Windowing consts
 #define WinWidth 1800
-#define WinHeight 850
+#define WinHeight 900
 
 std::vector<GLfloat> vertices = {};
 std::vector<GLuint> indices = {};
@@ -104,10 +104,16 @@ float *heightData = new float[heightDataVec.size()];
 std::copy(heightDataVec.begin(), heightDataVec.end(), heightData);
 
     // Instantiate TerrainPhysics
-    TerrainPhysics terrain(width, length, heightData, 0, 100);
+    TerrainPhysics terrain(width, length, heightData, 0, 100, 0, 0);
 
+    
     // Add the terrain to the dynamics world
     physicsWorld->dynamicsWorld->addRigidBody(terrain.terrainRigidBody);
+
+    //Second heightfield test, works fine, can do LOD heightfield
+
+    //TerrainPhysics terrain2(width, length, heightData, 0, 100, 100, 0);
+    //physicsWorld->dynamicsWorld->addRigidBody(terrain2.terrainRigidBody);
 
 
 
@@ -115,15 +121,35 @@ std::copy(heightDataVec.begin(), heightDataVec.end(), heightData);
   uint32_t WindowFlags = SDL_WINDOW_OPENGL;
   SDL_Window *Window = SDL_CreateWindow("XJZoom Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WinWidth, WinHeight, WindowFlags);
   assert(Window);
+
+  //* ########## OpenGL & SDL Context Setup (Versioning, Settings) ############
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-  SDL_GLContext Context = SDL_GL_CreateContext(Window);
+  SDL_GLContext SDL_GL_Context = SDL_GL_CreateContext(Window);
   double prevTime = SDL_GetTicks(); // Window Tick Rate (SDL thing)
 
   gladLoadGLLoader(SDL_GL_GetProcAddress);
+
+
+    // Setup Dear ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
+    //ImGui::StyleColorsLight();
+
+    // Setup Platform/Renderer backends
+    const char* glsl_version = "#version 330 core";
+    ImGui_ImplSDL2_InitForOpenGL(Window, SDL_GL_Context);
+    ImGui_ImplOpenGL3_Init(glsl_version);
+    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
   GLuint carTexID;
   glGenTextures(1, &carTexID);
@@ -138,17 +164,20 @@ std::copy(heightDataVec.begin(), heightDataVec.end(), heightData);
   else if (carTexChannels == 4)
     carTexFormat = GL_RGBA;
 
-  //* Some OpenGL config..
+  //* Texting Configuration Setup for OpenGL
 
   glTexImage2D(GL_TEXTURE_2D, 0, carTexFormat, carTexWidth, carTexHeight, 0, carTexFormat, GL_UNSIGNED_BYTE, carTextureData);
   glGenerateMipmap(GL_TEXTURE_2D);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-  // Specify the viewport of OpenGL in the Window
-  // In this case the viewport goes from x = 0, y = 0, to x = 800, y = 800
-  glViewport(0, 0, WinWidth, WinHeight);
+  glViewport(0, 0, WinWidth, WinHeight); //(X1, Y1 bottom left) to (X2, Y2, top right)
   glEnable(GL_DEPTH_TEST);
+
+
+
+
+  // ------ Below is the mess i need to clean up eventually ------
 
   // Load Managers:
   SceneManager sceneManager;
@@ -255,6 +284,9 @@ std::copy(heightDataVec.begin(), heightDataVec.end(), heightData);
     SDL_Event Event;
     while (SDL_PollEvent(&Event))
     {
+
+      ImGui_ImplSDL2_ProcessEvent(&Event);
+
       if (Event.type == SDL_KEYDOWN)
       {
         switch (Event.key.keysym.sym)
@@ -282,6 +314,15 @@ std::copy(heightDataVec.begin(), heightDataVec.end(), heightData);
         Running = 0;
       }
     }
+
+    // Start the Dear ImGui frame
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplSDL2_NewFrame();
+    ImGui::NewFrame();
+
+    ImGui::Begin("Hello, world!");  
+    ImGui::Text("This is some useful text.");  
+    ImGui::End();
 
     //! ### IMPORTANT, Allow the Physics Simulation to tick ###
     physicsWorld->dynamicsWorld->stepSimulation(1.0f / 60.0f);
@@ -345,7 +386,7 @@ std::copy(heightDataVec.begin(), heightDataVec.end(), heightData);
     }
 
 
-    camera.Inputs(Window);
+    //camera.Inputs(Window);
 
     //  Updates and exports the camera matrix to the Vertex Shader
     camera.Matrix(45.0f, 0.1f, 100.0f, shaderProgram, "camMatrix");
@@ -387,6 +428,12 @@ std::copy(heightDataVec.begin(), heightDataVec.end(), heightData);
     glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(bulletModelMatrix));
 
 
+
+    //ImGUI Render calls
+
+    ImGui::Render();
+
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
     
 

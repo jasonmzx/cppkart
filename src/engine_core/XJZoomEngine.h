@@ -7,7 +7,10 @@
 #include <SDL2/SDL.h>
 #include <glad/glad.h>
 
-
+//* ImGUI Imports:
+#include "imgui.h"
+#include "imgui_impl_sdl2.h"
+#include "imgui_impl_opengl3.h"
 
 //*SOURCE Imports:
 
@@ -20,7 +23,6 @@
 #include "rendering/FrustumCull.h"
 
 #include "terrain_gen/MapChunker.h"
-
 
 //Renderable geoms
 

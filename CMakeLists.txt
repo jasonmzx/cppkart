@@ -8,8 +8,16 @@ find_package(assimp REQUIRED)
 
 # External Source Libraries
 
-include_directories(src/glad/include src ${BULLET_INCLUDE_DIRS})
+include_directories(src/glad/include src ${BULLET_INCLUDE_DIRS} src/imgui src/imgui/backends)
+
+# --- Allows CMake to know all Imgui source files & backend impls I'm using
+file(GLOB IMGUI_SOURCES 
+     src/imgui/*.cpp 
+     src/imgui/backends/imgui_impl_sdl2.cpp 
+     src/imgui/backends/imgui_impl_opengl3.cpp)
+
 add_executable(cppkart
+${IMGUI_SOURCES}
 src/glad/src/glad.c
 src/stb/stb_image.h
 src/stb/stb.cpp
@@ -81,7 +89,6 @@ src/rendering/FrustumCull.cpp
 
 src/rendering/Texture.h
 src/rendering/Texture.cpp
-
 )
 
 target_link_libraries(cppkart PRIVATE SDL2::SDL2 OpenGL::GL ${BULLET_LIBRARIES} assimp::assimp)

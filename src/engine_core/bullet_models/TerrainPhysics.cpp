@@ -1,7 +1,8 @@
 #include "TerrainPhysics.h"
 #include "engine_core/singletons/PhysicsWorldSingleton.h"
 
-TerrainPhysics::TerrainPhysics(int width, int length, float* heightData, btScalar minHeight, btScalar maxHeight) {
+TerrainPhysics::TerrainPhysics(int width, int length, float* heightData, btScalar minHeight, btScalar maxHeight,
+ int absolute_x_offset, int absolute_z_offset) {
         // Define the scale - adjust as needed
         btVector3 scale(1.0f, 1.0f, 1.0f);
 
@@ -15,7 +16,7 @@ TerrainPhysics::TerrainPhysics(int width, int length, float* heightData, btScala
         // Define the terrain's position - adjust the position as needed
         btTransform groundTransform;
         groundTransform.setIdentity();
-        groundTransform.setOrigin(btVector3(0, 0, 0));
+        groundTransform.setOrigin(btVector3(absolute_x_offset, 0, absolute_z_offset));
 
         // Create the terrain rigid body
         btScalar mass(0.0); // Zero mass means static
