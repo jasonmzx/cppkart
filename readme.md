@@ -7,5 +7,30 @@ build command i use:
 Install ASSIMP (Model/Asset loader)
 
 
-Linux:
+### Setup for Debian-Like Linux: *(Debian, Ubuntu)*
+
+1. Essential installs for C/C++ & CMake:
+`sudo apt install build-essential cmake`
+
+2. SDL Development Library Install:
+`sudo apt install libsdl2-dev`
+
+3. Bullet Physics Development Library Install:
+`sudo apt install libbullet-dev`
+
+4. Assimp Loader & Utils Install:
 `sudo apt install assimp-utils libassimp-dev libassimp5`
+
+*OpenGL Distribution comes natively with Kubuntu & Debian-Bookworm, if you don't have it, please install*
+
+### CMake & Build Executable:
+
+1. Preliminary, for initial build: <br/>
+`mkdir build && cd build`
+
+2. Run CMake, then Make for building of executable: <br/>
+`cmake ..` <br/>
+`make`
+
+3. Run it:
+`./cppkart`

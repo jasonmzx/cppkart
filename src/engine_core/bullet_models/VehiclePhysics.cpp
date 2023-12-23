@@ -5,7 +5,7 @@ VehiclePhysics::VehiclePhysics()
 {
     PhysicsWorldSingleton *physicsWorld = PhysicsWorldSingleton::getInstance();
 
-    VEHICLE_SCALE = 1.5;
+    VEHICLE_SCALE = 0.9;
 
     // Vehicle tuning:
     tuning.m_suspensionStiffness = 90.0f;
@@ -48,7 +48,7 @@ VehiclePhysics::VehiclePhysics()
     btVector3 wheelAxle = btVector3(-1.0, 0, 0); //used to be -1
     btScalar suspensionRestLength = 0.3;
     btScalar wheelRadius = 1.5*VEHICLE_SCALE;
-    btScalar wheelWidth = 0.4*VEHICLE_SCALE;
+    btScalar wheelWidth = 0.4;
     btScalar suspensionStiffness = 40.0;
     btScalar dampingRelaxation = 4.3;
     btScalar dampingCompression = 2.4;
@@ -58,7 +58,7 @@ VehiclePhysics::VehiclePhysics()
     //* Adding WHEELS to vehicle physics model !
 
     auto halfExtents = vehicleChassisShape->getHalfExtentsWithoutMargin();
-    btScalar connectionHeight(5);
+    btScalar connectionHeight(4);
 
     btVector3 wheelConnectionPoint(halfExtents.x() - 0.4, connectionHeight, halfExtents.z() - 0.5);
 

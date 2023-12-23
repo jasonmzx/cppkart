@@ -90,7 +90,7 @@ bool loadHeightfieldData(const char* filename, std::vector<float>& heightData, i
             int raw_img_index = (y * width + x) * 4; // Each pixel has 4 channels (RGBA)
             unsigned char color_c = image[raw_img_index]; // Assuming height is represented by the red channel
 
-            float heightValue = static_cast<float>(color_c) / 10.0f; // Convert to float
+            float heightValue = static_cast<float>(color_c) / 20.0f; // Convert to float
             heightData.push_back(heightValue);
 
             maxPixelValue = std::max(maxPixelValue, heightValue);

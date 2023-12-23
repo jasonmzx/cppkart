@@ -96,29 +96,12 @@ std::vector<float> heightDataVec; // Updated to float
 btScalar minHeight;               
 btScalar maxHeight;               
 
+// ----- Height Field -----
+
 bool loadTerrainFromIMG = loadHeightfieldData("../src/ressources/small_map.png", heightDataVec, width, length, minHeight, maxHeight);
-
-
 
 float *heightData = new float[heightDataVec.size()];
 std::copy(heightDataVec.begin(), heightDataVec.end(), heightData);
-
-
-  //* Add terrain to physics world
-  // physicsWorld->dynamicsWorld->addRigidBody(terrain.GetRigidBody());
-
-
-    // //! gpt example
-
-    // // Define a small set of height data
-    // const int terrainWidth = 4;
-    // const int terrainLength = 4;
-    // unsigned short heightData[terrainWidth * terrainLength] = {
-    //     100, 120, 100, 90,
-    //     110, 130, 110, 100,
-    //     100, 120, 100, 90,
-    //     90, 110, 90, 80
-    // };
 
     // Instantiate TerrainPhysics
     TerrainPhysics terrain(width, length, heightData, 0, 100);
@@ -126,7 +109,6 @@ std::copy(heightDataVec.begin(), heightDataVec.end(), heightData);
     // Add the terrain to the dynamics world
     physicsWorld->dynamicsWorld->addRigidBody(terrain.terrainRigidBody);
 
-  //!
 
 
   //* ########## WINDOWING STUFF ############
