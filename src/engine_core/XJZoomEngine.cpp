@@ -446,6 +446,11 @@ std::copy(heightDataVec.begin(), heightDataVec.end(), heightData);
   // brickTex.Delete();
   shaderProgram.Delete();
 
+  // Shutdown for ImGUI
+  ImGui_ImplOpenGL3_Shutdown();
+  ImGui_ImplSDL2_Shutdown();
+  ImGui::DestroyContext();
+
   // TODO: Delete the Physics World Singleton here
 }
 

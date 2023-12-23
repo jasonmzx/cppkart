@@ -34,3 +34,10 @@ Install ASSIMP (Model/Asset loader)
 
 3. Run it:
 `./cppkart`
+
+---
+
+### Useful ImGUI Docs for this setup
+
+Dear ImGUI [Example](https://github.com/ocornut/imgui/wiki/Getting-Started#example-if-you-are-using-sdl2--openglwebgl) I followed for SDL2 and OpenGL3+ source code : [example_sdl2_opengl3/main.cpp](https://github.com/ocornut/imgui/blob/master/examples/example_sdl2_opengl3/main.cpp) <br/>
+Dear ImGUI | [Getting Started](https://github.com/ocornut/imgui/wiki/Getting-Started)
