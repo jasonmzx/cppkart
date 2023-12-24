@@ -170,12 +170,20 @@ btTransform VehiclePhysics::GetTransform() const
     return vehicleRigidBody->getWorldTransform();
 }
 
-void VehiclePhysics::printState()
+std::string VehiclePhysics::debugStateSTR() 
 {
     btVector3 velocity = vehicleRigidBody->getLinearVelocity();
-    btVector3 position = vehicleRigidBody->getWorldTransform().getOrigin();
+    btVector3 vehiclePosition = vehicleRigidBody->getWorldTransform().getOrigin();
 
-    printf("Vehicle Velocity (XYZ): %.2f, %.2f, %.2f | Position (XYZ): %.2f, %.2f, %.2f | Steer: %.2f \n",
-           velocity.getX(), velocity.getY(), velocity.getZ(),
-           position.getX(), position.getY(), position.getZ(), vehicle->getSteeringValue(0));
+    char debugVehicle_STR[1024];
+    sprintf(debugVehicle_STR,
+            "(X,Y,Z)\n\n"
+            "POS=      %.2f , %.2f , %.2f\n\n"
+            "VELOCITY= %.2f , %.2f , %.2f\n\n"
+            "STEER=    %.2f , %.2f",
+            vehiclePosition.getX(), vehiclePosition.getY(), vehiclePosition.getZ(),
+            velocity.getX(), velocity.getY(), velocity.getZ(),
+            vehicle->getSteeringValue(0), vehicle->getSteeringValue(1));
+
+    return std::string(debugVehicle_STR);
 }

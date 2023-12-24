@@ -7,31 +7,6 @@
 std::vector<GLfloat> vertices = {};
 std::vector<GLuint> indices = {};
 
-// TODO: remove this, just for prototyping of SolidEntity
-
-std::vector<GLfloat> pyramidVertices = {
-    // Base - square
-    -0.5f, 0.0f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, // Bottom left (0)
-    0.5f, 0.0f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,  // Bottom right (1)
-    0.5f, 0.0f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,   // Top right (2)
-    -0.5f, 0.0f, 0.5f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,  // Top left (3)
-
-    // Apex of the pyramid
-    0.0f, 0.3f, 0.0f, 1.0f, 1.0f, 1.0f, 0.5f, 1.0f    // Apex (4)
-};
-
-
-std::vector<GLuint> pyramidIndices = {
-    // Base
-    0, 1, 2, 2, 3, 0,
-
-    // Sides
-    0, 1, 4,  // Front face
-    1, 2, 4,  // Right face
-    2, 3, 4,  // Back face
-    3, 0, 4   // Left face
-};
-
 
 
 ObjModel firstCarModel = ObjModel("../src/ressources/first_car.obj");
@@ -224,8 +199,6 @@ std::copy(heightDataVec.begin(), heightDataVec.end(), heightData);
   RenderableGeometry terrainGeom(&VAO4, &VBO4, &EBO4, vertices, indices);
   //SolidEntity TERRAIN(&VAO4, &VBO4, &EBO4, vertices, indices, terrainModelMatrix);
 
-  SolidEntity BOX1(&VAO1, &VBO1, &EBO1, pyramidVertices, pyramidIndices, terrainModelMatrix);
-
   //* #### Player Vehicle Instanciation:
 
   VehicleEntity vehicle(&VAO2, &VBO2, &EBO2, playerVehicle_verts, playerVehicle_indices,
@@ -253,6 +226,9 @@ std::copy(heightDataVec.begin(), heightDataVec.end(), heightData);
   physicsWorld->dynamicsWorld->setDebugDrawer(debugDrawer);
 
 
+  //* ImGui State
+
+  bool show_debug_draw = true;
 
 
   // #### MAIN GAME LOOP THAT ENGINE IS RUNNING:
@@ -320,19 +296,49 @@ std::copy(heightDataVec.begin(), heightDataVec.end(), heightData);
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
 
-    ImGui::Begin("Hello, world!");  
-    ImGui::Text("This is some useful text.");  
-    ImGui::End();
+    float framerate = ImGui::GetIO().Framerate;
+    char formatted_fps_STR[50]; 
+    // Use sprintf to format the float as a string
+    sprintf(formatted_fps_STR, "FPS: %f", framerate);
+
+
+    btTransform vehicleTransform = vehicle.GetPhysics().GetTransform();
+    btVector3 vehiclePosition = vehicleTransform.getOrigin();
+
+
+    // Format the position into a string
+    char vehicle_pos_STR[100];
+    sprintf(vehicle_pos_STR, "POS= X: %.2f Y: %.2f Z: %.2f", vehiclePosition.getX(), vehiclePosition.getY(), vehiclePosition.getZ());
+
+ImGui::Begin("Debug Menu");
+
+if (ImGui::BeginTabBar("DebugTabBar")) {
+    // Tab for FPS & Physics Debug
+    if (ImGui::BeginTabItem("General")) {
+        ImGui::Text(formatted_fps_STR);
+        ImGui::Checkbox("Physics Debug Draw (Bullet3)", &show_debug_draw);
+        ImGui::EndTabItem();
+    }
+
+    // Tab for Vehicle
+    if (ImGui::BeginTabItem("Vehicle Debug")) {
+
+        std::string v_debug_str = vehicle.GetPhysics().debugStateSTR(); 
+        ImGui::Text("%s", v_debug_str.c_str());
+        ImGui::EndTabItem();
+    }
+
+    ImGui::EndTabBar();
+}
+
+ImGui::End();
 
     //! ### IMPORTANT, Allow the Physics Simulation to tick ###
     physicsWorld->dynamicsWorld->stepSimulation(1.0f / 60.0f);
 
-
     //! PROTOTYPING: VEHICLE RENDERING CODE
     // ### Update the box's model matrix to match the vehicle's transform ###
-    btTransform vehicleTransform = vehicle.GetPhysics().GetTransform();
 
-    btVector3 vehiclePosition = vehicleTransform.getOrigin();
     btQuaternion vehicleRotation = vehicleTransform.getRotation();
 
     //Position Translation
@@ -357,7 +363,9 @@ std::copy(heightDataVec.begin(), heightDataVec.end(), heightData);
     // brickTex.Bind();
 
     //debugDrawer->setDebugMode(btIDebugDraw::DBG_DrawWireframe);
-    physicsWorld->dynamicsWorld->debugDrawWorld();
+    if(show_debug_draw) {
+      physicsWorld->dynamicsWorld->debugDrawWorld();
+    }
 
     //* ###### CAMERA #######
 
@@ -402,11 +410,10 @@ std::copy(heightDataVec.begin(), heightDataVec.end(), heightData);
 //    terrainGeom.Draw(modelMatrixLocation,terrainModelMatrix);
     
     vehicle.GetGeometry().Draw(modelMatrixLocation, vehicleModelMatrix, NULL, false);
- //   vehicle.GetPhysics().printState();  
+ 
 
     //! idk why i'm not binding textures and it's still workign...?
     // glBindTexture(GL_TEXTURE_2D, carTexID);
-
 
     vehicle.renderWheelGeometries(modelMatrixLocation);
 
@@ -418,12 +425,10 @@ std::copy(heightDataVec.begin(), heightDataVec.end(), heightData);
     GLint colorUniformLocation = glGetUniformLocation(shaderProgram.ID, "FragColor");
 
     terrainGeom.Draw(modelMatrixLocation,terrainModelMatrix, colorUniformLocation, false);
-    //TERRAIN.geom.Draw(modelMatrixLocation, terrainModelMatrix, colorUniformLocation, true);
 
 
     //* Important: The Bullet Render Debug Drawer uses the Non-Textured Shader Option, therefore we need to re-set the model matrix before making the switch, or else
     //* the Bullet Debug Drawer will be hooked up to the last model Matrix, which will causes wonky debug overlay
-
 
     glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(bulletModelMatrix));
 
