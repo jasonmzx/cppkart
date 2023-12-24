@@ -21,12 +21,12 @@ VehiclePhysics::VehiclePhysics()
     btTransform localTransform;
 
     localTransform.setIdentity();
-    localTransform.setOrigin(btVector3(20, -20, -10));
+    localTransform.setOrigin(btVector3(0, -30, 0));
     
     vehicleMotionState->setWorldTransform(localTransform);
 
     //* VEHICLE MASS !
-    btScalar vehicleMass = 1000;
+    btScalar vehicleMass = 800;
 
     btVector3 vehicleInertia(0, 0, 0);
     vehicleChassisShape->calculateLocalInertia(vehicleMass, vehicleInertia);
@@ -38,8 +38,7 @@ VehiclePhysics::VehiclePhysics()
     // vehicleRigidBody->getWorldTransform
     // ^ use for rotation camera thingy
 
-    //*  
-    
+
     // Raycaster and the actual vehicle
     vehicleRayCaster = new btDefaultVehicleRaycaster(physicsWorld->dynamicsWorld);
     vehicle = new btRaycastVehicle(tuning, vehicleRigidBody, vehicleRayCaster);
@@ -53,7 +52,7 @@ VehiclePhysics::VehiclePhysics()
     btScalar dampingRelaxation = 4.3;
     btScalar dampingCompression = 2.4;
     btScalar frictionSlip = 10;
-    btScalar rollInfluence = 0.2;
+    btScalar rollInfluence = 0.1;
 
     //* Adding WHEELS to vehicle physics model !
 

@@ -48,7 +48,6 @@ void VehicleEntity::renderWheelGeometries(GLuint modelMatrixLocation){
 
 }
 
-
 VehiclePhysics& VehicleEntity::GetPhysics() {
     return vehiclePhysics;
 }

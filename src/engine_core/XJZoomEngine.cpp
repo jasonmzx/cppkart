@@ -45,29 +45,12 @@ void XJZoomEngine::Run()
 
   PhysicsWorldSingleton *physicsWorld = PhysicsWorldSingleton::getInstance();
 
-  //* ############ PROTOTYPE Collision Plane ############
-
-  btTransform protoPlaneTransform;
-  protoPlaneTransform.setIdentity();
-  protoPlaneTransform.setOrigin(btVector3(0, 0, 0));
-  btStaticPlaneShape *plane = new btStaticPlaneShape(btVector3(0, 1, 0), btScalar(0));
-
-  // Create Motion shape:
-  btMotionState *motion = new btDefaultMotionState(protoPlaneTransform); //! He put btDefaultMotionShape
-
-  btRigidBody::btRigidBodyConstructionInfo info(0.0, motion, plane);
-  info.m_friction = 2.0f;
-
-  btRigidBody *planeBody = new btRigidBody(info);
-  //physicsWorld->dynamicsWorld->addRigidBody(planeBody);
-  
-
-  //* ############ PROTOTYPE Collision Plane ^^^ ############
+  //* Proto Plane Wuz Here (check the gist for this)
 
 // Terrain Physics
 int width;
 int length;
-std::vector<float> heightDataVec; // Updated to float
+std::vector<float> heightDataVec; 
 btScalar minHeight;               
 btScalar maxHeight;               
 
@@ -87,9 +70,20 @@ std::copy(heightDataVec.begin(), heightDataVec.end(), heightData);
 
     //Second heightfield test, works fine, can do LOD heightfield
 
-    //TerrainPhysics terrain2(width, length, heightData, 0, 100, 100, 0);
-    //physicsWorld->dynamicsWorld->addRigidBody(terrain2.terrainRigidBody);
+    // TerrainPhysics terrain2(width, length, heightData, 0, 100, 100, 0);
+    // physicsWorld->dynamicsWorld->addRigidBody(terrain2.terrainRigidBody);
 
+
+// chunking stuff
+
+int chunk_size = 50; //Represents Width & Length (X & Z)
+std::vector<std::vector<float>> chunkVecs;
+btScalar globalChunkMin; 
+btScalar globalChunkMax;
+int N_chunks_x;
+int N_chunks_y;
+
+bool chunkHeightMap = chunkHeightDataFromIMG("../src/ressources/Map_B.png", &chunk_size, chunkVecs, N_chunks_x, N_chunks_y, globalChunkMin, globalChunkMax);
 
 
   //* ########## WINDOWING STUFF ############
@@ -301,15 +295,6 @@ std::copy(heightDataVec.begin(), heightDataVec.end(), heightData);
     // Use sprintf to format the float as a string
     sprintf(formatted_fps_STR, "FPS: %f", framerate);
 
-
-    btTransform vehicleTransform = vehicle.GetPhysics().GetTransform();
-    btVector3 vehiclePosition = vehicleTransform.getOrigin();
-
-
-    // Format the position into a string
-    char vehicle_pos_STR[100];
-    sprintf(vehicle_pos_STR, "POS= X: %.2f Y: %.2f Z: %.2f", vehiclePosition.getX(), vehiclePosition.getY(), vehiclePosition.getZ());
-
 ImGui::Begin("Debug Menu");
 
 if (ImGui::BeginTabBar("DebugTabBar")) {
@@ -338,6 +323,9 @@ ImGui::End();
 
     //! PROTOTYPING: VEHICLE RENDERING CODE
     // ### Update the box's model matrix to match the vehicle's transform ###
+
+    btTransform vehicleTransform = vehicle.GetPhysics().GetTransform();
+    btVector3 vehiclePosition = vehicleTransform.getOrigin();
 
     btQuaternion vehicleRotation = vehicleTransform.getRotation();
 

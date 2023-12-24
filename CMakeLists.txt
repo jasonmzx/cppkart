@@ -47,6 +47,12 @@ src/engine_core/bullet_models/TerrainPhysics.cpp
 src/engine_core/bullet_models/StaticTriangleMeshPhysics.h
 src/engine_core/bullet_models/StaticTriangleMeshPhysics.cpp
 
+### Physics Chunking Manager
+
+src/engine_core/managers/PhysicsChunkManager.h
+src/engine_core/managers/PhysicsChunkManager.cpp
+
+
 ## Bullet Debug Rendering
 
 src/engine_core/geometries/BulletDebugDrawer.cpp

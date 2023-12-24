@@ -69,8 +69,9 @@ void terrainMapLoader(std::vector<GLuint>& indices_vec, std::vector<GLfloat>& ve
 }
 
 bool loadHeightfieldData(const char* filename, std::vector<float>& heightData, int& width, int& length, btScalar& minHeight, btScalar& maxHeight) {
+    
+    
     int channels;
-
     // Load the PNG image
     unsigned char* image = stbi_load(filename, &width, &length, &channels, STBI_rgb_alpha);
     if (!image) {
@@ -98,8 +99,6 @@ bool loadHeightfieldData(const char* filename, std::vector<float>& heightData, i
         }
     }
 
-
-
     minHeight = static_cast<btScalar>(minPixelValue);
     maxHeight = static_cast<btScalar>(maxPixelValue);
 
@@ -107,6 +106,62 @@ bool loadHeightfieldData(const char* filename, std::vector<float>& heightData, i
 
     printf("MAX %f", maxPixelValue);
     printf("MIN %f", minPixelValue);
+
+    stbi_image_free(image);
+
+    return true;
+}
+
+bool chunkHeightDataFromIMG(const char* filename, const int* chunk_size,
+                            std::vector<std::vector<float>>& chunkVecs, int N_chunks_x, int N_chunks_y, btScalar& globalChunkMin, btScalar& globalChunkMax ) {
+
+    //Image Data from STB Load fn.
+    int img_width; int img_length; int img_channels;
+
+    // Load the PNG image
+    unsigned char* image = stbi_load(filename, &img_width, &img_length, &img_channels, STBI_rgb_alpha);
+    if (!image) {
+        std::cerr << "Error loading image: " << stbi_failure_reason() << std::endl;
+        return false;
+    }
+
+    //* Chunking Algorithm, to store to in chunkVecs
+
+    int N_chunks_X = img_width  / (*chunk_size);
+    int N_chunks_Y = img_length / (*chunk_size);
+
+    chunkVecs.resize(N_chunks_X * N_chunks_Y); //Hold the chunks
+
+    float maxPixelValue = 0.0f;
+    float minPixelValue = FLT_MAX;
+
+    for (int y = 0; y < img_length; ++y) {
+        for (int x = 0; x < img_width; ++x) {
+
+            int raw_img_index = (y * img_width + x) * 4; // Each pixel has 4 channels (RGBA)
+            unsigned char color_c = image[raw_img_index]; // Assuming height is represented by the red channel
+
+            float heightValue = static_cast<float>(color_c) / 20.0f;
+                
+            // Determine which chunk this pixel belongs to
+            int chunk_x = x / (*chunk_size);
+            int chunk_y = y / (*chunk_size);
+            int chunk_index = chunk_y * N_chunks_X + chunk_x;
+
+            // Store the height value in the correct chunk
+            chunkVecs[chunk_index].push_back(heightValue);
+
+            maxPixelValue = std::max(maxPixelValue, heightValue);
+            minPixelValue = std::min(minPixelValue, heightValue);
+        }
+    }
+
+    //Setting Global Min/Max for all chunks to be cohesive
+    globalChunkMin = static_cast<btScalar>(minPixelValue);
+    globalChunkMax = static_cast<btScalar>(maxPixelValue);
+
+    N_chunks_x = N_chunks_X;
+    N_chunks_y = N_chunks_Y;
 
     stbi_image_free(image);
 
