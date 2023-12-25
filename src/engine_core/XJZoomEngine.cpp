@@ -64,13 +64,12 @@ std::copy(heightDataVec.begin(), heightDataVec.end(), heightData);
     // Instantiate TerrainPhysics
     TerrainPhysics terrain(width, length, heightData, minHeight, maxHeight, 0, 0);
 
-    
     // Add the terrain to the dynamics world
-    physicsWorld->dynamicsWorld->addRigidBody(terrain.terrainRigidBody);
+    //physicsWorld->dynamicsWorld->addRigidBody(terrain.terrainRigidBody);
 
     //Second heightfield test, works fine, can do LOD heightfield
 
-    // TerrainPhysics terrain2(width, length, heightData, 0, 100, 100, 0);
+    // TerrainPhysics terrain2(width, length, heightData, 0, 100, -100, 0);
     // physicsWorld->dynamicsWorld->addRigidBody(terrain2.terrainRigidBody);
 
 
@@ -332,7 +331,13 @@ ImGui::End();
     btVector3 vehiclePosition = vehicleTransform.getOrigin();
 
     //* ==== Dynamic World Loading ====
+    
+    //player positions (vehicle)
+    btScalar pXpos = vehiclePosition.getX();
+    btScalar pYpos = vehiclePosition.getY();
+    btScalar pZpos = vehiclePosition.getZ();
 
+    terrainChunkManager.update(pXpos, pZpos);
 
 
     btQuaternion vehicleRotation = vehicleTransform.getRotation();
@@ -390,7 +395,7 @@ ImGui::End();
     }
 
 
-    //camera.Inputs(Window);
+    camera.Inputs(Window);
 
     //  Updates and exports the camera matrix to the Vertex Shader
     camera.Matrix(45.0f, 0.1f, 100.0f, shaderProgram, "camMatrix");

@@ -102,7 +102,7 @@ bool loadHeightfieldData(const char* filename, std::vector<float>& heightData, i
     minHeight = static_cast<btScalar>(minPixelValue);
     maxHeight = static_cast<btScalar>(maxPixelValue);
 
-    printHeightData(heightData, width, length);
+    //printHeightData(heightData, width, length);
 
     printf("MAX %f", maxPixelValue);
     printf("MIN %f", minPixelValue);
@@ -113,7 +113,7 @@ bool loadHeightfieldData(const char* filename, std::vector<float>& heightData, i
 }
 
 bool chunkHeightDataFromIMG(const char* filename, const int* chunk_size,
-                            std::vector<std::vector<float>>& chunkVecs, int N_chunks_x, int N_chunks_y, btScalar& globalChunkMin, btScalar& globalChunkMax ) {
+                            std::vector<std::vector<float>>& chunkVecs, int& N_chunks_x, int& N_chunks_y, btScalar& globalChunkMin, btScalar& globalChunkMax ) {
 
     //Image Data from STB Load fn.
     int img_width; int img_length; int img_channels;
@@ -130,6 +130,11 @@ bool chunkHeightDataFromIMG(const char* filename, const int* chunk_size,
     int N_chunks_X = img_width  / (*chunk_size);
     int N_chunks_Y = img_length / (*chunk_size);
 
+    //* Setting reference chunk sizes
+
+    N_chunks_x = N_chunks_X;
+    N_chunks_y = N_chunks_Y;
+
     chunkVecs.resize(N_chunks_X * N_chunks_Y); //Hold the chunks
 
     float maxPixelValue = 0.0f;
@@ -141,7 +146,7 @@ bool chunkHeightDataFromIMG(const char* filename, const int* chunk_size,
             int raw_img_index = (y * img_width + x) * 4; // Each pixel has 4 channels (RGBA)
             unsigned char color_c = image[raw_img_index]; // Assuming height is represented by the red channel
 
-            float heightValue = static_cast<float>(color_c) / 20.0f;
+            float heightValue = static_cast<float>(color_c) / 100.0f;
                 
             // Determine which chunk this pixel belongs to
             int chunk_x = x / (*chunk_size);
@@ -160,8 +165,6 @@ bool chunkHeightDataFromIMG(const char* filename, const int* chunk_size,
     globalChunkMin = static_cast<btScalar>(minPixelValue);
     globalChunkMax = static_cast<btScalar>(maxPixelValue);
 
-    N_chunks_x = N_chunks_X;
-    N_chunks_y = N_chunks_Y;
 
     stbi_image_free(image);
 
