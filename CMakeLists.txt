@@ -52,12 +52,10 @@ src/engine_core/bullet_models/StaticTriangleMeshPhysics.cpp
 src/engine_core/managers/PhysicsChunkManager.h
 src/engine_core/managers/PhysicsChunkManager.cpp
 
-
 ## Bullet Debug Rendering
 
 src/engine_core/geometries/BulletDebugDrawer.cpp
 
-##
 
 src/engine_core/managers/SceneManager.h
 src/engine_core/managers/SceneManager.cpp

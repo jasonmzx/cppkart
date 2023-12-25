@@ -50,6 +50,9 @@
 //Model Loader
 #include "loaders/ObjModel.h"
 
+//* ----- Terrain Imports -----
+#include "engine_core/managers/PhysicsChunkManager.h"
+
 class XJZoomEngine {
 
 public:

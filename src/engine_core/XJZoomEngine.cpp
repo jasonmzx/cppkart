@@ -62,7 +62,7 @@ float *heightData = new float[heightDataVec.size()];
 std::copy(heightDataVec.begin(), heightDataVec.end(), heightData);
 
     // Instantiate TerrainPhysics
-    TerrainPhysics terrain(width, length, heightData, 0, 100, 0, 0);
+    TerrainPhysics terrain(width, length, heightData, minHeight, maxHeight, 0, 0);
 
     
     // Add the terrain to the dynamics world
@@ -76,15 +76,16 @@ std::copy(heightDataVec.begin(), heightDataVec.end(), heightData);
 
 // chunking stuff
 
-int chunk_size = 50; //Represents Width & Length (X & Z)
-std::vector<std::vector<float>> chunkVecs;
-btScalar globalChunkMin; 
-btScalar globalChunkMax;
-int N_chunks_x;
-int N_chunks_y;
+// int chunk_size = 50; //Represents Width & Length (X & Z)
+// std::vector<std::vector<float>> chunkVecs;
+// btScalar globalChunkMin; 
+// btScalar globalChunkMax;
+// int N_chunks_x;
+// int N_chunks_y;
 
-bool chunkHeightMap = chunkHeightDataFromIMG("../src/ressources/Map_B.png", &chunk_size, chunkVecs, N_chunks_x, N_chunks_y, globalChunkMin, globalChunkMax);
+// bool chunkHeightMap = chunkHeightDataFromIMG("../src/ressources/Map_B.png", &chunk_size, chunkVecs, N_chunks_x, N_chunks_y, globalChunkMin, globalChunkMax);
 
+PhysicsChunkManager terrainChunkManager("../src/ressources/Map_B.png");
 
   //* ########## WINDOWING STUFF ############
   uint32_t WindowFlags = SDL_WINDOW_OPENGL;
@@ -190,7 +191,10 @@ bool chunkHeightMap = chunkHeightDataFromIMG("../src/ressources/Map_B.png", &chu
   VBO VBO4(vertices);
   EBO EBO4(indices);
 
-  RenderableGeometry terrainGeom(&VAO4, &VBO4, &EBO4, vertices, indices);
+  //Temporary un-render of terrain Geom
+  //RenderableGeometry terrainGeom(&VAO4, &VBO4, &EBO4, vertices, indices);
+  
+  
   //SolidEntity TERRAIN(&VAO4, &VBO4, &EBO4, vertices, indices, terrainModelMatrix);
 
   //* #### Player Vehicle Instanciation:
@@ -327,6 +331,10 @@ ImGui::End();
     btTransform vehicleTransform = vehicle.GetPhysics().GetTransform();
     btVector3 vehiclePosition = vehicleTransform.getOrigin();
 
+    //* ==== Dynamic World Loading ====
+
+
+
     btQuaternion vehicleRotation = vehicleTransform.getRotation();
 
     //Position Translation
@@ -412,7 +420,7 @@ ImGui::End();
 
     GLint colorUniformLocation = glGetUniformLocation(shaderProgram.ID, "FragColor");
 
-    terrainGeom.Draw(modelMatrixLocation,terrainModelMatrix, colorUniformLocation, false);
+    //terrainGeom.Draw(modelMatrixLocation,terrainModelMatrix, colorUniformLocation, false);
 
 
     //* Important: The Bullet Render Debug Drawer uses the Non-Textured Shader Option, therefore we need to re-set the model matrix before making the switch, or else
