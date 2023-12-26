@@ -113,7 +113,8 @@ bool loadHeightfieldData(const char* filename, std::vector<float>& heightData, i
 }
 
 bool chunkHeightDataFromIMG(const char* filename, const int* chunk_size,
-                            std::vector<std::vector<float>>& chunkVecs, int& N_chunks_x, int& N_chunks_y, btScalar& globalChunkMin, btScalar& globalChunkMax ) {
+                            std::vector<std::vector<float>>& chunkVecs, 
+                            int& N_chunks_x, int& N_chunks_y, btScalar& globalChunkMin, btScalar& globalChunkMax ) {
 
     //Image Data from STB Load fn.
     int img_width; int img_length; int img_channels;

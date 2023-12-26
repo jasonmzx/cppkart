@@ -56,8 +56,11 @@ VehiclePhysics::VehiclePhysics()
 
     //* Adding WHEELS to vehicle physics model !
 
+    //This like, fixes the wonky vehicle sim lmao
+    vehicle->setCoordinateSystem(0, 1, 2);
+
     auto halfExtents = vehicleChassisShape->getHalfExtentsWithoutMargin();
-    btScalar connectionHeight(4);
+    btScalar connectionHeight(3.2);
 
     btVector3 wheelConnectionPoint(halfExtents.x() - 0.4, connectionHeight, halfExtents.z() - 0.5);
 
@@ -80,7 +83,8 @@ VehiclePhysics::VehiclePhysics()
         
          wheel.m_suspensionStiffness = suspensionStiffness;
          wheel.m_wheelsDampingRelaxation = dampingRelaxation;
-         wheel.m_wheelsDampingCompression = dampingCompression;
+         
+        // wheel.m_wheelsDampingCompression = dampingCompression;
          wheel.m_wheelsDampingCompression = btScalar(0.3) * 2 * btSqrt(wheel.m_suspensionStiffness); // btScalar(0.8);
          wheel.m_wheelsDampingRelaxation = btScalar(0.5) * 2 * btSqrt(wheel.m_suspensionStiffness);  // 1;
         
@@ -102,7 +106,7 @@ VehiclePhysics::VehiclePhysics()
     engineForce = 0.0;
     vehicleSteering = 0.0;
     steeringIncrement = 0.04;
-    steeringClamp = 0.45;
+    steeringClamp = 0.35;
     brakeForce = 0.0;
 }
 
