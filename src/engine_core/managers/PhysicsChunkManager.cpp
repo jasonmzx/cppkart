@@ -42,8 +42,9 @@ PhysicsChunkManager::PhysicsChunkManager(const std::string& filename){
             Z_origin --;
         }
         //===== EXPERIMENTAL, DOESNT' FULLY WORK ====== 
-
-        TerrainPhysics terrainChunk(chunk_size, chunk_size, heightData, globalChunkMin, globalChunkMax, X_origin, Z_origin);
+        
+        //! ALWAYS MULTIPLY X and Z Origins by -1 here, or we're FUCKED
+        TerrainPhysics terrainChunk(chunk_size, chunk_size, heightData, globalChunkMin, globalChunkMax, -1*X_origin, -1*Z_origin);
 
         PhysicsChunk chunk(false, terrainChunk);
         chunk.X_origin = X_origin;
@@ -82,7 +83,7 @@ void PhysicsChunkManager::update(btScalar playerX, btScalar playerZ) {
     PhysicsWorldSingleton *physicsWorld = PhysicsWorldSingleton::getInstance();
 
     // Define a radius within which chunks should be active
-    const btScalar activationRadius = 50.0; // Example radius value
+    const btScalar activationRadius = 125.0; // Example radius value
 
     for (PhysicsChunk& chunk : chunkVector) {
         // Calculate distance from player to chunk origin

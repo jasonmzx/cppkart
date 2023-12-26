@@ -6,6 +6,9 @@ TerrainPhysics::TerrainPhysics(int width, int length, float* heightData, btScala
         // Define the scale - adjust as needed
         btVector3 scale(1.0f, 1.0f, 1.0f);
 
+        //From Docs:
+        //* PHY_FLOAT: height at a point is the float value at that grid point. heightScale is ignored when using the float heightfield data type.
+
         // Create a heightfield terrain shape
         auto* terrainShape = new btHeightfieldTerrainShape(
             width, length, heightData, 1.0, minHeight, maxHeight, 1, PHY_FLOAT, false);
