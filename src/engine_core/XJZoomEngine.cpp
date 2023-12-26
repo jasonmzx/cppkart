@@ -84,7 +84,7 @@ std::copy(heightDataVec.begin(), heightDataVec.end(), heightData);
 
 // bool chunkHeightMap = chunkHeightDataFromIMG("../src/ressources/Map_B.png", &chunk_size, chunkVecs, N_chunks_x, N_chunks_y, globalChunkMin, globalChunkMax);
 
-PhysicsChunkManager terrainChunkManager("../src/ressources/small_map.png");
+PhysicsChunkManager terrainChunkManager("../src/ressources/Map_1K.png");
 
   //* ########## WINDOWING STUFF ############
   uint32_t WindowFlags = SDL_WINDOW_OPENGL;
@@ -370,7 +370,7 @@ ImGui::End();
 
     //* ###### CAMERA #######
 
-    camera.DEBUG = true;
+    camera.DEBUG = false;
 
     //* naive approach (hard offsets camera, bad for steering)
     //  camera.Position.x = vehiclePosition.x() + 0.5f;
@@ -395,7 +395,7 @@ ImGui::End();
     }
 
 
-    camera.Inputs(Window);
+    //camera.Inputs(Window);
 
     //  Updates and exports the camera matrix to the Vertex Shader
     camera.Matrix(45.0f, 0.1f, 100.0f, shaderProgram, "camMatrix");

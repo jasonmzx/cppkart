@@ -26,20 +26,26 @@ PhysicsChunkManager::PhysicsChunkManager(const std::string& filename){
         int rX = i % N_chunks_x; //X Chunk in row
         int rZ = i / N_chunks_y; //Y Chunk (col)
         
-        int X_origin = (cX * chunk_size) - (rX * chunk_size);
-        int Z_origin = (cZ * chunk_size) - (rZ * chunk_size);
+
+        int X_origin = (cX - rX) * chunk_size;
+        int Z_origin = (cZ - rZ) * chunk_size;
 
         //===== EXPERIMENTAL, DOESNT' FULLY WORK ====== 
+        
+        int offsetFactorX = (std::abs(X_origin) / chunk_size);
+        int offsetFactorZ = (std::abs(Z_origin) / chunk_size);
+
+
         if(X_origin < 0){
-            X_origin++;
+            X_origin += offsetFactorX;
         } else if (X_origin > 0) {
-            X_origin --;
+            X_origin -= offsetFactorX;
         }
 
         if(Z_origin < 0){
-            Z_origin++;
+            Z_origin += offsetFactorZ;
         } else if (Z_origin > 0) {
-            Z_origin --;
+            Z_origin -= offsetFactorZ;
         }
         //===== EXPERIMENTAL, DOESNT' FULLY WORK ====== 
         
@@ -68,7 +74,7 @@ void PhysicsChunkManager::debugMapPrint() {
                 const PhysicsChunk& chunk = chunkVector[index];
 
                 // Print details of the chunk
-                printf("(%d, %d): %c\t", 
+                printf("(%d, %d ): %c\t", 
                        chunk.X_origin, chunk.Z_origin, 
                        chunk.active ? 'T' : 'F');
             }
@@ -83,12 +89,12 @@ void PhysicsChunkManager::update(btScalar playerX, btScalar playerZ) {
     PhysicsWorldSingleton *physicsWorld = PhysicsWorldSingleton::getInstance();
 
     // Define a radius within which chunks should be active
-    const btScalar activationRadius = 125.0; // Example radius value
+    const btScalar activationRadius = 50.0; // Example radius value
 
     for (PhysicsChunk& chunk : chunkVector) {
         // Calculate distance from player to chunk origin
-        btScalar distanceX = playerX - chunk.X_origin;
-        btScalar distanceZ = playerZ - chunk.Z_origin;
+        btScalar distanceX = playerX - (chunk.X_origin*-1);
+        btScalar distanceZ = playerZ - (chunk.Z_origin*-1);
         btScalar distance = sqrt(distanceX * distanceX + distanceZ * distanceZ);
 
         if (distance <= activationRadius && !chunk.active) {
