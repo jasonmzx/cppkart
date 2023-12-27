@@ -154,7 +154,21 @@ bool chunkHeightDataFromIMG(const char* filename, const int* chunk_size,
             int chunk_y = y / (*chunk_size);
             int chunk_index = chunk_y * N_chunks_X + chunk_x;
 
-            // Store the height value in the correct chunk
+        //! COLUMN SEAM : Adding that extra Column to the Left of every chunk
+        int rXflood = x % (*chunk_size);
+
+        if(x != 0 && rXflood == 0) {
+            chunkVecs[chunk_index - 1].push_back(heightValue);
+        }
+
+        //! ROW SEAM : Addting
+        int rYflood = y % (*chunk_size);
+
+        if(y != 0 && rYflood == 0){
+            int above_chunk_index = chunk_index - N_chunks_X;
+            chunkVecs[above_chunk_index].push_back(heightValue);
+        }
+
             chunkVecs[chunk_index].push_back(heightValue);
 
             maxPixelValue = std::max(maxPixelValue, heightValue);

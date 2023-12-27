@@ -16,6 +16,7 @@ struct PhysicsChunk {
     TerrainPhysics heightmapChunk;
 
     int X_origin; int Z_origin;
+    int debugSize;
 
     PhysicsChunk(bool isActive, const TerrainPhysics& terrain)
     : active(isActive), heightmapChunk(terrain) {}
