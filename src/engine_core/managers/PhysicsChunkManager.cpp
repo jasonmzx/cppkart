@@ -30,38 +30,8 @@ PhysicsChunkManager::PhysicsChunkManager(const std::string& filename){
         int X_origin = (cX - rX) * chunk_size;
         int Z_origin = (cZ - rZ) * chunk_size;
 
-        //===== EXPERIMENTAL, DOESNT' FULLY WORK ====== 
-        
-        int offsetFactorX = (std::abs(X_origin) / chunk_size);
-        int offsetFactorZ = (std::abs(Z_origin) / chunk_size);
-
-
-        // if(X_origin < 0){
-        //     X_origin += offsetFactorX;
-        // } else if (X_origin > 0) {
-        //     X_origin -= offsetFactorX;
-        // }
-
-        // if(Z_origin < 0){
-        //     Z_origin += offsetFactorZ;
-        // } else if (Z_origin > 0) {
-        //     Z_origin -= offsetFactorZ;
-        // }
-        //===== EXPERIMENTAL, DOESNT' FULLY WORK ====== 
-        
-        int X_a = 1;
-        int Z_a = 1;
-
-        if(rX == (N_chunks_x - 1)) {
-            X_a = 0; X_origin++; //TODO: should be += 0.5, but it's an int, so like change the origins to float
-        }
-
-        if(rZ == (N_chunks_y - 1)) {
-            Z_a = 0; Z_origin++; //TODO: should be += 0.5, but it's an int, so like change the origins to float
-        }
-
         //! ALWAYS MULTIPLY X and Z Origins by -1 here, or we're FUCKED
-        TerrainPhysics terrainChunk(chunk_size+X_a, chunk_size+Z_a, heightData, globalChunkMin, globalChunkMax, -1*X_origin, -1*Z_origin);
+        TerrainPhysics terrainChunk(chunk_size+1, chunk_size+1, heightData, globalChunkMin, globalChunkMax, -1*X_origin, -1*Z_origin);
 
         PhysicsChunk chunk(false, terrainChunk);
         chunk.X_origin = X_origin;
@@ -101,7 +71,7 @@ void PhysicsChunkManager::update(btScalar playerX, btScalar playerZ) {
     PhysicsWorldSingleton *physicsWorld = PhysicsWorldSingleton::getInstance();
 
     // Define a radius within which chunks should be active
-    const btScalar activationRadius = 120.0; // Example radius value
+    const btScalar activationRadius = 50.0; // Example radius value
 
     for (PhysicsChunk& chunk : chunkVector) {
         // Calculate distance from player to chunk origin

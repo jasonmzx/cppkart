@@ -45,47 +45,6 @@ void XJZoomEngine::Run()
 
   PhysicsWorldSingleton *physicsWorld = PhysicsWorldSingleton::getInstance();
 
-  //* Proto Plane Wuz Here (check the gist for this)
-
-// Terrain Physics
-int width;
-int length;
-std::vector<float> heightDataVec; 
-btScalar minHeight;               
-btScalar maxHeight;               
-
-// ----- Height Field -----
-
-bool loadTerrainFromIMG = loadHeightfieldData("../src/ressources/small_map.png", heightDataVec, width, length, minHeight, maxHeight);
-
-float *heightData = new float[heightDataVec.size()];
-std::copy(heightDataVec.begin(), heightDataVec.end(), heightData);
-
-    // Instantiate TerrainPhysics
-    TerrainPhysics terrain(width, length, heightData, minHeight, maxHeight, 0, 0);
-
-    // Add the terrain to the dynamics world
-    //physicsWorld->dynamicsWorld->addRigidBody(terrain.terrainRigidBody);
-
-    //Second heightfield test, works fine, can do LOD heightfield
-
-    // TerrainPhysics terrain2(width, length, heightData, 0, 100, -100, 0);
-    // physicsWorld->dynamicsWorld->addRigidBody(terrain2.terrainRigidBody);
-
-
-// chunking stuff
-
-// int chunk_size = 50; //Represents Width & Length (X & Z)
-// std::vector<std::vector<float>> chunkVecs;
-// btScalar globalChunkMin; 
-// btScalar globalChunkMax;
-// int N_chunks_x;
-// int N_chunks_y;
-
-// bool chunkHeightMap = chunkHeightDataFromIMG("../src/ressources/Map_B.png", &chunk_size, chunkVecs, N_chunks_x, N_chunks_y, globalChunkMin, globalChunkMax);
-
-PhysicsChunkManager terrainChunkManager("../src/ressources/map_150_test.png");
-
   //* ########## WINDOWING STUFF ############
   uint32_t WindowFlags = SDL_WINDOW_OPENGL;
   SDL_Window *Window = SDL_CreateWindow("XJZoom Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WinWidth, WinHeight, WindowFlags);
@@ -150,8 +109,7 @@ PhysicsChunkManager terrainChunkManager("../src/ressources/map_150_test.png");
 
   // Load Managers:
   SceneManager sceneManager;
-
-  terrainMapLoader(indices, vertices);
+  PhysicsChunkManager terrainChunkManager("../src/ressources/Map_1K.png");
 
   // Generates Shader object using shaders default.vert and default.frag
   Shader shaderProgram("../src/rendering/shader/default.vert", "../src/rendering/shader/default.frag");
@@ -370,7 +328,7 @@ ImGui::End();
 
     //* ###### CAMERA #######
 
-    camera.DEBUG = true;
+    camera.DEBUG = false;
 
     //* naive approach (hard offsets camera, bad for steering)
     //  camera.Position.x = vehiclePosition.x() + 0.5f;
