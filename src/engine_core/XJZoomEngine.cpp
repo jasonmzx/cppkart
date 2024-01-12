@@ -111,6 +111,8 @@ void XJZoomEngine::Run()
   SceneManager sceneManager;
   PhysicsChunkManager terrainChunkManager("../src/ressources/Map_1K.png");
 
+  terrainMapLoader(indices, vertices); //! EXPERIMENTAL
+
   // Generates Shader object using shaders default.vert and default.frag
   Shader shaderProgram("../src/rendering/shader/default.vert", "../src/rendering/shader/default.frag");
 
@@ -149,8 +151,7 @@ void XJZoomEngine::Run()
   EBO EBO4(indices);
 
   //Temporary un-render of terrain Geom
-  //RenderableGeometry terrainGeom(&VAO4, &VBO4, &EBO4, vertices, indices);
-  
+ RenderableGeometry terrainGeom(&VAO4, &VBO4, &EBO4, vertices, indices);
   
   //SolidEntity TERRAIN(&VAO4, &VBO4, &EBO4, vertices, indices, terrainModelMatrix);
 
@@ -176,7 +177,6 @@ void XJZoomEngine::Run()
   //Application Window State
   int32_t Running = 1;
   int32_t FullScreen = 0;
-
 
   physicsWorld->dynamicsWorld->setDebugDrawer(debugDrawer);
 
@@ -328,7 +328,7 @@ ImGui::End();
 
     //* ###### CAMERA #######
 
-    camera.DEBUG = false;
+    camera.DEBUG = true;
 
     //* naive approach (hard offsets camera, bad for steering)
     //  camera.Position.x = vehiclePosition.x() + 0.5f;
@@ -382,7 +382,9 @@ ImGui::End();
 
     GLint colorUniformLocation = glGetUniformLocation(shaderProgram.ID, "FragColor");
 
-    //terrainGeom.Draw(modelMatrixLocation,terrainModelMatrix, colorUniformLocation, false);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Set to wireframe mode
+    terrainGeom.Draw(modelMatrixLocation, terrainModelMatrix, colorUniformLocation, false);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Reset to default mode
 
 
     //* Important: The Bullet Render Debug Drawer uses the Non-Textured Shader Option, therefore we need to re-set the model matrix before making the switch, or else
@@ -391,14 +393,11 @@ ImGui::End();
     glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(bulletModelMatrix));
 
 
-
     //ImGUI Render calls
 
     ImGui::Render();
-
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-    
 
     // Swap the back buffer with the front buffer
     SDL_GL_SwapWindow(Window);

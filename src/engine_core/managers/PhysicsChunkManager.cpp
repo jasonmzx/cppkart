@@ -46,7 +46,7 @@ PhysicsChunkManager::PhysicsChunkManager(const std::string& filename){
 }
 
 void PhysicsChunkManager::debugMapPrint() {
-    printf("\n"); // New line after each row
+
     for (int y = 0; y < N_chunks_y; ++y) {
         for (int x = 0; x < N_chunks_x; ++x) {
             // Calculate the index in the chunkVector based on x and y
@@ -65,9 +65,8 @@ void PhysicsChunkManager::debugMapPrint() {
     }
 }
 
-//EXPERIMENTAL
-
 void PhysicsChunkManager::update(btScalar playerX, btScalar playerZ) {
+    
     PhysicsWorldSingleton *physicsWorld = PhysicsWorldSingleton::getInstance();
 
     // Define a radius within which chunks should be active

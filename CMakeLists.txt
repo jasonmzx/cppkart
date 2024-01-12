@@ -79,6 +79,11 @@ src/engine_core/entities/VehicleEntity.cpp
 src/engine_core/entities/SolidEntity.h
 src/engine_core/entities/SolidEntity.cpp
 
+##Renderers
+
+src/engine_core/renderers/TerrainRenderer.h
+src/engine_core/renderers/TerrainRenderer.cpp
+
 # Main Imports for Rendering
 
 src/main.cpp 

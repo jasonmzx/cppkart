@@ -68,7 +68,7 @@ bool chunkHeightDataFromIMG(const char *filename, const int *chunk_size,
                 chunkVecs[chunk_index].push_back(heightValue);
             }
 
-            //! ROW SEAM : Addting
+            //! ROW SEAM : Adding Horizontal Seams (X Axis)
 
             if (y != 0 && rYflood == 0)
             {
@@ -96,7 +96,6 @@ bool chunkHeightDataFromIMG(const char *filename, const int *chunk_size,
         }
 
     }
-
 
     // Duplicate the last *chunk_size elements in each chunk of the last row
     int start_chunk_index_last_row = (N_chunks_Y - 1) * N_chunks_X;
