@@ -39,6 +39,8 @@ private:
     btScalar globalChunkMax;
     int N_chunks_x;
     int N_chunks_y;
+
+    float SCALE_FACTOR;
 };
 
 #endif

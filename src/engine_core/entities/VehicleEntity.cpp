@@ -48,6 +48,25 @@ void VehicleEntity::renderWheelGeometries(GLuint modelMatrixLocation){
 
 }
 
+void VehicleEntity::updateVehicleControls(const Uint8 *state) {
+
+  if (state[SDL_SCANCODE_UP]) {
+    vehiclePhysics.ApplyEngineForce(2000);
+  } else if (state[SDL_SCANCODE_DOWN]) {
+    vehiclePhysics.ApplyEngineForce(-2500);
+  } else {
+    vehiclePhysics.ApplyEngineForce(0);
+  }
+
+  if (state[SDL_SCANCODE_LEFT]) {
+    vehiclePhysics.ApplySteer(0.13);
+  } else if (state[SDL_SCANCODE_RIGHT]) {
+    vehiclePhysics.ApplySteer(-0.13);
+  } else {
+    vehiclePhysics.ApplySteer(0);
+  }
+}
+
 VehiclePhysics& VehicleEntity::GetPhysics() {
     return vehiclePhysics;
 }

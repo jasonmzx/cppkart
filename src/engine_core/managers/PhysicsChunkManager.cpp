@@ -3,6 +3,8 @@
 //Constructor
 PhysicsChunkManager::PhysicsChunkManager(const std::string& filename){
 
+    SCALE_FACTOR = 3.0;
+
     std::vector<std::vector<float>> tempChunkVec;
 
     bool chunkHeightMap = chunkHeightDataFromIMG(filename.c_str(), &chunk_size, tempChunkVec, N_chunks_x, N_chunks_y, globalChunkMin, globalChunkMax);
@@ -21,8 +23,6 @@ PhysicsChunkManager::PhysicsChunkManager(const std::string& filename){
         float* heightData = new float[heightDataVec.size()];
         std::copy(heightDataVec.begin(), heightDataVec.end(), heightData);
 
-        //TODO: Unsafe if N_chunks x or y is 0, assert for that
-
         int rX = i % N_chunks_x; //X Chunk in row
         int rZ = i / N_chunks_y; //Y Chunk (col)
         
@@ -31,7 +31,7 @@ PhysicsChunkManager::PhysicsChunkManager(const std::string& filename){
         int Z_origin = (cZ - rZ) * chunk_size;
 
         //! ALWAYS MULTIPLY X and Z Origins by -1 here, or we're FUCKED
-        TerrainPhysics terrainChunk(chunk_size+1, chunk_size+1, heightData, globalChunkMin, globalChunkMax, -1*X_origin, -1*Z_origin);
+        TerrainPhysics terrainChunk(chunk_size+1, chunk_size+1, heightData, globalChunkMin, globalChunkMax, -1*X_origin, -1*Z_origin, SCALE_FACTOR);
 
         PhysicsChunk chunk(false, terrainChunk);
         chunk.X_origin = X_origin;
@@ -41,7 +41,7 @@ PhysicsChunkManager::PhysicsChunkManager(const std::string& filename){
         chunkVector.push_back(chunk);
     }
 
-    debugMapPrint();
+    //debugMapPrint();
 
 }
 
@@ -70,16 +70,31 @@ void PhysicsChunkManager::update(btScalar playerX, btScalar playerZ) {
     PhysicsWorldSingleton *physicsWorld = PhysicsWorldSingleton::getInstance();
 
     // Define a radius within which chunks should be active
-    const btScalar activationRadius = 50.0; // Example radius value
+    const btScalar activationRadius = 70.0; 
 
     for (PhysicsChunk& chunk : chunkVector) {
         // Calculate distance from player to chunk origin
-        btScalar distanceX = playerX - (chunk.X_origin*-1);
-        btScalar distanceZ = playerZ - (chunk.Z_origin*-1);
+        btScalar distanceX = playerX - (chunk.X_origin*-1)*SCALE_FACTOR;
+        btScalar distanceZ = playerZ - (chunk.Z_origin*-1)*SCALE_FACTOR;
         btScalar distance = sqrt(distanceX * distanceX + distanceZ * distanceZ);
 
         if (distance <= activationRadius && !chunk.active) {
             // Activate chunk and add its rigid body to the physics world
+
+            //Activated Chunk Debug
+
+        const btTransform& trans = chunk.heightmapChunk.terrainRigidBody->getWorldTransform();
+
+        float modelMatrix[16];
+        trans.getOpenGLMatrix(modelMatrix);
+        // Access the Z-coordinate
+
+printf("\n");
+for (int i = 0; i < 4; ++i) {
+    // Print each row of the matrix
+    printf("%f %f %f %f\n", modelMatrix[i*4 + 0], modelMatrix[i*4 + 1], modelMatrix[i*4 + 2], modelMatrix[i*4 + 3]);
+}
+
             chunk.active = true;
             physicsWorld->dynamicsWorld->addRigidBody(chunk.heightmapChunk.terrainRigidBody);
         } else if (distance > activationRadius && chunk.active) {

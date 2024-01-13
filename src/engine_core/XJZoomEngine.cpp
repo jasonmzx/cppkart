@@ -29,7 +29,7 @@ glm::mat4 bulletModelMatrix = glm::scale(glm::vec3(1.0f, 1.0f, 1.0f));
 
 //*#### Terrain Scale Matrix:
 glm::mat4 terrainModelMatrix = glm::scale(glm::vec3(100.0f, 100.0f, 100.0f));
-glm::mat4 boxMtrxTest = glm::scale(glm::vec3(100.0f, 4.0f, 100.0f));
+//glm::mat4 terrainModelMatrix = glm::mat4(100.0f);
 
 //*#### Vehicle & Wheel Matrix scaling:
 glm::mat4 WheelMatrix = glm::scale(glm::vec3(0.25f, 0.25f, 0.25f));
@@ -111,7 +111,7 @@ void XJZoomEngine::Run()
   SceneManager sceneManager;
   PhysicsChunkManager terrainChunkManager("../src/ressources/Map_1K.png");
 
-  terrainMapLoader(indices, vertices); //! EXPERIMENTAL
+  terrainMapLoader(indices, vertices, "../src/ressources/Map_1K.png"); //! EXPERIMENTAL
 
   // Generates Shader object using shaders default.vert and default.frag
   Shader shaderProgram("../src/rendering/shader/default.vert", "../src/rendering/shader/default.frag");
@@ -190,27 +190,11 @@ void XJZoomEngine::Run()
   while (Running)
   {
 
-    //* POLLING INPUTS for Multiple Keyboard Input and Handle Simultaneously
+    //* POLLING INPUTS for Multiple Keyboard Input and Handle Simultaneously?
 
-  SDL_PumpEvents(); // Make sure we have the latest state
+  SDL_PumpEvents(); 
   state = SDL_GetKeyboardState(NULL);
-
-  // Handling continuous key states rather than events
-  if (state[SDL_SCANCODE_UP]) {
-    vehicle.GetPhysics().ApplyEngineForce(2000);
-  } else if (state[SDL_SCANCODE_DOWN]) {
-    vehicle.GetPhysics().ApplyEngineForce(-2500);
-  } else {
-    vehicle.GetPhysics().ApplyEngineForce(0);
-  }
-
-  if (state[SDL_SCANCODE_LEFT]) {
-    vehicle.GetPhysics().ApplySteer(0.13);
-  } else if (state[SDL_SCANCODE_RIGHT]) {
-    vehicle.GetPhysics().ApplySteer(-0.13);
-  } else {
-    vehicle.GetPhysics().ApplySteer(0);
-  }
+  vehicle.updateVehicleControls(state); //This function handles SDL Inputs for the Vehicle's controls
 
     SDL_Event Event;
     while (SDL_PollEvent(&Event))
@@ -328,7 +312,7 @@ ImGui::End();
 
     //* ###### CAMERA #######
 
-    camera.DEBUG = true;
+    camera.DEBUG = false;
 
     //* naive approach (hard offsets camera, bad for steering)
     //  camera.Position.x = vehiclePosition.x() + 0.5f;
@@ -344,17 +328,16 @@ ImGui::End();
     if (glm::distance2(targetVec, camera.Position) > 0.02f)
       camera.Position += dirVec * 0.03f;
 
-
     //Look at Vehicle:
 
     camera.LookAt.x = vehiclePosition.x();
     camera.LookAt.y = vehiclePosition.y();
     camera.LookAt.z = vehiclePosition.z();
+    } else {
+    camera.Inputs(Window);
     }
 
-    camera.Inputs(Window);
 
-    //  Updates and exports the camera matrix to the Vertex Shader
     camera.Matrix(45.0f, 0.1f, 100.0f, shaderProgram, "camMatrix");
     //camera.Matrix(45.0f, 0.1f, 100.0f, terrainShaderProgram, "camMatrix");
 
@@ -382,7 +365,7 @@ ImGui::End();
 
     GLint colorUniformLocation = glGetUniformLocation(shaderProgram.ID, "FragColor");
 
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Set to wireframe mode
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Set to wireframe mode
     terrainGeom.Draw(modelMatrixLocation, terrainModelMatrix, colorUniformLocation, false);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Reset to default mode
 
@@ -413,7 +396,7 @@ ImGui::End();
   ImGui_ImplSDL2_Shutdown();
   ImGui::DestroyContext();
 
-  // TODO: Delete the Physics World Singleton here
+  physicsWorld->Destroy();
 }
 
 void XJZoomEngine::Init()

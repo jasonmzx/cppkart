@@ -7,7 +7,7 @@
 #include <glad/glad.h>
 #include <btBulletDynamicsCommon.h>
 
-void terrainMapLoader(std::vector<GLuint>& indices_vec, std::vector<GLfloat>& vertices_vec);
+void terrainMapLoader(std::vector<GLuint>& indices_vec, std::vector<GLfloat>& vertices_vec, const char* filename);
 
 bool loadHeightfieldData(const char* filename, std::vector<float>& heightData, 
                         int& width, int& length, btScalar& minHeight, btScalar& maxHeight);               

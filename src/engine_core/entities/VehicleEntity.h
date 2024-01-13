@@ -19,6 +19,8 @@ public:
     // Render Functions to be called every iteration
     void renderWheelGeometries(GLuint modelMatrixLocation);
 
+    void updateVehicleControls(const Uint8 *state);
+
     // Getter for direct access to VehiclePhysics
     VehiclePhysics &GetPhysics();
     RenderableGeometry &GetGeometry();

@@ -26,6 +26,7 @@ public:
     btDiscreteDynamicsWorld* dynamicsWorld;
 
     static PhysicsWorldSingleton* getInstance();
+    static void Destroy(); // Static method to destroy the instance
 };
 
 #endif

@@ -14,9 +14,8 @@ void printHeightData(const std::vector<float>& heightData, int width, int length
     }
 }
 
-void terrainMapLoader(std::vector<GLuint>& indices_vec, std::vector<GLfloat>& vertices_vec) {
+void terrainMapLoader(std::vector<GLuint>& indices_vec, std::vector<GLfloat>& vertices_vec, const char* filename) {
 
-     const char* filename = "../src/ressources/Map_1K.png";
     int width, height, channels;
 
     // Load the PNG image
@@ -44,18 +43,30 @@ void terrainMapLoader(std::vector<GLuint>& indices_vec, std::vector<GLfloat>& ve
             indices_vec.push_back((y + 1) * width + (x + 1));
         }
 
-            int raw_img_index = (y * width + x) * 4; // Each pixel has 4 channels (RGBA)
 
-            // Access the RGBA components of the pixel
-    unsigned char color_c = image[raw_img_index];
-    float normalized_color = static_cast<float>(color_c) / ( 255.0f*0.75f);
+    int XZ_scale = width;
 
-            //X: 
-            vertices_vec.push_back(static_cast<GLfloat>(x)/width);
-            //Y:
-            vertices_vec.push_back(static_cast<GLfloat>(normalized_color/10)); //height vertical
-            //Z:
-            vertices_vec.push_back(static_cast<GLfloat>(y)/width); //Not multiplying by height, as I dont want to stretch the proportions
+// Calculate the offsets for centering
+float xOffset = width / 2.0f + 11.5;
+float zOffset = height / 2.0f + 12.5;
+
+        int raw_img_index = (y * width + x) * 4; // Each pixel has 4 channels (RGBA)
+
+        // Access the RGBA components of the pixel
+        unsigned char color_c = image[raw_img_index];
+        float normalized_color = static_cast<float>(color_c) / (255.0f * 0.75f);
+
+        // Adjust X and Z by subtracting the offsets and then scale
+        float adjustedX = (x - xOffset) / XZ_scale;
+        float adjustedZ = (y - zOffset) / XZ_scale;
+
+        // X: 
+        vertices_vec.push_back(static_cast<GLfloat>(adjustedX));
+        // Y: Adjust height as needed
+        vertices_vec.push_back(static_cast<GLfloat>((normalized_color / 5.2) - 0.08)); // Height (vertical)
+        // Z:
+        vertices_vec.push_back(static_cast<GLfloat>(adjustedZ));
+
             //
             for (int i = 0; i < 5; ++i) {
                 vertices_vec.push_back(static_cast<GLuint>(0.0f));
