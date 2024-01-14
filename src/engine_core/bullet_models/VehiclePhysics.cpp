@@ -21,7 +21,7 @@ VehiclePhysics::VehiclePhysics()
     btTransform localTransform;
 
     localTransform.setIdentity();
-    localTransform.setOrigin(btVector3(0, 10, 0));
+    localTransform.setOrigin(btVector3(0, 5, 0));
     
     vehicleMotionState->setWorldTransform(localTransform);
 
@@ -159,7 +159,6 @@ void VehiclePhysics::Brake(float force)
     vehicle->setBrake(brakeForce, 2);
     vehicle->setBrake(brakeForce, 3);
 
-    // TODO: Add Bullet code here to apply brake
 }
 
 void VehiclePhysics::Update()

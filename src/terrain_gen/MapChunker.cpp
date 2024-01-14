@@ -44,7 +44,7 @@ bool chunkHeightDataFromIMG(const char *filename, const int *chunk_size,
             int raw_img_index = (y * img_width + x) * 4;  // Each pixel has 4 channels (RGBA)
             unsigned char color_c = image[raw_img_index]; // Assuming height is represented by the red channel
 
-            float heightValue = static_cast<float>(color_c) / 10.0f;
+            float heightValue = static_cast<float>(color_c) / (10.0f) ;
 
             // Determine which chunk this pixel belongs to
             int chunk_x = x / (*chunk_size);

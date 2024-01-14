@@ -3,7 +3,7 @@
 // Windowing consts
 #define WinWidth 1800
 #define WinHeight 900
-
+namespace {
 std::vector<GLfloat> vertices = {};
 std::vector<GLuint> indices = {};
 
@@ -28,12 +28,13 @@ std::vector<GLuint> VW_indices = firstCarWheelModel.GetIndices();
 glm::mat4 bulletModelMatrix = glm::scale(glm::vec3(1.0f, 1.0f, 1.0f));
 
 //*#### Terrain Scale Matrix:
-glm::mat4 terrainModelMatrix = glm::scale(glm::vec3(100.0f, 100.0f, 100.0f));
+glm::mat4 terrainModelMatrix;
 //glm::mat4 terrainModelMatrix = glm::mat4(100.0f);
 
 //*#### Vehicle & Wheel Matrix scaling:
 glm::mat4 WheelMatrix = glm::scale(glm::vec3(0.25f, 0.25f, 0.25f));
 glm::mat4 vehicleModelMatrix = glm::scale(glm::vec3(1.0f));
+}
 
 void XJZoomEngine::Run()
 {
@@ -110,8 +111,8 @@ void XJZoomEngine::Run()
   // Load Managers:
   SceneManager sceneManager;
   PhysicsChunkManager terrainChunkManager("../src/ressources/Map_1K.png");
-
-  terrainMapLoader(indices, vertices, "../src/ressources/Map_1K.png"); //! EXPERIMENTAL
+  terrainModelMatrix = glm::translate(glm::vec3(-5, -(terrainChunkManager.globalChunkMax - terrainChunkManager.globalChunkMin) / 2, -5)) 
+  * glm::scale(glm::vec3(1000.0f, 190.0f, 1000.0f));
 
   // Generates Shader object using shaders default.vert and default.frag
   Shader shaderProgram("../src/rendering/shader/default.vert", "../src/rendering/shader/default.frag");
@@ -144,6 +145,7 @@ void XJZoomEngine::Run()
 
   //* ####### 
 
+  terrainMapLoader(indices, vertices, "../src/ressources/Map_1K.png"); //! EXPERIMENTAL
 
   VAO VAO4;
   VAO4.Bind();
@@ -161,11 +163,11 @@ void XJZoomEngine::Run()
                         &VAO3, &VBO3, &EBO3, VW_vertices, VW_indices);
 
   //GLuint uniID = glGetUniformLocation(shaderProgram.ID, "scale");
-  //std::string texPath = "../src/ressources/";
+  std::string texPath = "../src/ressources/";
 
   // !Texture, TODO ground texture, for terrain
-  // Texture brickTex((texPath + "brick.png").c_str(), GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
-  // brickTex.texUnit(shaderProgram, "tex0", 0);
+   Texture cobbleTex((texPath + "cobble.png").c_str(), GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
+   cobbleTex.texUnit(shaderProgram, "tex0", 0);
   // Enables the Depth Buffer
 
   // Creates camera object
@@ -179,6 +181,7 @@ void XJZoomEngine::Run()
   int32_t FullScreen = 0;
 
   physicsWorld->dynamicsWorld->setDebugDrawer(debugDrawer);
+  //SDL_GL_SetSwapInterval(0);  turn vsync off and speed shit up drasitcally
 
 
   //* ImGui State
@@ -230,7 +233,7 @@ void XJZoomEngine::Run()
       }
     }
 
-    // Start the Dear ImGui frame
+  //* ================= Dear ImGui Setup ================
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
@@ -240,34 +243,31 @@ void XJZoomEngine::Run()
     // Use sprintf to format the float as a string
     sprintf(formatted_fps_STR, "FPS: %f", framerate);
 
-ImGui::Begin("Debug Menu");
+    ImGui::Begin("Debug Menu");
 
-if (ImGui::BeginTabBar("DebugTabBar")) {
-    // Tab for FPS & Physics Debug
-    if (ImGui::BeginTabItem("General")) {
-        ImGui::Text(formatted_fps_STR);
-        ImGui::Checkbox("Physics Debug Draw (Bullet3)", &show_debug_draw);
-        ImGui::EndTabItem();
+    if (ImGui::BeginTabBar("DebugTabBar")) {
+        // Tab for FPS & Physics Debug
+        if (ImGui::BeginTabItem("General")) {
+            ImGui::Text("%s", formatted_fps_STR);
+            ImGui::Checkbox("Physics Debug Draw (Bullet3)", &show_debug_draw);
+            ImGui::EndTabItem();
+        }
+
+        // Tab for Vehicle
+        if (ImGui::BeginTabItem("Vehicle Debug")) {
+
+            std::string v_debug_str = vehicle.GetPhysics().debugStateSTR(); 
+            ImGui::Text("%s", v_debug_str.c_str());
+            ImGui::EndTabItem();
+        }
+
+        ImGui::EndTabBar();
     }
+    ImGui::End();
+  //* ================= End of ImGUI setup ================
 
-    // Tab for Vehicle
-    if (ImGui::BeginTabItem("Vehicle Debug")) {
-
-        std::string v_debug_str = vehicle.GetPhysics().debugStateSTR(); 
-        ImGui::Text("%s", v_debug_str.c_str());
-        ImGui::EndTabItem();
-    }
-
-    ImGui::EndTabBar();
-}
-
-ImGui::End();
-
-    //! ### IMPORTANT, Allow the Physics Simulation to tick ###
     physicsWorld->dynamicsWorld->stepSimulation(1.0f / 60.0f);
 
-    //! PROTOTYPING: VEHICLE RENDERING CODE
-    // ### Update the box's model matrix to match the vehicle's transform ###
 
     btTransform vehicleTransform = vehicle.GetPhysics().GetTransform();
     btVector3 vehiclePosition = vehicleTransform.getOrigin();
@@ -280,7 +280,6 @@ ImGui::End();
     btScalar pZpos = vehiclePosition.getZ();
 
     terrainChunkManager.update(pXpos, pZpos);
-
 
     btQuaternion vehicleRotation = vehicleTransform.getRotation();
 
@@ -321,7 +320,6 @@ ImGui::End();
 
     //* #### Smooth Camera (For Driving)
 
-
     if(!camera.DEBUG) {
     auto targetVec = glm::vec3(vehiclePosition.x() + 1.0f, vehiclePosition.y() + 3.0f, vehiclePosition.z() - 5.0f);
     auto dirVec = targetVec - camera.Position;
@@ -337,36 +335,37 @@ ImGui::End();
     camera.Inputs(Window);
     }
 
-
-    camera.Matrix(45.0f, 0.1f, 100.0f, shaderProgram, "camMatrix");
+    camera.Matrix(45.0f, 0.1f, 1000.0f, shaderProgram, "camMatrix");
     //camera.Matrix(45.0f, 0.1f, 100.0f, terrainShaderProgram, "camMatrix");
 
     //*############## OpenGL - Draw Calls ################
+
     glUniform1i(useTextureLocation, GL_TRUE); 
     //BOX1.geom.Draw(modelMatrixLocation, terrainModelMatrix);
     
     debugDrawer->flushLines();
 
-
 //    terrainGeom.Draw(modelMatrixLocation,terrainModelMatrix);
     
-    vehicle.GetGeometry().Draw(modelMatrixLocation, vehicleModelMatrix, NULL, false);
- 
+    vehicle.GetGeometry().Draw(modelMatrixLocation, vehicleModelMatrix, 0, false);
 
     //! idk why i'm not binding textures and it's still workign...?
     // glBindTexture(GL_TEXTURE_2D, carTexID);
 
     vehicle.renderWheelGeometries(modelMatrixLocation);
 
-
     //! All Draw Calls below use no Texturing, and just Positonal coloring:
 
-    glUniform1i(useTextureLocation, GL_FALSE); 
+    // glUniform1i(useTextureLocation, GL_FALSE); 
 
     GLint colorUniformLocation = glGetUniformLocation(shaderProgram.ID, "FragColor");
 
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Set to wireframe mode
+    
+    // glBindTexture(GL_TEXTURE_2D, brick)
+    cobbleTex.Bind();
     terrainGeom.Draw(modelMatrixLocation, terrainModelMatrix, colorUniformLocation, false);
+    
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Reset to default mode
 
 
@@ -375,6 +374,7 @@ ImGui::End();
 
     glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(bulletModelMatrix));
 
+    glBindTexture(GL_TEXTURE_2D, carTexID);
 
     //ImGUI Render calls
 
@@ -386,6 +386,8 @@ ImGui::End();
     SDL_GL_SwapWindow(Window);
     //glm::vec3 cameraPosition = camera.Position;
   }
+
+  //* ============ Cleanup of Application ===========
 
   glDeleteTextures(1, &carTexID);
   // brickTex.Delete();

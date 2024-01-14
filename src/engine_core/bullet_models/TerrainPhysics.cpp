@@ -29,5 +29,5 @@ TerrainPhysics::TerrainPhysics(int width, int length, float* heightData, btScala
         auto* motionState = new btDefaultMotionState(groundTransform);
         btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, motionState, terrainShape, localInertia);
         
-        terrainRigidBody = new btRigidBody(rbInfo);
+        terrainRigidBody.reset(new btRigidBody(rbInfo));
 }

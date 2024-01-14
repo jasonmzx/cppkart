@@ -3,7 +3,7 @@
 //Constructor
 PhysicsChunkManager::PhysicsChunkManager(const std::string& filename){
 
-    SCALE_FACTOR = 3.0;
+    SCALE_FACTOR = 1.0;
 
     std::vector<std::vector<float>> tempChunkVec;
 
@@ -41,7 +41,7 @@ PhysicsChunkManager::PhysicsChunkManager(const std::string& filename){
         chunkVector.push_back(chunk);
     }
 
-    //debugMapPrint();
+    debugMapPrint();
 
 }
 
@@ -70,7 +70,7 @@ void PhysicsChunkManager::update(btScalar playerX, btScalar playerZ) {
     PhysicsWorldSingleton *physicsWorld = PhysicsWorldSingleton::getInstance();
 
     // Define a radius within which chunks should be active
-    const btScalar activationRadius = 70.0; 
+    constexpr btScalar activationRadius = 55.0; 
 
     for (PhysicsChunk& chunk : chunkVector) {
         // Calculate distance from player to chunk origin
@@ -82,25 +82,25 @@ void PhysicsChunkManager::update(btScalar playerX, btScalar playerZ) {
             // Activate chunk and add its rigid body to the physics world
 
             //Activated Chunk Debug
+                //!auto
+//         const btTransform& trans = chunk.heightmapChunk.terrainRigidBody->getWorldTransform();
 
-        const btTransform& trans = chunk.heightmapChunk.terrainRigidBody->getWorldTransform();
+//         float modelMatrix[16];
+//         trans.getOpenGLMatrix(modelMatrix);
+//         // Access the Z-coordinate
 
-        float modelMatrix[16];
-        trans.getOpenGLMatrix(modelMatrix);
-        // Access the Z-coordinate
-
-printf("\n");
-for (int i = 0; i < 4; ++i) {
-    // Print each row of the matrix
-    printf("%f %f %f %f\n", modelMatrix[i*4 + 0], modelMatrix[i*4 + 1], modelMatrix[i*4 + 2], modelMatrix[i*4 + 3]);
-}
+// printf("\n");
+// for (int i = 0; i < 4; ++i) {
+//     // Print each row of the matrix
+//     printf("%f %f %f %f\n", modelMatrix[i*4 + 0], modelMatrix[i*4 + 1], modelMatrix[i*4 + 2], modelMatrix[i*4 + 3]);
+// }
 
             chunk.active = true;
-            physicsWorld->dynamicsWorld->addRigidBody(chunk.heightmapChunk.terrainRigidBody);
+            physicsWorld->dynamicsWorld->addRigidBody(chunk.heightmapChunk.terrainRigidBody.get());
         } else if (distance > activationRadius && chunk.active) {
             // Deactivate chunk and remove its rigid body from the physics world
             chunk.active = false;
-            physicsWorld->dynamicsWorld->removeRigidBody(chunk.heightmapChunk.terrainRigidBody);
+            physicsWorld->dynamicsWorld->removeRigidBody(chunk.heightmapChunk.terrainRigidBody.get());
         }
     }
 }
