@@ -20,8 +20,8 @@ PhysicsChunkManager::PhysicsChunkManager(const std::string& filename){
     for (size_t i = 0; i < tempChunkVec.size(); ++i) {
         const auto& heightDataVec = tempChunkVec[i];
         
-        float* heightData = new float[heightDataVec.size()];
-        std::copy(heightDataVec.begin(), heightDataVec.end(), heightData);
+        std::shared_ptr<float[]> heightData(new float[heightDataVec.size()], std::default_delete<float[]>());
+        std::copy(heightDataVec.begin(), heightDataVec.end(), heightData.get());
 
         int rX = i % N_chunks_x; //X Chunk in row
         int rZ = i / N_chunks_y; //Y Chunk (col)
@@ -41,8 +41,7 @@ PhysicsChunkManager::PhysicsChunkManager(const std::string& filename){
         chunkVector.push_back(chunk);
     }
 
-    debugMapPrint();
-
+    tempChunkVec.clear();
 }
 
 void PhysicsChunkManager::debugMapPrint() {
@@ -79,28 +78,20 @@ void PhysicsChunkManager::update(btScalar playerX, btScalar playerZ) {
         btScalar distance = sqrt(distanceX * distanceX + distanceZ * distanceZ);
 
         if (distance <= activationRadius && !chunk.active) {
+
             // Activate chunk and add its rigid body to the physics world
-
-            //Activated Chunk Debug
-                //!auto
-//         const btTransform& trans = chunk.heightmapChunk.terrainRigidBody->getWorldTransform();
-
-//         float modelMatrix[16];
-//         trans.getOpenGLMatrix(modelMatrix);
-//         // Access the Z-coordinate
-
-// printf("\n");
-// for (int i = 0; i < 4; ++i) {
-//     // Print each row of the matrix
-//     printf("%f %f %f %f\n", modelMatrix[i*4 + 0], modelMatrix[i*4 + 1], modelMatrix[i*4 + 2], modelMatrix[i*4 + 3]);
-// }
-
             chunk.active = true;
             physicsWorld->dynamicsWorld->addRigidBody(chunk.heightmapChunk.terrainRigidBody.get());
+
         } else if (distance > activationRadius && chunk.active) {
+
             // Deactivate chunk and remove its rigid body from the physics world
             chunk.active = false;
             physicsWorld->dynamicsWorld->removeRigidBody(chunk.heightmapChunk.terrainRigidBody.get());
         }
     }
+}
+
+PhysicsChunkManager::~PhysicsChunkManager() {
+    chunkVector.clear();
 }

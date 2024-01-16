@@ -7,7 +7,7 @@
 // Local Imports:
 #include "terrain_gen/MapChunker.h"
 #include "engine_core/bullet_models/TerrainPhysics.h"
-#include "../singletons/PhysicsWorldSingleton.h"
+#include "engine_core/singletons/PhysicsWorldSingleton.h"
 
 // NOTE: TerrainPhysics doesn't have a default empty constructor, so this struct needs to be isntanciated immediately
 struct PhysicsChunk
@@ -28,6 +28,7 @@ class PhysicsChunkManager
 
 public:
     PhysicsChunkManager(const std::string &filename);
+    ~PhysicsChunkManager();
 
     void update(btScalar playerX, btScalar playerZ);
 

@@ -108,6 +108,6 @@ add_executable(cppkart
 )
 
 target_compile_options(cppkart PRIVATE -fsanitize=address)
-target_link_options(cppkart PRIVATE -fsanitize=address)
+target_link_libraries(cppkart PRIVATE -fsanitize=address)
 
 target_link_libraries(cppkart PRIVATE SDL2::SDL2 OpenGL::GL ${BULLET_LIBRARIES} assimp::assimp)

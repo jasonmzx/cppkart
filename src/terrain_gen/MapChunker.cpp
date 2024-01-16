@@ -1,11 +1,9 @@
-
 #include "MapChunker.h"
 
 #include <cstdio> // for printf
 
 bool chunkHeightDataFromIMG(const char *filename, const int *chunk_size,
-                            std::vector<std::vector<float>> &chunkVecs,
-                            int &N_chunks_x, int &N_chunks_y, btScalar &globalChunkMin, btScalar &globalChunkMax)
+    std::vector<std::vector<float>> &chunkVecs, int &N_chunks_x, int &N_chunks_y, btScalar &globalChunkMin, btScalar &globalChunkMax)
 {
 
     // Image Data from STB Load fn.
@@ -116,6 +114,5 @@ bool chunkHeightDataFromIMG(const char *filename, const int *chunk_size,
     globalChunkMax = static_cast<btScalar>(maxPixelValue);
 
     stbi_image_free(image);
-
     return true;
 }

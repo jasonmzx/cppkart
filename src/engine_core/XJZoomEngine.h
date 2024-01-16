@@ -54,7 +54,6 @@
 #include "engine_core/managers/PhysicsChunkManager.h"
 #include "engine_core/renderers/TerrainRenderer.h"
 
-
 class XJZoomEngine {
 
 public:

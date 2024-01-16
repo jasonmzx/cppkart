@@ -181,8 +181,7 @@ void XJZoomEngine::Run()
   int32_t FullScreen = 0;
 
   physicsWorld->dynamicsWorld->setDebugDrawer(debugDrawer);
-  //SDL_GL_SetSwapInterval(0);  turn vsync off and speed shit up drasitcally
-
+  //SDL_GL_SetSwapInterval(0); // turn vsync off and speed shit up drasitcally, bad design!!
 
   //* ImGui State
 
@@ -303,11 +302,12 @@ void XJZoomEngine::Run()
 
     // Assigns a value to the uniform; NOTE: Must always be done after activating the Shader Program
     // brickTex.Bind();
-
+    glUniform1i(useTextureLocation, GL_FALSE); 
     //debugDrawer->setDebugMode(btIDebugDraw::DBG_DrawWireframe);
     if(show_debug_draw) {
       physicsWorld->dynamicsWorld->debugDrawWorld();
     }
+    glUniform1i(useTextureLocation, GL_TRUE); 
 
     //* ###### CAMERA #######
 
@@ -340,7 +340,6 @@ void XJZoomEngine::Run()
 
     //*############## OpenGL - Draw Calls ################
 
-    glUniform1i(useTextureLocation, GL_TRUE); 
     //BOX1.geom.Draw(modelMatrixLocation, terrainModelMatrix);
     
     debugDrawer->flushLines();
@@ -390,7 +389,6 @@ void XJZoomEngine::Run()
   //* ============ Cleanup of Application ===========
 
   glDeleteTextures(1, &carTexID);
-  // brickTex.Delete();
   shaderProgram.Delete();
 
   // Shutdown for ImGUI
@@ -398,7 +396,10 @@ void XJZoomEngine::Run()
   ImGui_ImplSDL2_Shutdown();
   ImGui::DestroyContext();
 
-  physicsWorld->Destroy();
+  //Static Ressource freeing
+  stbi_image_free(carTextureData); //TODO: use texture class instead of this
+  cobbleTex.Delete();
+
 }
 
 void XJZoomEngine::Init()

@@ -21,37 +21,3 @@ PhysicsWorldSingleton* PhysicsWorldSingleton::getInstance() {
         instance = new PhysicsWorldSingleton;
     return instance;
 }
-
-void PhysicsWorldSingleton::Destroy() {
-    if (instance) {
-
-        if (instance->dynamicsWorld) {
-            delete instance->dynamicsWorld;
-            instance->dynamicsWorld = nullptr;
-        }
-
-        if (instance->solver) {
-            delete instance->solver;
-            instance->solver = nullptr;
-        }
-
-        if (instance->dispatcher) {
-            delete instance->dispatcher;
-            instance->dispatcher = nullptr;
-        }
-
-        if (instance->collisionConfiguration) {
-            delete instance->collisionConfiguration;
-            instance->collisionConfiguration = nullptr;
-        }
-
-        if (instance->broadphase) {
-            delete instance->broadphase;
-            instance->broadphase = nullptr;
-        }
-
-        // Finally, delete the instance itself
-        delete instance;
-        instance = nullptr;
-    }
-}
