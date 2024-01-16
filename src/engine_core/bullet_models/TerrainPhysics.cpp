@@ -3,6 +3,7 @@
 
 TerrainPhysics::TerrainPhysics(int width, int length, std::shared_ptr<float[]> heightData, btScalar minHeight, btScalar maxHeight,
  int absolute_x_offset, int absolute_z_offset, float SCALE_FACTOR) {
+        
         this->heightData = heightData;
 
         // Define the scale - adjust as needed
@@ -12,8 +13,8 @@ TerrainPhysics::TerrainPhysics(int width, int length, std::shared_ptr<float[]> h
         //* PHY_FLOAT: height at a point is the float value at that grid point. heightScale is ignored when using the float heightfield data type.
 
         // Create a heightfield terrain shape
-        this->terrainShape = new btHeightfieldTerrainShape(
-            width, length, this->heightData.get(), 1.0, minHeight, maxHeight, 1, PHY_FLOAT, false);
+        this->terrainShape.reset(new btHeightfieldTerrainShape(
+            width, length, this->heightData.get(), 1.0, minHeight, maxHeight, 1, PHY_FLOAT, false));
 
         // Scale the chunk
         terrainShape->setLocalScaling(scale);
@@ -26,8 +27,11 @@ TerrainPhysics::TerrainPhysics(int width, int length, std::shared_ptr<float[]> h
         // Create the terrain rigid body
         btScalar mass(0.0); // Zero mass means static
         btVector3 localInertia(0, 0, 0);
-        this->motionState = new btDefaultMotionState(groundTransform);
-        btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, motionState, terrainShape, localInertia);
+        this->motionState.reset(new btDefaultMotionState(groundTransform));
+        btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, motionState.get(), terrainShape.get(), localInertia);
         
         terrainRigidBody.reset(new btRigidBody(rbInfo));
 }
+
+
+

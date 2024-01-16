@@ -12,14 +12,17 @@
 //Memory Management Imports
 #include <memory>
 
+//* This class keeps Allocated Float Array & Bullet Classes as Shared Pointers for Dynamic De-Allocation & Memory leak Mitigation
+
 class TerrainPhysics {
 private:
 
-    std::shared_ptr<float[]> heightData; //This class keeps the Height Data Float Ptr Arr Ref, that's dynamically freed with shared-ptr
-    btHeightfieldTerrainShape* terrainShape; // Add as member variable
-    btDefaultMotionState* motionState; 
+    std::shared_ptr<float[]> heightData; 
+    std::shared_ptr<btHeightfieldTerrainShape> terrainShape;
+    std::shared_ptr<btDefaultMotionState> motionState; 
 
 public:
+
     std::shared_ptr<btRigidBody> terrainRigidBody;
     TerrainPhysics(int width, int length, std::shared_ptr<float[]> heightData, btScalar minHeight, btScalar maxHeight, int absolute_x_offset, int absolute_z_offset, float SCALE_FACTOR);
 };
