@@ -8,9 +8,9 @@ PhysicsThread::~PhysicsThread() {
     Stop(); // Ensure the thread is stopped on destruction
 }
 
-void PhysicsThread::Start() {
+void PhysicsThread::Start(TSQueue<uint8_t>& playerInputQueue) {
     running = true;
-    thread = std::thread(&PhysicsThread::ThreadLoop, this);
+    thread = std::thread(&PhysicsThread::ThreadLoop, this, std::ref(playerInputQueue));
 }
 
 void PhysicsThread::Stop() {
@@ -20,13 +20,19 @@ void PhysicsThread::Stop() {
     }
 }
 
-void PhysicsThread::ThreadLoop() {
+void PhysicsThread::ThreadLoop(TSQueue<uint8_t>& playerInputQueue ) {
     while (running) {
 
         //PhysicsWorldSingleton *physicsWorld = PhysicsWorldSingleton::getInstance();
+        
+        uint8_t input;
 
+        while (playerInputQueue.TryPop(input)) {
+            // Process and print the input command
+            std::cout << "Input Received: " << static_cast<int>(input) << std::endl;
+        }
 
-        std::cout << "Thread is running..." << std::endl;
+        // std::cout << "Thread is running..." << std::endl;
         // Sleep or wait logic can be added here to control update rate
     }
 }

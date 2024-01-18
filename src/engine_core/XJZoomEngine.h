@@ -46,13 +46,16 @@
 //Model Loader
 #include "loaders/ObjModel.h"
 
-//Physics Thread
-#include "PhysicsThread.h"
 
 //* ----- Terrain Imports -----
 #include "engine_core/managers/PhysicsChunkManager.h"
 #include "engine_core/renderers/TerrainRenderer.h"
 
+
+#include "engine_core/PhysicsThread.h"
+//* Vehicle Input Controller
+
+#include "controllers/VehicleInputController.h"
 
 class XJZoomEngine {
 

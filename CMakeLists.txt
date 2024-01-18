@@ -102,6 +102,12 @@ add_executable(cppkart
 
      src/rendering/Texture.h
      src/rendering/Texture.cpp
+
+     ## Data structs
+     src/data_structs/TSQueue.cpp
+
+     src/controllers/VehicleInputController.h
+     src/controllers/VehicleInputController.cpp
 )
 
 target_compile_options(cppkart PRIVATE -fsanitize=address)
