@@ -35,6 +35,9 @@ add_executable(cppkart
      src/engine_core/XJZoomEngine.h
      src/engine_core/XJZoomEngine.cpp
 
+     src/engine_core/PhysicsThread.h
+     src/engine_core/PhysicsThread.cpp
+
      #Core Engine; Managers Imports:
 
      src/engine_core/singletons/PhysicsWorldSingleton.h
@@ -44,9 +47,6 @@ add_executable(cppkart
 
      src/engine_core/bullet_models/VehiclePhysics.h
      src/engine_core/bullet_models/VehiclePhysics.cpp
-
-     src/engine_core/bullet_models/LowAbsVehicle.h
-     src/engine_core/bullet_models/LowAbsVehicle.cpp
 
      src/engine_core/bullet_models/TerrainPhysics.h
      src/engine_core/bullet_models/TerrainPhysics.cpp
@@ -99,9 +99,6 @@ add_executable(cppkart
      src/rendering/VBO.cpp 
      src/rendering/shaderClass.cpp
      src/rendering/Camera.cpp
-
-     src/rendering/FrustumCull.h
-     src/rendering/FrustumCull.cpp
 
      src/rendering/Texture.h
      src/rendering/Texture.cpp

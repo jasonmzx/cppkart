@@ -20,12 +20,9 @@
 #include "rendering/EBO.h"
 #include "rendering/Camera.h"
 #include "rendering/Texture.h"
-#include "rendering/FrustumCull.h"
-
 #include "terrain_gen/MapChunker.h"
 
 //Renderable geoms
-
 #include "geometries/RenderableGeometry.h"
 
 //Entity Imports
@@ -46,13 +43,16 @@
 //For Texturing:
 #include<stb/stb_image.h>
 
-
 //Model Loader
 #include "loaders/ObjModel.h"
+
+//Physics Thread
+#include "PhysicsThread.h"
 
 //* ----- Terrain Imports -----
 #include "engine_core/managers/PhysicsChunkManager.h"
 #include "engine_core/renderers/TerrainRenderer.h"
+
 
 class XJZoomEngine {
 

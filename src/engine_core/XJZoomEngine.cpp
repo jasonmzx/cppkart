@@ -1,12 +1,11 @@
 #include "XJZoomEngine.h"
 
 // Windowing consts
-#define WinWidth 1800
-#define WinHeight 900
+#define WinWidth 1920
+#define WinHeight 1080
 namespace {
 std::vector<GLfloat> vertices = {};
 std::vector<GLuint> indices = {};
-
 
 
 ObjModel firstCarModel = ObjModel("../src/ressources/first_car.obj");
@@ -38,6 +37,11 @@ glm::mat4 vehicleModelMatrix = glm::scale(glm::vec3(1.0f));
 
 void XJZoomEngine::Run()
 {
+
+  PhysicsThread pT; 
+  pT.Start();
+
+
   int carTexWidth, carTexHeight, carTexChannels;
   auto carTextureData = stbi_load("../src/ressources/first_car.png", &carTexWidth, &carTexHeight, &carTexChannels, STBI_rgb_alpha);
   assert(carTextureData);
@@ -93,7 +97,7 @@ void XJZoomEngine::Run()
   else if (carTexChannels == 4)
     carTexFormat = GL_RGBA;
 
-  //* Texting Configuration Setup for OpenGL
+  //* Texturing Configuration Setup for OpenGL
 
   glTexImage2D(GL_TEXTURE_2D, 0, carTexFormat, carTexWidth, carTexHeight, 0, carTexFormat, GL_UNSIGNED_BYTE, carTextureData);
   glGenerateMipmap(GL_TEXTURE_2D);
@@ -387,6 +391,8 @@ void XJZoomEngine::Run()
   }
 
   //* ============ Cleanup of Application ===========
+
+  pT.Stop();
 
   glDeleteTextures(1, &carTexID);
   shaderProgram.Delete();
