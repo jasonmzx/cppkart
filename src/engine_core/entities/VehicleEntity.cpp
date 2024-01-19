@@ -51,7 +51,7 @@ void VehicleEntity::renderWheelGeometries(GLuint modelMatrixLocation){
 void VehicleEntity::updateVehicleControls(const uint8_t *state) {
 
   if (state[82]) { //SDL_SCANCODE_UP
-    vehiclePhysics.ApplyEngineForce(2000);
+    vehiclePhysics.ApplyEngineForce(3500);
   } else if (state[81]) { // SDL_SCANCODE_DOWN
     vehiclePhysics.ApplyEngineForce(-2500);
   } else {

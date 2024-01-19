@@ -106,8 +106,8 @@ add_executable(cppkart
      ## Data structs
      src/data_structs/TSQueue.cpp
 
-     src/controllers/VehicleInputController.h
-     src/controllers/VehicleInputController.cpp
+     src/controllers/VehicleInputAdapter.h
+     src/controllers/VehicleInputAdapter.cpp
 )
 
 target_compile_options(cppkart PRIVATE -fsanitize=address)

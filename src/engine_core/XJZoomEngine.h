@@ -55,7 +55,7 @@
 #include "engine_core/PhysicsThread.h"
 //* Vehicle Input Controller
 
-#include "controllers/VehicleInputController.h"
+#include "controllers/VehicleInputAdapter.h"
 
 class XJZoomEngine {
 

@@ -38,7 +38,7 @@ glm::mat4 vehicleModelMatrix = glm::scale(glm::vec3(1.0f));
 void XJZoomEngine::Run()
 {
 
-  VehicleInputController vehicleInputControl;
+  VehicleInputAdapter vehicleInputControl;
 
   PhysicsThread pT; 
   pT.Start(vehicleInputControl.playerInputQueue);
@@ -203,7 +203,7 @@ void XJZoomEngine::Run()
   SDL_PumpEvents(); 
   state = SDL_GetKeyboardState(NULL);
 
-  vehicleInputControl.vehicleKeyboardInput(state);
+  //vehicleInputControl.vehicleKeyboardInput(state);
 
   vehicle.updateVehicleControls(state); //This function handles SDL Inputs for the Vehicle's controls
 
