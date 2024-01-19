@@ -21,13 +21,34 @@ void PhysicsThread::Stop() {
 }
 
 void PhysicsThread::ThreadLoop(TSQueue<uint8_t>& playerInputQueue ) {
+
+    //PhysicsWorldSingleton *physicsWorld = PhysicsWorldSingleton::getInstance();
+
     while (running) {
 
-        //PhysicsWorldSingleton *physicsWorld = PhysicsWorldSingleton::getInstance();
         
         uint8_t input;
 
         while (playerInputQueue.TryPop(input)) {
+
+            // //TODO: Implement Cohesive Input Controller
+            // if (input == 1) { //SDL_SCANCODE_UP
+            //     vehiclePhysics.ApplyEngineForce(3500);
+            // } else if (input == 2) { // SDL_SCANCODE_DOWN
+            //     vehiclePhysics.ApplyEngineForce(-2500);
+            // } else if (input == 0) {
+            //     vehiclePhysics.ApplyEngineForce(0);
+            // }
+            
+            // if (input == 3) { // SDL_SCANCODE_LEFT
+            //     vehiclePhysics.ApplySteer(0.13);
+            // } else if (input == 4) { // SDL_SCANCODE_RIGHT
+            //     vehiclePhysics.ApplySteer(-0.13);
+            // } else if (input == 5) {
+            //     vehiclePhysics.ApplySteer(0);
+            // }
+
+
             // Process and print the input command
             std::cout << "Input Received: " << static_cast<int>(input) << std::endl;
         }

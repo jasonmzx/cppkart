@@ -8,7 +8,7 @@
 class VehicleInputAdapter {
 
     public:
-        void vehicleKeyboardInput(const uint8_t *state);
+        void vehicleKeyboardInput(const uint8_t *SDL_KB_Input);
         TSQueue<uint8_t> playerInputQueue;  
     private:
 };

@@ -1,12 +1,12 @@
 #include "VehicleInputAdapter.h"
 
-void VehicleInputAdapter::vehicleKeyboardInput(const uint8_t *state) {
+void VehicleInputAdapter::vehicleKeyboardInput(const uint8_t *SDL_KB_Input) {
 
   //? 1: Gas , 2: Brakes , 0: No-Action for Gas or brakes
 
-    if (state[82]) { //SDL_SCANCODE_UP
+    if (SDL_KB_Input[82]) { //SDL_SCANCODE_UP
       playerInputQueue.Push(1);
-    } else if (state[81]) { // SDL_SCANCODE_DOWN
+    } else if (SDL_KB_Input[81]) { // SDL_SCANCODE_DOWN
       playerInputQueue.Push(2);
     } else {
       playerInputQueue.Push(0);
