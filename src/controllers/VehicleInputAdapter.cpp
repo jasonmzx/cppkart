@@ -2,7 +2,6 @@
 
 void VehicleInputAdapter::vehicleKeyboardInput(const uint8_t *state) {
 
-  //test
   //? 1: Gas , 2: Brakes , 0: No-Action for Gas or brakes
 
     if (state[82]) { //SDL_SCANCODE_UP
