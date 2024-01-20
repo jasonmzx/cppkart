@@ -46,7 +46,7 @@ void XJZoomEngine::Run()
 
   //Temp
 
-  VehiclePhysics vPhy;
+  //VehiclePhysics vPhy;
 
 
   int carTexWidth, carTexHeight, carTexChannels;
@@ -55,7 +55,7 @@ void XJZoomEngine::Run()
 
   //* ### Bullet Physics World Singleton Instanciation ###
 
-  PhysicsWorldSingleton *physicsWorld = PhysicsWorldSingleton::getInstance();
+  //PhysicsWorldSingleton *physicsWorld = PhysicsWorldSingleton::getInstance();
 
   //* ########## WINDOWING STUFF ############
   uint32_t WindowFlags = SDL_WINDOW_OPENGL;
@@ -121,9 +121,12 @@ void XJZoomEngine::Run()
 
   // Load Managers:
   SceneManager sceneManager;
-  PhysicsChunkManager terrainChunkManager("../src/ressources/Map_1K.png");
-  terrainModelMatrix = glm::translate(glm::vec3(-5, -(terrainChunkManager.globalChunkMax - terrainChunkManager.globalChunkMin) / 2, -5)) 
-  * glm::scale(glm::vec3(1000.0f, 190.0f, 1000.0f));
+  //! terrainModelMatrix = glm::translate(glm::vec3(-5, -(terrainChunkManager.globalChunkMax - terrainChunkManager.globalChunkMin) / 2, -5)) 
+  //! * glm::scale(glm::vec3(1000.0f, 190.0f, 1000.0f));
+
+terrainModelMatrix = glm::translate(glm::vec3(-5, -(100-20) / 2, -5)) 
+ * glm::scale(glm::vec3(1000.0f, 190.0f, 1000.0f));
+
 
   // Generates Shader object using shaders default.vert and default.frag
   Shader shaderProgram("../src/rendering/shader/default.vert", "../src/rendering/shader/default.frag");
@@ -191,7 +194,7 @@ void XJZoomEngine::Run()
   int32_t Running = 1;
   int32_t FullScreen = 0;
 
-  physicsWorld->dynamicsWorld->setDebugDrawer(debugDrawer);
+  //physicsWorld->dynamicsWorld->setDebugDrawer(debugDrawer);
   //SDL_GL_SetSwapInterval(0); // turn vsync off and speed shit up drasitcally, bad design!!
 
   //* ImGui State
@@ -203,19 +206,16 @@ void XJZoomEngine::Run()
   while (Running)
   {
 
-    vehiclePhysicsInfo vI = sharedPhysicsRessource.GetVehiclePhyInfo();
-    int vIt = vI.test;
 
-    printf("%d << \n", vIt);
 
     //* POLLING INPUTS for Multiple Keyboard Input and Handle Simultaneously?
 
   SDL_PumpEvents(); 
   state = SDL_GetKeyboardState(NULL);
 
-  //vehicleInputControl.vehicleKeyboardInput(state);
+  vehicleInputControl.vehicleKeyboardInput(state);
 
-  vehicle.updateVehicleControls(state, vPhy); //This function handles SDL Inputs for the Vehicle's controls
+  //vehicle.updateVehicleControls(state, vPhy); //This function handles SDL Inputs for the Vehicle's controls
 
     SDL_Event Event;
     while (SDL_PollEvent(&Event))
@@ -274,7 +274,8 @@ void XJZoomEngine::Run()
         // Tab for Vehicle
         if (ImGui::BeginTabItem("Vehicle Debug")) {
 
-            std::string v_debug_str = vPhy.debugStateSTR(); 
+            //std::string v_debug_str = vPhy.debugStateSTR(); 
+            std::string v_debug_str = "helo";
             ImGui::Text("%s", v_debug_str.c_str());
             ImGui::EndTabItem();
         }
@@ -284,20 +285,24 @@ void XJZoomEngine::Run()
     ImGui::End();
   //* ================= End of ImGUI setup ================
 
-    physicsWorld->dynamicsWorld->stepSimulation(1.0f / 60.0f);
+    //physicsWorld->dynamicsWorld->stepSimulation(1.0f / 60.0f);
 
 
-    btTransform vehicleTransform = vPhy.GetTransform();
+    //btTransform vehicleTransform = vPhy.GetTransform();
+    vehiclePhysicsInfo vI = sharedPhysicsRessource.GetVehiclePhyInfo();
+    btTransform vehicleTransform = vI.transform;
+
+
     btVector3 vehiclePosition = vehicleTransform.getOrigin();
 
     //* ==== Dynamic World Loading ====
     
-    //player positions (vehicle)
-    btScalar pXpos = vehiclePosition.getX();
-    btScalar pYpos = vehiclePosition.getY();
-    btScalar pZpos = vehiclePosition.getZ();
+    // //player positions (vehicle)
+    // btScalar pXpos = vehiclePosition.getX();
+    // btScalar pYpos = vehiclePosition.getY();
+    // btScalar pZpos = vehiclePosition.getZ();
 
-    terrainChunkManager.update(pXpos, pZpos);
+    // terrainChunkManager.update(pXpos, pZpos);
 
     btQuaternion vehicleRotation = vehicleTransform.getRotation();
 
@@ -324,7 +329,7 @@ void XJZoomEngine::Run()
     glUniform1i(useTextureLocation, GL_FALSE); 
     //debugDrawer->setDebugMode(btIDebugDraw::DBG_DrawWireframe);
     if(show_debug_draw) {
-      physicsWorld->dynamicsWorld->debugDrawWorld();
+    //  physicsWorld->dynamicsWorld->debugDrawWorld();
     }
     glUniform1i(useTextureLocation, GL_TRUE); 
 
@@ -370,7 +375,7 @@ void XJZoomEngine::Run()
     //! idk why i'm not binding textures and it's still workign...?
     // glBindTexture(GL_TEXTURE_2D, carTexID);
 
-    vehicle.renderWheelGeometries(modelMatrixLocation, vPhy.vehicle);
+    //vehicle.renderWheelGeometries(modelMatrixLocation, vPhy.vehicle);
 
     //! All Draw Calls below use no Texturing, and just Positonal coloring:
 

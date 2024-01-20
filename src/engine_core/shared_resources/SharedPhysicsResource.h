@@ -4,10 +4,11 @@
 #include <bullet/btBulletCollisionCommon.h>
 #include <bullet/btBulletDynamicsCommon.h>
 
+
 #include <mutex>
 
 struct vehiclePhysicsInfo {
-    int test;
+    btTransform transform;
 };
 
 
