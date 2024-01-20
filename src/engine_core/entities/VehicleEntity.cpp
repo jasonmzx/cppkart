@@ -9,15 +9,15 @@ VehicleEntity::VehicleEntity(VAO* vaoPtr, VBO* vboPtr, EBO* eboPtr, const std::v
     // The vehiclePhysics object is automatically instantiated when a VehicleEntity is created
 }
 
-void VehicleEntity::renderWheelGeometries(GLuint modelMatrixLocation){
+void VehicleEntity::renderWheelGeometries(GLuint modelMatrixLocation, const btRaycastVehicle* vehicle){
     
     std::vector<glm::mat4> wheelMatrices(4);
     glm::mat4 rotate90DEG_Adjustment = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
     //for (int i = 0; i < 1; i++)
-     for (int i = 0; i < vehiclePhysics.vehicle->getNumWheels(); i++)
+     for (int i = 0; i < vehicle->getNumWheels(); i++)
     {
-        btWheelInfo wheelinfo = vehiclePhysics.vehicle->getWheelInfo(i);
+        btWheelInfo wheelinfo = vehicle->getWheelInfo(i);
       
         //* Get Translation (Positioning)
         float wX = wheelinfo.m_worldTransform.getOrigin().getX();
@@ -48,7 +48,7 @@ void VehicleEntity::renderWheelGeometries(GLuint modelMatrixLocation){
 
 }
 
-void VehicleEntity::updateVehicleControls(const uint8_t *state) {
+void VehicleEntity::updateVehicleControls(const uint8_t *state, VehiclePhysics vehiclePhysics) {
 
   if (state[82]) { //SDL_SCANCODE_UP
     vehiclePhysics.ApplyEngineForce(3500);
@@ -65,10 +65,6 @@ void VehicleEntity::updateVehicleControls(const uint8_t *state) {
   } else {
     vehiclePhysics.ApplySteer(0);
   }
-}
-
-VehiclePhysics& VehicleEntity::GetPhysics() {
-    return vehiclePhysics;
 }
 
 RenderableGeometry& VehicleEntity::GetGeometry() {

@@ -12,9 +12,12 @@
 
 #include "./data_structs/TSQueue.cpp"
 
+#include "shared_resources/SharedPhysicsResource.h"
+
+
 class PhysicsThread {
 public:
-    PhysicsThread();
+     PhysicsThread(SharedPhysicsResource* sharedResource);
     ~PhysicsThread();
     
 
@@ -28,6 +31,7 @@ private:
 
     //* Actual Physics Element in the World
     //VehiclePhysics vehiclePhysics;
+    SharedPhysicsResource* sharedRSRC;  // Pointer to SharedPhysicsResource
 
 };
 

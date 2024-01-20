@@ -40,8 +40,13 @@ void XJZoomEngine::Run()
 
   VehicleInputAdapter vehicleInputControl;
 
-  PhysicsThread pT; 
+  SharedPhysicsResource sharedPhysicsRessource;
+  PhysicsThread pT(&sharedPhysicsRessource);
   pT.Start(vehicleInputControl.playerInputQueue);
+
+  //Temp
+
+  VehiclePhysics vPhy;
 
 
   int carTexWidth, carTexHeight, carTexChannels;
@@ -198,6 +203,11 @@ void XJZoomEngine::Run()
   while (Running)
   {
 
+    vehiclePhysicsInfo vI = sharedPhysicsRessource.GetVehiclePhyInfo();
+    int vIt = vI.test;
+
+    printf("%d << \n", vIt);
+
     //* POLLING INPUTS for Multiple Keyboard Input and Handle Simultaneously?
 
   SDL_PumpEvents(); 
@@ -205,7 +215,7 @@ void XJZoomEngine::Run()
 
   //vehicleInputControl.vehicleKeyboardInput(state);
 
-  vehicle.updateVehicleControls(state); //This function handles SDL Inputs for the Vehicle's controls
+  vehicle.updateVehicleControls(state, vPhy); //This function handles SDL Inputs for the Vehicle's controls
 
     SDL_Event Event;
     while (SDL_PollEvent(&Event))
@@ -264,7 +274,7 @@ void XJZoomEngine::Run()
         // Tab for Vehicle
         if (ImGui::BeginTabItem("Vehicle Debug")) {
 
-            std::string v_debug_str = vehicle.GetPhysics().debugStateSTR(); 
+            std::string v_debug_str = vPhy.debugStateSTR(); 
             ImGui::Text("%s", v_debug_str.c_str());
             ImGui::EndTabItem();
         }
@@ -277,7 +287,7 @@ void XJZoomEngine::Run()
     physicsWorld->dynamicsWorld->stepSimulation(1.0f / 60.0f);
 
 
-    btTransform vehicleTransform = vehicle.GetPhysics().GetTransform();
+    btTransform vehicleTransform = vPhy.GetTransform();
     btVector3 vehiclePosition = vehicleTransform.getOrigin();
 
     //* ==== Dynamic World Loading ====
@@ -360,7 +370,7 @@ void XJZoomEngine::Run()
     //! idk why i'm not binding textures and it's still workign...?
     // glBindTexture(GL_TEXTURE_2D, carTexID);
 
-    vehicle.renderWheelGeometries(modelMatrixLocation);
+    vehicle.renderWheelGeometries(modelMatrixLocation, vPhy.vehicle);
 
     //! All Draw Calls below use no Texturing, and just Positonal coloring:
 

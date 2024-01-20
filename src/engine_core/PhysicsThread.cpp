@@ -1,6 +1,7 @@
 #include "PhysicsThread.h"
 
-PhysicsThread::PhysicsThread() : running(false) {
+PhysicsThread::PhysicsThread(SharedPhysicsResource* sharedResource) 
+    : running(false), sharedRSRC(sharedResource) {
     // Constructor logic if needed
 }
 
@@ -26,6 +27,11 @@ void PhysicsThread::ThreadLoop(TSQueue<uint8_t>& playerInputQueue ) {
 
     while (running) {
 
+        if (sharedRSRC) {
+            vehiclePhysicsInfo vInfo;
+            vInfo.test = 15;
+            sharedRSRC->UpdateVehiclePhyInfo(vInfo);
+        }
         
         uint8_t input;
 
