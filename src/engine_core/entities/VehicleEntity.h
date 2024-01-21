@@ -18,8 +18,6 @@ public:
     // Render Functions to be called every iteration
     void renderWheelGeometries(GLuint modelMatrixLocation, const btRaycastVehicle* vehicle);
 
-    void updateVehicleControls(const Uint8 *state, VehiclePhysics vehiclePhysics);
-
     // Getter for direct access to VehiclePhysics
     RenderableGeometry &GetGeometry();
 };

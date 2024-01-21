@@ -106,12 +106,19 @@ add_executable(cppkart
      ## Data structs
      src/data_structs/TSQueue.cpp
 
+    
+    #Shared Ressources:
     src/engine_core/shared_resources/SharedPhysicsResource.cpp
     src/engine_core/shared_resources/SharedPhysicsResource.h
      
+    src/engine_core/shared_resources/DebugDrawQueue.cpp
+    src/engine_core/shared_resources/DebugDrawQueue.h
+     
+
      src/controllers/VehicleInputAdapter.h
      src/controllers/VehicleInputAdapter.cpp
 
+     
      
 )
 

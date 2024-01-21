@@ -12,15 +12,22 @@ struct vehiclePhysicsInfo {
 };
 
 
+
+
 class SharedPhysicsResource {
 
 public:
     void UpdateVehiclePhyInfo(const vehiclePhysicsInfo& data);
     vehiclePhysicsInfo GetVehiclePhyInfo();
 
+    void UpdatePhysicsWorld(btDiscreteDynamicsWorld* physicsWorld);
+    btDiscreteDynamicsWorld* getPhysicsWorld();
+
 private:
     vehiclePhysicsInfo playerVehicle;
     std::mutex mutex_;
+    btDiscreteDynamicsWorld* physicsWorld_;
+
 };
 
 

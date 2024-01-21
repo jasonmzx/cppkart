@@ -20,7 +20,7 @@
 
 class PhysicsThread {
 public:
-     PhysicsThread(SharedPhysicsResource* sharedResource);
+     PhysicsThread(SharedPhysicsResource* sharedResource, BulletDebugDrawer* debugDrawer);
     ~PhysicsThread();
     
 
@@ -37,6 +37,7 @@ private:
 
     //* Actual Physics Element in the World
     VehiclePhysics vehiclePhysics;
+    BulletDebugDrawer* debugDrawer; 
 
 };
 

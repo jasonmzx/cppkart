@@ -40,9 +40,6 @@ void XJZoomEngine::Run()
 
   VehicleInputAdapter vehicleInputControl;
 
-  SharedPhysicsResource sharedPhysicsRessource;
-  PhysicsThread pT(&sharedPhysicsRessource);
-  pT.Start(vehicleInputControl.playerInputQueue);
 
   //Temp
 
@@ -138,6 +135,10 @@ terrainModelMatrix = glm::translate(glm::vec3(-5, -(100-20) / 2, -5))
   //* Bullet Physics Rendering Debug Tool
   BulletDebugDrawer* debugDrawer = new BulletDebugDrawer(shaderProgram.ID);
 
+  SharedPhysicsResource sharedPhysicsRessource;
+  PhysicsThread pT(&sharedPhysicsRessource, debugDrawer);
+  pT.Start(vehicleInputControl.playerInputQueue);
+
   //* ####### Terrain Geometry Instance
   VAO VAO1;
   VAO1.Bind();
@@ -194,8 +195,14 @@ terrainModelMatrix = glm::translate(glm::vec3(-5, -(100-20) / 2, -5))
   int32_t Running = 1;
   int32_t FullScreen = 0;
 
+  btDiscreteDynamicsWorld* physicsWorldPTR = sharedPhysicsRessource.getPhysicsWorld();
+
+  physicsWorldPTR->setDebugDrawer(debugDrawer);
+  
   //physicsWorld->dynamicsWorld->setDebugDrawer(debugDrawer);
-  //SDL_GL_SetSwapInterval(0); // turn vsync off and speed shit up drasitcally, bad design!!
+
+  
+  // SDL_GL_SetSwapInterval(0); // turn vsync off and speed shit up drasitcally, bad design!!
 
   //* ImGui State
 
@@ -328,8 +335,10 @@ terrainModelMatrix = glm::translate(glm::vec3(-5, -(100-20) / 2, -5))
     // brickTex.Bind();
     glUniform1i(useTextureLocation, GL_FALSE); 
     //debugDrawer->setDebugMode(btIDebugDraw::DBG_DrawWireframe);
+    
     if(show_debug_draw) {
-    //  physicsWorld->dynamicsWorld->debugDrawWorld();
+      physicsWorldPTR->debugDrawWorld();
+      debugDrawer->flushLines();
     }
     glUniform1i(useTextureLocation, GL_TRUE); 
 
@@ -346,9 +355,9 @@ terrainModelMatrix = glm::translate(glm::vec3(-5, -(100-20) / 2, -5))
 
     if(!camera.DEBUG) {
     auto targetVec = glm::vec3(vehiclePosition.x() + 1.0f, vehiclePosition.y() + 3.0f, vehiclePosition.z() - 5.0f);
-    auto dirVec = targetVec - camera.Position;
-    if (glm::distance2(targetVec, camera.Position) > 0.02f)
-      camera.Position += dirVec * 0.03f;
+    // auto dirVec = targetVec - camera.Position;
+    // if (glm::distance2(targetVec, camera.Position) > 0.02f)
+    //   camera.Position += dirVec * 0.03f;
 
     //Look at Vehicle:
 
@@ -366,7 +375,6 @@ terrainModelMatrix = glm::translate(glm::vec3(-5, -(100-20) / 2, -5))
 
     //BOX1.geom.Draw(modelMatrixLocation, terrainModelMatrix);
     
-    debugDrawer->flushLines();
 
 //    terrainGeom.Draw(modelMatrixLocation,terrainModelMatrix);
     

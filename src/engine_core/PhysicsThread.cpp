@@ -2,8 +2,8 @@
 
 #include <chrono>
 
-PhysicsThread::PhysicsThread(SharedPhysicsResource* sharedResource) 
-    : running(false), sharedRSRC(sharedResource) {
+PhysicsThread::PhysicsThread(SharedPhysicsResource* sharedResource, BulletDebugDrawer* debugDrawer)
+    : running(false), sharedRSRC(sharedResource), debugDrawer(debugDrawer) { // Modify this line
     // Constructor logic if needed
 }
 
@@ -29,9 +29,17 @@ void PhysicsThread::ThreadLoop(TSQueue<uint8_t>& playerInputQueue ) {
     PhysicsChunkManager terrainChunkManager("../src/ressources/Map_1K.png");
 
         // Duration of each tick (1/60th of a second)
-    auto tickDuration = std::chrono::milliseconds(1000 / 120);
+    auto tickDuration = std::chrono::milliseconds(1000 / 60);
+
+    if (debugDrawer) {
+            physicsWorld->dynamicsWorld->setDebugDrawer(debugDrawer);
+            sharedRSRC->UpdatePhysicsWorld(physicsWorld->dynamicsWorld);
+    }
 
     while (running) {
+
+        //physicsWorld->dynamicsWorld->debugDrawWorld();
+
         auto startTime = std::chrono::high_resolution_clock::now();
 
         btTransform vehicleTransform = vehiclePhysics.GetTransform();
@@ -40,6 +48,8 @@ void PhysicsThread::ThreadLoop(TSQueue<uint8_t>& playerInputQueue ) {
             vehiclePhysicsInfo vInfo;
             vInfo.transform = vehicleTransform;
             sharedRSRC->UpdateVehiclePhyInfo(vInfo);
+
+           // sharedRSRC->UpdatePhysicsWorld(physicsWorld->dynamicsWorld);
         }
         
         uint8_t input;
@@ -93,6 +103,9 @@ void PhysicsThread::ThreadLoop(TSQueue<uint8_t>& playerInputQueue ) {
         if (loopDuration < tickDuration) {
             std::this_thread::sleep_for(tickDuration - loopDuration);
         }
+
+        //debugDrawer->flushLines();
+
     
     }
 }
