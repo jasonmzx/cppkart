@@ -25,12 +25,15 @@ void PhysicsThread::Stop() {
 
 void PhysicsThread::ThreadLoop(TSQueue<uint8_t>& playerInputQueue ) {
 
+  //* ### Bullet Physics World Singleton Inst. ###
     PhysicsWorldSingleton *physicsWorld = PhysicsWorldSingleton::getInstance();
+
+  //* ### Terrain Chunk Physics Manager Inst. ###
     PhysicsChunkManager terrainChunkManager("../src/ressources/Map_1K.png");
 
     auto lastTime = std::chrono::high_resolution_clock::now();
     double accumulator = 0.0;
-    const double physicsTimestep = 1.0 / 60.0;
+    const double physicsTimestep = 0.25 / 60.0;
 
     if (debugDrawer) {
             physicsWorld->dynamicsWorld->setDebugDrawer(debugDrawer);
@@ -44,27 +47,6 @@ void PhysicsThread::ThreadLoop(TSQueue<uint8_t>& playerInputQueue ) {
         lastTime = currentTime;
         accumulator += frameTime;
 
-        // while (accumulator >= physicsTimestep) {
-        // physicsWorld->dynamicsWorld->stepSimulation(1.0f / 60.0f);
-        
-
-        // }
-
-        // //physicsWorld->dynamicsWorld->debugDrawWorld();
-
-        // auto startTime = std::chrono::high_resolution_clock::now();
-
-        // btTransform vehicleTransform = vehiclePhysics.GetTransform();
-
-        // if (sharedRSRC) {
-        //     vehiclePhysicsInfo vInfo;
-        //     vInfo.transform = vehicleTransform;
-        //     sharedRSRC->UpdateVehiclePhyInfo(vInfo);
-        //     sharedRSRC->SwapBuffers();
-
-        //    // sharedRSRC->UpdatePhysicsWorld(physicsWorld->dynamicsWorld);
-        // }
-        
         uint8_t input;
         while (playerInputQueue.TryPop(input)) {
             
@@ -89,11 +71,11 @@ void PhysicsThread::ThreadLoop(TSQueue<uint8_t>& playerInputQueue ) {
 
 
             // Process and print the input command
-            std::cout << "Input Received: " << static_cast<int>(input) << std::endl;
+            //std::cout << "Input Received: " << static_cast<int>(input) << std::endl;
         }
 
-                // Update physics as many times as required by the accumulated time
         while (accumulator >= physicsTimestep) {
+
             // Step the physics simulation
             physicsWorld->dynamicsWorld->stepSimulation(physicsTimestep);
 

@@ -20,10 +20,10 @@ public:
     void UpdateVehiclePhyInfo(const vehiclePhysicsInfo& data);
     vehiclePhysicsInfo GetVehiclePhyInfo();
 
+    void SwapBuffers();
+
     void UpdatePhysicsWorld(btDiscreteDynamicsWorld* physicsWorld);
     btDiscreteDynamicsWorld* getPhysicsWorld();
-
-    void SwapBuffers();
 
 private:
     vehiclePhysicsInfo playerVehicleBuffer[2];
@@ -32,7 +32,6 @@ private:
 
     std::mutex mutex_;
     btDiscreteDynamicsWorld* physicsWorld_;
-
 };
 
 

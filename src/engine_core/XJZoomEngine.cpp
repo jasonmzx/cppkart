@@ -35,24 +35,20 @@ glm::mat4 WheelMatrix = glm::scale(glm::vec3(0.25f, 0.25f, 0.25f));
 glm::mat4 vehicleModelMatrix = glm::scale(glm::vec3(1.0f));
 }
 
+glm::vec3 lerpVec3(const glm::vec3 &start, const glm::vec3 &end, float factor) {
+    return start + factor * (end - start);
+}
+
+
 void XJZoomEngine::Run()
 {
 
   VehicleInputAdapter vehicleInputControl;
 
 
-  //Temp
-
-  //VehiclePhysics vPhy;
-
-
   int carTexWidth, carTexHeight, carTexChannels;
   auto carTextureData = stbi_load("../src/ressources/first_car.png", &carTexWidth, &carTexHeight, &carTexChannels, STBI_rgb_alpha);
   assert(carTextureData);
-
-  //* ### Bullet Physics World Singleton Instanciation ###
-
-  //PhysicsWorldSingleton *physicsWorld = PhysicsWorldSingleton::getInstance();
 
   //* ########## WINDOWING STUFF ############
   uint32_t WindowFlags = SDL_WINDOW_OPENGL;
@@ -69,7 +65,6 @@ void XJZoomEngine::Run()
   double prevTime = SDL_GetTicks(); // Window Tick Rate (SDL thing)
 
   gladLoadGLLoader(SDL_GL_GetProcAddress);
-
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -112,19 +107,15 @@ void XJZoomEngine::Run()
   glEnable(GL_DEPTH_TEST);
 
 
-
-
   // ------ Below is the mess i need to clean up eventually ------
 
   // Load Managers:
-  SceneManager sceneManager;
   //! terrainModelMatrix = glm::translate(glm::vec3(-5, -(terrainChunkManager.globalChunkMax - terrainChunkManager.globalChunkMin) / 2, -5)) 
   //! * glm::scale(glm::vec3(1000.0f, 190.0f, 1000.0f));
 
 // Really bad hard code, todo fix this after jitter is over
 terrainModelMatrix = glm::translate(glm::vec3(-5, -(18.1) / 2, -5)) 
  * glm::scale(glm::vec3(1000.0f, 190.0f, 1000.0f));
-
 
   // Generates Shader object using shaders default.vert and default.frag
   Shader shaderProgram("../src/rendering/shader/default.vert", "../src/rendering/shader/default.frag");
@@ -200,12 +191,12 @@ terrainModelMatrix = glm::translate(glm::vec3(-5, -(18.1) / 2, -5))
 
   physicsWorldPTR->setDebugDrawer(debugDrawer);
   
-  // SDL_GL_SetSwapInterval(0); // turn vsync off and speed shit up drasitcally, bad design!!
+  //SDL_GL_SetSwapInterval(0); // turn vsync off and speed shit up drasitcally, bad design!!
 
   //* ImGui State
 
   bool show_debug_draw = true;
-
+  bool interpolated_transforms = false;
 
   btTransform lastVehicleTransform;
   bool isFirstUpdate = true; // To handle the first frame case
@@ -213,7 +204,6 @@ terrainModelMatrix = glm::translate(glm::vec3(-5, -(18.1) / 2, -5))
   // #### MAIN GAME LOOP THAT ENGINE IS RUNNING:
   while (Running)
   {
-
 
 
     //* POLLING INPUTS for Multiple Keyboard Input and Handle Simultaneously?
@@ -276,6 +266,7 @@ terrainModelMatrix = glm::translate(glm::vec3(-5, -(18.1) / 2, -5))
         if (ImGui::BeginTabItem("General")) {
             ImGui::Text("%s", formatted_fps_STR);
             ImGui::Checkbox("Physics Debug Draw (Bullet3)", &show_debug_draw);
+            ImGui::Checkbox("Interpolate Vehicle Transforms", &interpolated_transforms);
             ImGui::EndTabItem();
         }
 
@@ -292,8 +283,6 @@ terrainModelMatrix = glm::translate(glm::vec3(-5, -(18.1) / 2, -5))
     }
     ImGui::End();
   //* ================= End of ImGUI setup ================
-
-    //physicsWorld->dynamicsWorld->stepSimulation(1.0f / 60.0f);
 
 
     vehiclePhysicsInfo vI = sharedPhysicsRessource.GetVehiclePhyInfo();
@@ -316,16 +305,11 @@ terrainModelMatrix = glm::translate(glm::vec3(-5, -(18.1) / 2, -5))
     // Update lastVehicleTransform at the end of the loop
     lastVehicleTransform = vehicleTransform;
 
-    //* ==== Dynamic World Loading ====
-    
+    if(interpolated_transforms){
+      vehiclePosition = interpolatedPosition;
+    }
 
-
-    // //player positions (vehicle)
-    // btScalar pXpos = vehiclePosition.getX();
-    // btScalar pYpos = vehiclePosition.getY();
-    // btScalar pZpos = vehiclePosition.getZ();
-
-    // terrainChunkManager.update(pXpos, pZpos);
+    //TODO: ==== Vehicle Rendering Code, To be Abstracted from this class ====
 
     btQuaternion vehicleRotation = vehicleTransform.getRotation();
 
@@ -335,13 +319,14 @@ terrainModelMatrix = glm::translate(glm::vec3(-5, -(18.1) / 2, -5))
     glm::mat4 rotation = glm::mat4_cast(glm::quat(vehicleRotation.w(), vehicleRotation.x(), vehicleRotation.y(), vehicleRotation.z()));
     glm::mat4 rotate90DEG_Adjustment = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-    vehicleModelMatrix = translation * rotation * rotate90DEG_Adjustment * glm::scale(glm::vec3(0.4f));
+    vehicleModelMatrix = translation * rotation * rotate90DEG_Adjustment * glm::scale(glm::vec3(0.75f));
     // WheelMatrix = translation * glm::scale(glm::vec3(0.25f));
 
     //! PROTOTYPING: VEHICLE RENDERING CODE
 
     // Specify the color of the background
     glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
+    
     // Clean the back buffer and depth buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     // Tell OpenGL which Shader Program we want to use
@@ -353,8 +338,11 @@ terrainModelMatrix = glm::translate(glm::vec3(-5, -(18.1) / 2, -5))
     //debugDrawer->setDebugMode(btIDebugDraw::DBG_DrawWireframe);
     
     if(show_debug_draw) {
-      physicsWorldPTR->debugDrawWorld();
-      debugDrawer->flushLines();
+
+        physicsWorldPTR->debugDrawWorld();
+        debugDrawer->flushLines();
+
+
     }
     glUniform1i(useTextureLocation, GL_TRUE); 
 
@@ -371,15 +359,20 @@ terrainModelMatrix = glm::translate(glm::vec3(-5, -(18.1) / 2, -5))
 
     if(!camera.DEBUG) {
     
-    auto targetVec = glm::vec3(interpolatedPosition.x() + 1.0f, interpolatedPosition.y() + 3.0f, interpolatedPosition.z() - 5.0f);
+    auto targetVec = glm::vec3(vehiclePosition.x() + 1.0f, vehiclePosition.y() + 3.0f, vehiclePosition.z() - 5.0f);
     auto dirVec = targetVec - camera.Position;
     if (glm::distance2(targetVec, camera.Position) > 0.02f)
         camera.Position += dirVec * 0.03f;
 
-    camera.LookAt.x = interpolatedPosition.x();
-    camera.LookAt.y = interpolatedPosition.y();
-    camera.LookAt.z = interpolatedPosition.z();
+    glm::vec3 lookAtPosition = glm::vec3(vehiclePosition.x(), vehiclePosition.y(), vehiclePosition.z());
 
+
+
+    // camera.LookAt.x = vehiclePosition.x();
+    // camera.LookAt.y = vehiclePosition.y();
+    // camera.LookAt.z = vehiclePosition.z();
+
+ camera.LookAt = lerpVec3(camera.LookAt, lookAtPosition, 0.2f);
     } else {
     camera.Inputs(Window);
     }
@@ -389,11 +382,6 @@ terrainModelMatrix = glm::translate(glm::vec3(-5, -(18.1) / 2, -5))
 
     //*############## OpenGL - Draw Calls ################
 
-    //BOX1.geom.Draw(modelMatrixLocation, terrainModelMatrix);
-    
-
-//    terrainGeom.Draw(modelMatrixLocation,terrainModelMatrix);
-    
     vehicle.GetGeometry().Draw(modelMatrixLocation, vehicleModelMatrix, 0, false);
 
     //! idk why i'm not binding textures and it's still workign...?
