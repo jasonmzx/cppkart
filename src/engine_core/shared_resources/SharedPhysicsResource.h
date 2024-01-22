@@ -23,8 +23,13 @@ public:
     void UpdatePhysicsWorld(btDiscreteDynamicsWorld* physicsWorld);
     btDiscreteDynamicsWorld* getPhysicsWorld();
 
+    void SwapBuffers();
+
 private:
-    vehiclePhysicsInfo playerVehicle;
+    vehiclePhysicsInfo playerVehicleBuffer[2];
+    int rI = 0; //Read 
+    int wI = 1; //Write
+
     std::mutex mutex_;
     btDiscreteDynamicsWorld* physicsWorld_;
 

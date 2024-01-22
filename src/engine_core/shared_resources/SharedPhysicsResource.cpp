@@ -2,12 +2,17 @@
 
 void SharedPhysicsResource::UpdateVehiclePhyInfo(const vehiclePhysicsInfo& data) {
     std::lock_guard<std::mutex> lock(mutex_);
-    playerVehicle = data;
+    playerVehicleBuffer[wI] = data;
 }
 
 vehiclePhysicsInfo SharedPhysicsResource::GetVehiclePhyInfo() {
     std::lock_guard<std::mutex> lock(mutex_);
-    return playerVehicle;
+    return playerVehicleBuffer[rI];
+}
+
+void SharedPhysicsResource::SwapBuffers() {
+    std::lock_guard<std::mutex> lock(mutex_);
+    std::swap(rI, wI); //Write becomes read
 }
 
 void SharedPhysicsResource::UpdatePhysicsWorld(btDiscreteDynamicsWorld* physicsWorld) {

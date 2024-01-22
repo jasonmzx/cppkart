@@ -28,8 +28,9 @@ void PhysicsThread::ThreadLoop(TSQueue<uint8_t>& playerInputQueue ) {
     PhysicsWorldSingleton *physicsWorld = PhysicsWorldSingleton::getInstance();
     PhysicsChunkManager terrainChunkManager("../src/ressources/Map_1K.png");
 
-        // Duration of each tick (1/60th of a second)
-    auto tickDuration = std::chrono::milliseconds(1000 / 60);
+    auto lastTime = std::chrono::high_resolution_clock::now();
+    double accumulator = 0.0;
+    const double physicsTimestep = 1.0 / 60.0;
 
     if (debugDrawer) {
             physicsWorld->dynamicsWorld->setDebugDrawer(debugDrawer);
@@ -37,23 +38,34 @@ void PhysicsThread::ThreadLoop(TSQueue<uint8_t>& playerInputQueue ) {
     }
 
     while (running) {
+        
+        auto currentTime = std::chrono::high_resolution_clock::now();
+        double frameTime = std::chrono::duration_cast<std::chrono::duration<double>>(currentTime - lastTime).count();
+        lastTime = currentTime;
+        accumulator += frameTime;
 
-        //physicsWorld->dynamicsWorld->debugDrawWorld();
+        // while (accumulator >= physicsTimestep) {
+        // physicsWorld->dynamicsWorld->stepSimulation(1.0f / 60.0f);
+        
 
-        auto startTime = std::chrono::high_resolution_clock::now();
+        // }
 
-        btTransform vehicleTransform = vehiclePhysics.GetTransform();
+        // //physicsWorld->dynamicsWorld->debugDrawWorld();
 
-        if (sharedRSRC) {
-            vehiclePhysicsInfo vInfo;
-            vInfo.transform = vehicleTransform;
-            sharedRSRC->UpdateVehiclePhyInfo(vInfo);
+        // auto startTime = std::chrono::high_resolution_clock::now();
 
-           // sharedRSRC->UpdatePhysicsWorld(physicsWorld->dynamicsWorld);
-        }
+        // btTransform vehicleTransform = vehiclePhysics.GetTransform();
+
+        // if (sharedRSRC) {
+        //     vehiclePhysicsInfo vInfo;
+        //     vInfo.transform = vehicleTransform;
+        //     sharedRSRC->UpdateVehiclePhyInfo(vInfo);
+        //     sharedRSRC->SwapBuffers();
+
+        //    // sharedRSRC->UpdatePhysicsWorld(physicsWorld->dynamicsWorld);
+        // }
         
         uint8_t input;
-
         while (playerInputQueue.TryPop(input)) {
             
             auto startTime = std::chrono::high_resolution_clock::now();
@@ -80,32 +92,39 @@ void PhysicsThread::ThreadLoop(TSQueue<uint8_t>& playerInputQueue ) {
             std::cout << "Input Received: " << static_cast<int>(input) << std::endl;
         }
 
+                // Update physics as many times as required by the accumulated time
+        while (accumulator >= physicsTimestep) {
+            // Step the physics simulation
+            physicsWorld->dynamicsWorld->stepSimulation(physicsTimestep);
 
-        btVector3 vehiclePosition = vehicleTransform.getOrigin();
+            // Get the latest vehicle transform and update shared resource
+            btTransform vehicleTransform = vehiclePhysics.GetTransform();
+            if (sharedRSRC) {
+                vehiclePhysicsInfo vInfo;
+                vInfo.transform = vehicleTransform;
+                sharedRSRC->UpdateVehiclePhyInfo(vInfo);
+                sharedRSRC->SwapBuffers();
+            }
+
+            // Decrease the accumulated time
+            accumulator -= physicsTimestep;
+        }
+
+        btVector3 vehiclePosition = vehiclePhysics.GetTransform().getOrigin();
         
-            //player positions (vehicle)
+        //player positions (vehicle)
+        
         btScalar pXpos = vehiclePosition.getX();
         btScalar pYpos = vehiclePosition.getY();
         btScalar pZpos = vehiclePosition.getZ();
 
         terrainChunkManager.update(pXpos, pZpos);
         
-        physicsWorld->dynamicsWorld->stepSimulation(1.0f / 60.0f);
         
         // std::cout << "Thread is running..." << std::endl;
         // Sleep or wait logic can be added here to control update rate
     
-            // Calculate the duration of the loop execution
-        auto endTime = std::chrono::high_resolution_clock::now();
-        auto loopDuration = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
 
-        // Sleep if the loop executed faster than the tick duration
-        if (loopDuration < tickDuration) {
-            std::this_thread::sleep_for(tickDuration - loopDuration);
-        }
 
-        //debugDrawer->flushLines();
-
-    
     }
 }

@@ -121,7 +121,8 @@ void XJZoomEngine::Run()
   //! terrainModelMatrix = glm::translate(glm::vec3(-5, -(terrainChunkManager.globalChunkMax - terrainChunkManager.globalChunkMin) / 2, -5)) 
   //! * glm::scale(glm::vec3(1000.0f, 190.0f, 1000.0f));
 
-terrainModelMatrix = glm::translate(glm::vec3(-5, -(100-20) / 2, -5)) 
+// Really bad hard code, todo fix this after jitter is over
+terrainModelMatrix = glm::translate(glm::vec3(-5, -(18.1) / 2, -5)) 
  * glm::scale(glm::vec3(1000.0f, 190.0f, 1000.0f));
 
 
@@ -199,15 +200,15 @@ terrainModelMatrix = glm::translate(glm::vec3(-5, -(100-20) / 2, -5))
 
   physicsWorldPTR->setDebugDrawer(debugDrawer);
   
-  //physicsWorld->dynamicsWorld->setDebugDrawer(debugDrawer);
-
-  
   // SDL_GL_SetSwapInterval(0); // turn vsync off and speed shit up drasitcally, bad design!!
 
   //* ImGui State
 
   bool show_debug_draw = true;
 
+
+  btTransform lastVehicleTransform;
+  bool isFirstUpdate = true; // To handle the first frame case
 
   // #### MAIN GAME LOOP THAT ENGINE IS RUNNING:
   while (Running)
@@ -295,15 +296,30 @@ terrainModelMatrix = glm::translate(glm::vec3(-5, -(100-20) / 2, -5))
     //physicsWorld->dynamicsWorld->stepSimulation(1.0f / 60.0f);
 
 
-    //btTransform vehicleTransform = vPhy.GetTransform();
     vehiclePhysicsInfo vI = sharedPhysicsRessource.GetVehiclePhyInfo();
     btTransform vehicleTransform = vI.transform;
 
+    if (isFirstUpdate) {
+        lastVehicleTransform = vehicleTransform;
+        isFirstUpdate = false;
+    }
 
     btVector3 vehiclePosition = vehicleTransform.getOrigin();
+    btVector3 lastVehiclePosition = lastVehicleTransform.getOrigin();
+
+    // Interpolation factor
+    float interpolationFactor = 0.5f; // Adjust this value as needed
+
+    // Interpolated position
+    btVector3 interpolatedPosition = lastVehiclePosition.lerp(vehiclePosition, interpolationFactor);
+
+    // Update lastVehicleTransform at the end of the loop
+    lastVehicleTransform = vehicleTransform;
 
     //* ==== Dynamic World Loading ====
     
+
+
     // //player positions (vehicle)
     // btScalar pXpos = vehiclePosition.getX();
     // btScalar pYpos = vehiclePosition.getY();
@@ -354,16 +370,16 @@ terrainModelMatrix = glm::translate(glm::vec3(-5, -(100-20) / 2, -5))
     //* #### Smooth Camera (For Driving)
 
     if(!camera.DEBUG) {
-    auto targetVec = glm::vec3(vehiclePosition.x() + 1.0f, vehiclePosition.y() + 3.0f, vehiclePosition.z() - 5.0f);
-    // auto dirVec = targetVec - camera.Position;
-    // if (glm::distance2(targetVec, camera.Position) > 0.02f)
-    //   camera.Position += dirVec * 0.03f;
+    
+    auto targetVec = glm::vec3(interpolatedPosition.x() + 1.0f, interpolatedPosition.y() + 3.0f, interpolatedPosition.z() - 5.0f);
+    auto dirVec = targetVec - camera.Position;
+    if (glm::distance2(targetVec, camera.Position) > 0.02f)
+        camera.Position += dirVec * 0.03f;
 
-    //Look at Vehicle:
+    camera.LookAt.x = interpolatedPosition.x();
+    camera.LookAt.y = interpolatedPosition.y();
+    camera.LookAt.z = interpolatedPosition.z();
 
-    camera.LookAt.x = vehiclePosition.x();
-    camera.LookAt.y = vehiclePosition.y();
-    camera.LookAt.z = vehiclePosition.z();
     } else {
     camera.Inputs(Window);
     }
