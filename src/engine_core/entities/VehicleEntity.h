@@ -7,7 +7,6 @@
 class VehicleEntity
 {
 private:
-    VehiclePhysics vehiclePhysics;
     RenderableGeometry vehicleGeometry;
     RenderableGeometry vehicleWheelGeometry;
 
@@ -17,12 +16,9 @@ public:
                   VAO *vaoPtr1, VBO *vboPtr1, EBO *eboPtr1, const std::vector<GLfloat> &wheelVertices, const std::vector<GLuint> &wheelIndices);
 
     // Render Functions to be called every iteration
-    void renderWheelGeometries(GLuint modelMatrixLocation);
-
-    void updateVehicleControls(const Uint8 *state);
+    void renderWheelGeometries(GLuint modelMatrixLocation, const btRaycastVehicle* vehicle);
 
     // Getter for direct access to VehiclePhysics
-    VehiclePhysics &GetPhysics();
     RenderableGeometry &GetGeometry();
 };
 

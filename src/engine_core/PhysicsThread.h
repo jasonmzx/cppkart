@@ -8,18 +8,37 @@
 // Core Imports
 #include "singletons/PhysicsWorldSingleton.h"
 
+#include "bullet_models/VehiclePhysics.h"
+
+#include "managers/PhysicsChunkManager.h"
+
+#include "./data_structs/TSQueue.cpp"
+
+#include "shared_resources/SharedPhysicsResource.h"
+
+#include "engine_core/geometries/BulletDebugDrawer.cpp"
+
 class PhysicsThread {
 public:
-    PhysicsThread();
+     PhysicsThread(SharedPhysicsResource* sharedResource, BulletDebugDrawer* debugDrawer);
     ~PhysicsThread();
+    
 
-    void Start();
+    void Start(TSQueue<uint8_t>& playerInputQueue);
     void Stop();
 
+
 private:
-    void ThreadLoop();
+    void ThreadLoop(TSQueue<uint8_t>& playerInputQueue);
     std::thread thread;
     std::atomic<bool> running;
+
+    SharedPhysicsResource* sharedRSRC;  // Pointer to shared ressource with main thread
+
+    //* Actual Physics Element in the World
+    VehiclePhysics vehiclePhysics;
+    BulletDebugDrawer* debugDrawer; 
+
 };
 
 #endif

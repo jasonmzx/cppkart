@@ -6,9 +6,6 @@
 #include <bullet/BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h>
 #include <bullet/BulletDynamics/Vehicle/btRaycastVehicle.h>
 
-#include <bullet/btBulletCollisionCommon.h>
-#include <bullet/btBulletDynamicsCommon.h>
-
 class PhysicsWorldSingleton {
 private:
     PhysicsWorldSingleton();

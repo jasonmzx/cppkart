@@ -35,20 +35,14 @@ glm::mat4 WheelMatrix = glm::scale(glm::vec3(0.25f, 0.25f, 0.25f));
 glm::mat4 vehicleModelMatrix = glm::scale(glm::vec3(1.0f));
 }
 
+glm::vec3 lerpVec3(const glm::vec3 &start, const glm::vec3 &end, float factor) {
+    return start + factor * (end - start);
+}
+
 void XJZoomEngine::Run()
 {
 
-  PhysicsThread pT; 
-  pT.Start();
-
-
-  int carTexWidth, carTexHeight, carTexChannels;
-  auto carTextureData = stbi_load("../src/ressources/first_car.png", &carTexWidth, &carTexHeight, &carTexChannels, STBI_rgb_alpha);
-  assert(carTextureData);
-
-  //* ### Bullet Physics World Singleton Instanciation ###
-
-  PhysicsWorldSingleton *physicsWorld = PhysicsWorldSingleton::getInstance();
+  VehicleInputAdapter vehicleInputControl;
 
   //* ########## WINDOWING STUFF ############
   uint32_t WindowFlags = SDL_WINDOW_OPENGL;
@@ -66,7 +60,6 @@ void XJZoomEngine::Run()
 
   gladLoadGLLoader(SDL_GL_GetProcAddress);
 
-
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -78,45 +71,25 @@ void XJZoomEngine::Run()
     ImGui::StyleColorsDark();
     //ImGui::StyleColorsLight();
 
-    // Setup Platform/Renderer backends
+    // Setup Platform/Renderer backends for Imgui
     const char* glsl_version = "#version 330 core";
     ImGui_ImplSDL2_InitForOpenGL(Window, SDL_GL_Context);
     ImGui_ImplOpenGL3_Init(glsl_version);
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-  GLuint carTexID;
-  glGenTextures(1, &carTexID);
-  glBindTexture(GL_TEXTURE_2D, carTexID);
-
-  // Depending on the number of channels, pick the appropriate format
-  GLenum carTexFormat;
-  if (carTexChannels == 1)
-    carTexFormat = GL_RED;
-  else if (carTexChannels == 3)
-    carTexFormat = GL_RGB;
-  else if (carTexChannels == 4)
-    carTexFormat = GL_RGBA;
-
-  //* Texturing Configuration Setup for OpenGL
-
-  glTexImage2D(GL_TEXTURE_2D, 0, carTexFormat, carTexWidth, carTexHeight, 0, carTexFormat, GL_UNSIGNED_BYTE, carTextureData);
-  glGenerateMipmap(GL_TEXTURE_2D);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
   glViewport(0, 0, WinWidth, WinHeight); //(X1, Y1 bottom left) to (X2, Y2, top right)
   glEnable(GL_DEPTH_TEST);
-
-
 
 
   // ------ Below is the mess i need to clean up eventually ------
 
   // Load Managers:
-  SceneManager sceneManager;
-  PhysicsChunkManager terrainChunkManager("../src/ressources/Map_1K.png");
-  terrainModelMatrix = glm::translate(glm::vec3(-5, -(terrainChunkManager.globalChunkMax - terrainChunkManager.globalChunkMin) / 2, -5)) 
-  * glm::scale(glm::vec3(1000.0f, 190.0f, 1000.0f));
+  //! terrainModelMatrix = glm::translate(glm::vec3(-5, -(terrainChunkManager.globalChunkMax - terrainChunkManager.globalChunkMin) / 2, -5)) 
+  //! * glm::scale(glm::vec3(1000.0f, 190.0f, 1000.0f));
+
+// Really bad hard code, todo fix this after jitter is over
+terrainModelMatrix = glm::translate(glm::vec3(-5, -(18.1) / 2, -5)) 
+ * glm::scale(glm::vec3(1000.0f, 190.0f, 1000.0f));
 
   // Generates Shader object using shaders default.vert and default.frag
   Shader shaderProgram("../src/rendering/shader/default.vert", "../src/rendering/shader/default.frag");
@@ -127,6 +100,10 @@ void XJZoomEngine::Run()
 
   //* Bullet Physics Rendering Debug Tool
   BulletDebugDrawer* debugDrawer = new BulletDebugDrawer(shaderProgram.ID);
+
+  SharedPhysicsResource sharedPhysicsRessource;
+  PhysicsThread pT(&sharedPhysicsRessource, debugDrawer);
+  pT.Start(vehicleInputControl.playerInputQueue);
 
   //* ####### Terrain Geometry Instance
   VAO VAO1;
@@ -146,8 +123,6 @@ void XJZoomEngine::Run()
   VAO3.Bind();
   VBO VBO3(VW_vertices);
   EBO EBO3(VW_indices);
-
-  //* ####### 
 
   terrainMapLoader(indices, vertices, "../src/ressources/Map_1K.png"); //! EXPERIMENTAL
 
@@ -172,35 +147,45 @@ void XJZoomEngine::Run()
   // !Texture, TODO ground texture, for terrain
    Texture cobbleTex((texPath + "cobble.png").c_str(), GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
    cobbleTex.texUnit(shaderProgram, "tex0", 0);
-  // Enables the Depth Buffer
+
+  Texture pCarTex("../src/ressources/first_car.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
+  pCarTex.texUnit(shaderProgram, "tex0", 0);  
 
   // Creates camera object
   Camera camera(WinWidth, WinHeight, glm::vec3(0.0f, 0.0f, 2.0f));
 
   //Keyboard Input:
-  const Uint8 *state = SDL_GetKeyboardState(NULL);
+  const uint8_t *state = SDL_GetKeyboardState(NULL);
 
   //Application Window State
   int32_t Running = 1;
   int32_t FullScreen = 0;
 
-  physicsWorld->dynamicsWorld->setDebugDrawer(debugDrawer);
+  btDiscreteDynamicsWorld* physicsWorldPTR = sharedPhysicsRessource.getPhysicsWorld();
+  physicsWorldPTR->setDebugDrawer(debugDrawer);
+  
   //SDL_GL_SetSwapInterval(0); // turn vsync off and speed shit up drasitcally, bad design!!
 
   //* ImGui State
 
   bool show_debug_draw = true;
+  bool interpolated_transforms = false;
 
+  //* Physics Interpolation State (for vehicle only rn)
+
+  btTransform lastVehicleTransform;
+  bool isFirstUpdate = true; // To handle the first frame case
 
   // #### MAIN GAME LOOP THAT ENGINE IS RUNNING:
   while (Running)
   {
 
-    //* POLLING INPUTS for Multiple Keyboard Input and Handle Simultaneously?
+
+  //* POLLING INPUTS for Multiple Keyboard Input and Handle Simultaneously?
 
   SDL_PumpEvents(); 
   state = SDL_GetKeyboardState(NULL);
-  vehicle.updateVehicleControls(state); //This function handles SDL Inputs for the Vehicle's controls
+  vehicleInputControl.vehicleKeyboardInput(state);
 
     SDL_Event Event;
     while (SDL_PollEvent(&Event))
@@ -253,13 +238,15 @@ void XJZoomEngine::Run()
         if (ImGui::BeginTabItem("General")) {
             ImGui::Text("%s", formatted_fps_STR);
             ImGui::Checkbox("Physics Debug Draw (Bullet3)", &show_debug_draw);
+            ImGui::Checkbox("Interpolate Vehicle Transforms", &interpolated_transforms);
             ImGui::EndTabItem();
         }
 
         // Tab for Vehicle
         if (ImGui::BeginTabItem("Vehicle Debug")) {
 
-            std::string v_debug_str = vehicle.GetPhysics().debugStateSTR(); 
+            //std::string v_debug_str = vPhy.debugStateSTR(); 
+            std::string v_debug_str = "helo";
             ImGui::Text("%s", v_debug_str.c_str());
             ImGui::EndTabItem();
         }
@@ -269,20 +256,31 @@ void XJZoomEngine::Run()
     ImGui::End();
   //* ================= End of ImGUI setup ================
 
-    physicsWorld->dynamicsWorld->stepSimulation(1.0f / 60.0f);
+    vehiclePhysicsInfo vI = sharedPhysicsRessource.GetVehiclePhyInfo();
+    btTransform vehicleTransform = vI.transform;
 
+    if (isFirstUpdate) {
+        lastVehicleTransform = vehicleTransform;
+        isFirstUpdate = false;
+    }
 
-    btTransform vehicleTransform = vehicle.GetPhysics().GetTransform();
     btVector3 vehiclePosition = vehicleTransform.getOrigin();
+    btVector3 lastVehiclePosition = lastVehicleTransform.getOrigin();
 
-    //* ==== Dynamic World Loading ====
-    
-    //player positions (vehicle)
-    btScalar pXpos = vehiclePosition.getX();
-    btScalar pYpos = vehiclePosition.getY();
-    btScalar pZpos = vehiclePosition.getZ();
+    // Interpolation factor
+    float interpolationFactor = 0.5f; // Adjust this value as needed
 
-    terrainChunkManager.update(pXpos, pZpos);
+    // Interpolated position
+    btVector3 interpolatedPosition = lastVehiclePosition.lerp(vehiclePosition, interpolationFactor);
+
+    // Update lastVehicleTransform at the end of the loop
+    lastVehicleTransform = vehicleTransform;
+
+    if(interpolated_transforms){
+      vehiclePosition = interpolatedPosition;
+    }
+
+    //TODO: ==== Vehicle Rendering Code, To be Abstracted from this class ====
 
     btQuaternion vehicleRotation = vehicleTransform.getRotation();
 
@@ -292,13 +290,14 @@ void XJZoomEngine::Run()
     glm::mat4 rotation = glm::mat4_cast(glm::quat(vehicleRotation.w(), vehicleRotation.x(), vehicleRotation.y(), vehicleRotation.z()));
     glm::mat4 rotate90DEG_Adjustment = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-    vehicleModelMatrix = translation * rotation * rotate90DEG_Adjustment * glm::scale(glm::vec3(0.4f));
+    vehicleModelMatrix = translation * rotation * rotate90DEG_Adjustment * glm::scale(glm::vec3(0.75f));
     // WheelMatrix = translation * glm::scale(glm::vec3(0.25f));
 
     //! PROTOTYPING: VEHICLE RENDERING CODE
 
     // Specify the color of the background
     glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
+    
     // Clean the back buffer and depth buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     // Tell OpenGL which Shader Program we want to use
@@ -308,54 +307,47 @@ void XJZoomEngine::Run()
     // brickTex.Bind();
     glUniform1i(useTextureLocation, GL_FALSE); 
     //debugDrawer->setDebugMode(btIDebugDraw::DBG_DrawWireframe);
+    
     if(show_debug_draw) {
-      physicsWorld->dynamicsWorld->debugDrawWorld();
+
+        physicsWorldPTR->debugDrawWorld();
+        debugDrawer->flushLines();
+
+
     }
     glUniform1i(useTextureLocation, GL_TRUE); 
 
-    //* ###### CAMERA #######
+  //* ###### CAMERA #######
 
     camera.DEBUG = false;
 
-    //* naive approach (hard offsets camera, bad for steering)
-    //  camera.Position.x = vehiclePosition.x() + 0.5f;
-    //  camera.Position.y = vehiclePosition.y() + 2.0f;
-    //  camera.Position.z = vehiclePosition.z() - 3.0f;
-
-    //* #### Smooth Camera (For Driving)
-
     if(!camera.DEBUG) {
-    auto targetVec = glm::vec3(vehiclePosition.x() + 1.0f, vehiclePosition.y() + 3.0f, vehiclePosition.z() - 5.0f);
-    auto dirVec = targetVec - camera.Position;
-    if (glm::distance2(targetVec, camera.Position) > 0.02f)
-      camera.Position += dirVec * 0.03f;
-
-    //Look at Vehicle:
-
-    camera.LookAt.x = vehiclePosition.x();
-    camera.LookAt.y = vehiclePosition.y();
-    camera.LookAt.z = vehiclePosition.z();
-    } else {
-    camera.Inputs(Window);
-    }
-
-    camera.Matrix(45.0f, 0.1f, 1000.0f, shaderProgram, "camMatrix");
-    //camera.Matrix(45.0f, 0.1f, 100.0f, terrainShaderProgram, "camMatrix");
-
-    //*############## OpenGL - Draw Calls ################
-
-    //BOX1.geom.Draw(modelMatrixLocation, terrainModelMatrix);
     
-    debugDrawer->flushLines();
+      auto targetVec = glm::vec3(vehiclePosition.x() + 1.0f, vehiclePosition.y() + 3.0f, vehiclePosition.z() - 5.0f); //* Camera Offset
+      auto dirVec = targetVec - camera.Position;
+      
+      if (glm::distance2(targetVec, camera.Position) > 0.02f)
+        camera.Position += dirVec * 0.03f;
 
-//    terrainGeom.Draw(modelMatrixLocation,terrainModelMatrix);
+      glm::vec3 lookAtPosition = glm::vec3(vehiclePosition.x(), vehiclePosition.y(), vehiclePosition.z());
+      // camera.LookAt = lookAtPosition; //Naive Approach
+
+      camera.LookAt = lerpVec3(camera.LookAt, lookAtPosition, 0.35f);
     
+    } else { camera.Inputs(Window); }
+
+    camera.Matrix(45.0f, 0.1f, 1000.0f, shaderProgram, "camMatrix"); //! IMPORTANT
+
+  //*############## OpenGL - Draw Calls ################
+
+    pCarTex.Bind();
     vehicle.GetGeometry().Draw(modelMatrixLocation, vehicleModelMatrix, 0, false);
+    pCarTex.Unbind();
 
     //! idk why i'm not binding textures and it's still workign...?
     // glBindTexture(GL_TEXTURE_2D, carTexID);
 
-    vehicle.renderWheelGeometries(modelMatrixLocation);
+    //vehicle.renderWheelGeometries(modelMatrixLocation, vPhy.vehicle);
 
     //! All Draw Calls below use no Texturing, and just Positonal coloring:
 
@@ -377,10 +369,7 @@ void XJZoomEngine::Run()
 
     glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(bulletModelMatrix));
 
-    glBindTexture(GL_TEXTURE_2D, carTexID);
-
     //ImGUI Render calls
-
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
@@ -391,10 +380,8 @@ void XJZoomEngine::Run()
   }
 
   //* ============ Cleanup of Application ===========
+  pT.Stop(); //Stopping of Physics Thread
 
-  pT.Stop();
-
-  glDeleteTextures(1, &carTexID);
   shaderProgram.Delete();
 
   // Shutdown for ImGUI
@@ -402,9 +389,10 @@ void XJZoomEngine::Run()
   ImGui_ImplSDL2_Shutdown();
   ImGui::DestroyContext();
 
-  //Static Ressource freeing
-  stbi_image_free(carTextureData); //TODO: use texture class instead of this
+  //Free Static Ressources (Textures, Models, etc...)
+
   cobbleTex.Delete();
+  pCarTex.Delete();
 
 }
 
