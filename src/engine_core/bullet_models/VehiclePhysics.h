@@ -8,6 +8,8 @@ private:
     btRigidBody* vehicleRigidBody;
     btVehicleRaycaster* vehicleRayCaster;
 
+    btDefaultMotionState *vehicleMotionState;
+
     btRaycastVehicle::btVehicleTuning tuning;
 
     btScalar VEHICLE_SCALE;

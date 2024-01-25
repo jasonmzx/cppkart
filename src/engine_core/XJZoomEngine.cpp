@@ -39,12 +39,10 @@ glm::vec3 lerpVec3(const glm::vec3 &start, const glm::vec3 &end, float factor) {
     return start + factor * (end - start);
 }
 
-
 void XJZoomEngine::Run()
 {
 
   VehicleInputAdapter vehicleInputControl;
-
 
   int carTexWidth, carTexHeight, carTexChannels;
   auto carTextureData = stbi_load("../src/ressources/first_car.png", &carTexWidth, &carTexHeight, &carTexChannels, STBI_rgb_alpha);
@@ -77,7 +75,7 @@ void XJZoomEngine::Run()
     ImGui::StyleColorsDark();
     //ImGui::StyleColorsLight();
 
-    // Setup Platform/Renderer backends
+    // Setup Platform/Renderer backends for Imgui
     const char* glsl_version = "#version 330 core";
     ImGui_ImplSDL2_InitForOpenGL(Window, SDL_GL_Context);
     ImGui_ImplOpenGL3_Init(glsl_version);
@@ -284,7 +282,6 @@ terrainModelMatrix = glm::translate(glm::vec3(-5, -(18.1) / 2, -5))
     ImGui::End();
   //* ================= End of ImGUI setup ================
 
-
     vehiclePhysicsInfo vI = sharedPhysicsRessource.GetVehiclePhyInfo();
     btTransform vehicleTransform = vI.transform;
 
@@ -346,41 +343,28 @@ terrainModelMatrix = glm::translate(glm::vec3(-5, -(18.1) / 2, -5))
     }
     glUniform1i(useTextureLocation, GL_TRUE); 
 
-    //* ###### CAMERA #######
+  //* ###### CAMERA #######
 
     camera.DEBUG = false;
 
-    //* naive approach (hard offsets camera, bad for steering)
-    //  camera.Position.x = vehiclePosition.x() + 0.5f;
-    //  camera.Position.y = vehiclePosition.y() + 2.0f;
-    //  camera.Position.z = vehiclePosition.z() - 3.0f;
-
-    //* #### Smooth Camera (For Driving)
-
     if(!camera.DEBUG) {
     
-    auto targetVec = glm::vec3(vehiclePosition.x() + 1.0f, vehiclePosition.y() + 3.0f, vehiclePosition.z() - 5.0f);
-    auto dirVec = targetVec - camera.Position;
-    if (glm::distance2(targetVec, camera.Position) > 0.02f)
+      auto targetVec = glm::vec3(vehiclePosition.x() + 1.0f, vehiclePosition.y() + 3.0f, vehiclePosition.z() - 5.0f); //* Camera Offset
+      auto dirVec = targetVec - camera.Position;
+      
+      if (glm::distance2(targetVec, camera.Position) > 0.02f)
         camera.Position += dirVec * 0.03f;
 
-    glm::vec3 lookAtPosition = glm::vec3(vehiclePosition.x(), vehiclePosition.y(), vehiclePosition.z());
+      glm::vec3 lookAtPosition = glm::vec3(vehiclePosition.x(), vehiclePosition.y(), vehiclePosition.z());
+      // camera.LookAt = lookAtPosition; //Naive Approach
 
+      camera.LookAt = lerpVec3(camera.LookAt, lookAtPosition, 0.35f);
+    
+    } else { camera.Inputs(Window); }
 
+    camera.Matrix(45.0f, 0.1f, 1000.0f, shaderProgram, "camMatrix"); //! IMPORTANT
 
-    // camera.LookAt.x = vehiclePosition.x();
-    // camera.LookAt.y = vehiclePosition.y();
-    // camera.LookAt.z = vehiclePosition.z();
-
- camera.LookAt = lerpVec3(camera.LookAt, lookAtPosition, 0.2f);
-    } else {
-    camera.Inputs(Window);
-    }
-
-    camera.Matrix(45.0f, 0.1f, 1000.0f, shaderProgram, "camMatrix");
-    //camera.Matrix(45.0f, 0.1f, 100.0f, terrainShaderProgram, "camMatrix");
-
-    //*############## OpenGL - Draw Calls ################
+  //*############## OpenGL - Draw Calls ################
 
     vehicle.GetGeometry().Draw(modelMatrixLocation, vehicleModelMatrix, 0, false);
 

@@ -17,7 +17,7 @@ VehiclePhysics::VehiclePhysics()
 
     // Vehicle setup
     btBoxShape *vehicleChassisShape = new btBoxShape(btVector3(1.6f * VEHICLE_SCALE, 0.5f * VEHICLE_SCALE, 3.0f * VEHICLE_SCALE));
-    btDefaultMotionState *vehicleMotionState = new btDefaultMotionState();
+    vehicleMotionState = new btDefaultMotionState();
     btTransform localTransform;
 
     localTransform.setIdentity();
@@ -168,8 +168,15 @@ void VehiclePhysics::Update()
 
 btTransform VehiclePhysics::GetTransform() const
 {
-    // Returns the current transform (position & rotation) of the vehicle
-    return vehicleRigidBody->getWorldTransform();
+
+    btTransform trans;
+
+    //! This is super choppy
+    //trans = vehicleRigidBody->getWorldTransform();
+    
+    vehicleMotionState->getWorldTransform(trans);
+
+    return trans;
 }
 
 std::string VehiclePhysics::debugStateSTR() 
