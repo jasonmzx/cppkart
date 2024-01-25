@@ -44,10 +44,6 @@ void XJZoomEngine::Run()
 
   VehicleInputAdapter vehicleInputControl;
 
-  int carTexWidth, carTexHeight, carTexChannels;
-  auto carTextureData = stbi_load("../src/ressources/first_car.png", &carTexWidth, &carTexHeight, &carTexChannels, STBI_rgb_alpha);
-  assert(carTextureData);
-
   //* ########## WINDOWING STUFF ############
   uint32_t WindowFlags = SDL_WINDOW_OPENGL;
   SDL_Window *Window = SDL_CreateWindow("XJZoom Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WinWidth, WinHeight, WindowFlags);
@@ -80,26 +76,6 @@ void XJZoomEngine::Run()
     ImGui_ImplSDL2_InitForOpenGL(Window, SDL_GL_Context);
     ImGui_ImplOpenGL3_Init(glsl_version);
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-
-  GLuint carTexID;
-  glGenTextures(1, &carTexID);
-  glBindTexture(GL_TEXTURE_2D, carTexID);
-
-  // Depending on the number of channels, pick the appropriate format
-  GLenum carTexFormat;
-  if (carTexChannels == 1)
-    carTexFormat = GL_RED;
-  else if (carTexChannels == 3)
-    carTexFormat = GL_RGB;
-  else if (carTexChannels == 4)
-    carTexFormat = GL_RGBA;
-
-  //* Texturing Configuration Setup for OpenGL
-
-  glTexImage2D(GL_TEXTURE_2D, 0, carTexFormat, carTexWidth, carTexHeight, 0, carTexFormat, GL_UNSIGNED_BYTE, carTextureData);
-  glGenerateMipmap(GL_TEXTURE_2D);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
   glViewport(0, 0, WinWidth, WinHeight); //(X1, Y1 bottom left) to (X2, Y2, top right)
   glEnable(GL_DEPTH_TEST);
@@ -148,8 +124,6 @@ terrainModelMatrix = glm::translate(glm::vec3(-5, -(18.1) / 2, -5))
   VBO VBO3(VW_vertices);
   EBO EBO3(VW_indices);
 
-  //* ####### 
-
   terrainMapLoader(indices, vertices, "../src/ressources/Map_1K.png"); //! EXPERIMENTAL
 
   VAO VAO4;
@@ -173,7 +147,9 @@ terrainModelMatrix = glm::translate(glm::vec3(-5, -(18.1) / 2, -5))
   // !Texture, TODO ground texture, for terrain
    Texture cobbleTex((texPath + "cobble.png").c_str(), GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
    cobbleTex.texUnit(shaderProgram, "tex0", 0);
-  // Enables the Depth Buffer
+
+  Texture pCarTex("../src/ressources/first_car.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
+  pCarTex.texUnit(shaderProgram, "tex0", 0);  
 
   // Creates camera object
   Camera camera(WinWidth, WinHeight, glm::vec3(0.0f, 0.0f, 2.0f));
@@ -186,7 +162,6 @@ terrainModelMatrix = glm::translate(glm::vec3(-5, -(18.1) / 2, -5))
   int32_t FullScreen = 0;
 
   btDiscreteDynamicsWorld* physicsWorldPTR = sharedPhysicsRessource.getPhysicsWorld();
-
   physicsWorldPTR->setDebugDrawer(debugDrawer);
   
   //SDL_GL_SetSwapInterval(0); // turn vsync off and speed shit up drasitcally, bad design!!
@@ -196,6 +171,8 @@ terrainModelMatrix = glm::translate(glm::vec3(-5, -(18.1) / 2, -5))
   bool show_debug_draw = true;
   bool interpolated_transforms = false;
 
+  //* Physics Interpolation State (for vehicle only rn)
+
   btTransform lastVehicleTransform;
   bool isFirstUpdate = true; // To handle the first frame case
 
@@ -204,14 +181,11 @@ terrainModelMatrix = glm::translate(glm::vec3(-5, -(18.1) / 2, -5))
   {
 
 
-    //* POLLING INPUTS for Multiple Keyboard Input and Handle Simultaneously?
+  //* POLLING INPUTS for Multiple Keyboard Input and Handle Simultaneously?
 
   SDL_PumpEvents(); 
   state = SDL_GetKeyboardState(NULL);
-
   vehicleInputControl.vehicleKeyboardInput(state);
-
-  //vehicle.updateVehicleControls(state, vPhy); //This function handles SDL Inputs for the Vehicle's controls
 
     SDL_Event Event;
     while (SDL_PollEvent(&Event))
@@ -366,7 +340,9 @@ terrainModelMatrix = glm::translate(glm::vec3(-5, -(18.1) / 2, -5))
 
   //*############## OpenGL - Draw Calls ################
 
+    pCarTex.Bind();
     vehicle.GetGeometry().Draw(modelMatrixLocation, vehicleModelMatrix, 0, false);
+    pCarTex.Unbind();
 
     //! idk why i'm not binding textures and it's still workign...?
     // glBindTexture(GL_TEXTURE_2D, carTexID);
@@ -393,10 +369,7 @@ terrainModelMatrix = glm::translate(glm::vec3(-5, -(18.1) / 2, -5))
 
     glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(bulletModelMatrix));
 
-    glBindTexture(GL_TEXTURE_2D, carTexID);
-
     //ImGUI Render calls
-
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
@@ -407,10 +380,8 @@ terrainModelMatrix = glm::translate(glm::vec3(-5, -(18.1) / 2, -5))
   }
 
   //* ============ Cleanup of Application ===========
+  pT.Stop(); //Stopping of Physics Thread
 
-  pT.Stop();
-
-  glDeleteTextures(1, &carTexID);
   shaderProgram.Delete();
 
   // Shutdown for ImGUI
@@ -418,9 +389,10 @@ terrainModelMatrix = glm::translate(glm::vec3(-5, -(18.1) / 2, -5))
   ImGui_ImplSDL2_Shutdown();
   ImGui::DestroyContext();
 
-  //Static Ressource freeing
-  stbi_image_free(carTextureData); //TODO: use texture class instead of this
+  //Free Static Ressources (Textures, Models, etc...)
+
   cobbleTex.Delete();
+  pCarTex.Delete();
 
 }
 
