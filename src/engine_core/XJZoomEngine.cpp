@@ -1,4 +1,5 @@
 #include "XJZoomEngine.h"
+#include <SDL_mixer.h>
 
 // Windowing consts
 #define WinWidth 1920
@@ -39,8 +40,30 @@ glm::vec3 lerpVec3(const glm::vec3 &start, const glm::vec3 &end, float factor) {
     return start + factor * (end - start);
 }
 
+
+
+
 void XJZoomEngine::Run()
 {
+
+  SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO); 
+
+  // Initialize SDL_mixer
+    if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+        printf("SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError());
+        // Handle error
+    }
+
+    // Load the MP3 music
+    Mix_Music *backgroundMusic = Mix_LoadMUS("../src/ressources/main-menu-theme.mp3");
+    if(!backgroundMusic) {
+        printf("Failed to load background music! SDL_mixer Error: %s\n", Mix_GetError());
+        // Handle error
+    } else {
+        // Play the music (once)
+        Mix_PlayMusic(backgroundMusic, 1);
+    }
+
 
   VehicleInputAdapter vehicleInputControl;
 
@@ -124,15 +147,25 @@ terrainModelMatrix = glm::translate(glm::vec3(-5, -(18.1) / 2, -5))
   VBO VBO3(VW_vertices);
   EBO EBO3(VW_indices);
 
-  terrainMapLoader(indices, vertices, "../src/ressources/Map_1K.png"); //! EXPERIMENTAL
+  terrainMapLoader(indices, vertices, "../src/ressources/loop_map.png"); //! EXPERIMENTAL
+  std::vector<GLuint> roadIndices;
+  std::vector<GLfloat> roadVertices;
+  //roadTerrainMapLoader(roadIndices, roadVertices, "../src/ressources/loop_map.png", "../src/ressources/loop_track.png");
 
   VAO VAO4;
   VAO4.Bind();
   VBO VBO4(vertices);
   EBO EBO4(indices);
 
+  VAO VAO5;
+  VAO5.Bind();
+  VBO VBO5(roadVertices);
+  EBO EBO5(roadIndices);
+
   //Temporary un-render of terrain Geom
  RenderableGeometry terrainGeom(&VAO4, &VBO4, &EBO4, vertices, indices);
+
+ RenderableGeometry roadGeom(&VAO5, &VBO5, &EBO5, roadVertices, roadIndices);
   
   //SolidEntity TERRAIN(&VAO4, &VBO4, &EBO4, vertices, indices, terrainModelMatrix);
 
@@ -148,14 +181,45 @@ terrainModelMatrix = glm::translate(glm::vec3(-5, -(18.1) / 2, -5))
    Texture cobbleTex((texPath + "cobble.png").c_str(), GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
    cobbleTex.texUnit(shaderProgram, "tex0", 0);
 
+ Texture roadCobbleTex((texPath + "road.png").c_str(), GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
+   roadCobbleTex.texUnit(shaderProgram, "tex0", 0);
+
   Texture pCarTex("../src/ressources/first_car.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
   pCarTex.texUnit(shaderProgram, "tex0", 0);  
 
   // Creates camera object
   Camera camera(WinWidth, WinHeight, glm::vec3(0.0f, 0.0f, 2.0f));
+  glm::vec3 initCamLookAt = glm::vec3(1, 1, 1);
+  camera.LookAt = initCamLookAt;
 
-  //Keyboard Input:
-  const uint8_t *state = SDL_GetKeyboardState(NULL);
+  //Inputs:
+
+  const int JOYSTICK_DEAD_ZONE = 4000;
+
+  const uint8_t* state = SDL_GetKeyboardState(nullptr);
+  SDL_Joystick* gGameController = nullptr;
+
+
+        //Check for joysticks
+        if( SDL_NumJoysticks() < 1 )
+        {
+            printf( "Warning: No joysticks connected!\n" );
+        }
+        else
+        {
+            //Load joystick
+            gGameController = SDL_JoystickOpen( 0 );
+            if( gGameController == nullptr )
+            {
+                printf( "Warning: Unable to open game controller! SDL Error: %s\n", SDL_GetError() );
+            }
+
+            printf(
+              "JOYSTICK CONNECTION :-)\n"
+            );
+        }
+
+
 
   //Application Window State
   int32_t Running = 1;
@@ -184,7 +248,7 @@ terrainModelMatrix = glm::translate(glm::vec3(-5, -(18.1) / 2, -5))
   //* POLLING INPUTS for Multiple Keyboard Input and Handle Simultaneously?
 
   SDL_PumpEvents(); 
-  state = SDL_GetKeyboardState(NULL);
+  state = SDL_GetKeyboardState(nullptr);
   vehicleInputControl.vehicleKeyboardInput(state);
 
     SDL_Event Event;
@@ -267,8 +331,14 @@ terrainModelMatrix = glm::translate(glm::vec3(-5, -(18.1) / 2, -5))
     btVector3 vehiclePosition = vehicleTransform.getOrigin();
     btVector3 lastVehiclePosition = lastVehicleTransform.getOrigin();
 
+    btQuaternion vehicleRotation = vehicleTransform.getRotation();
+    btQuaternion lastVehicleRotation = lastVehicleTransform.getRotation();
+
     // Interpolation factor
-    float interpolationFactor = 0.5f; // Adjust this value as needed
+    float interpolationFactor = 0.75f; // Adjust this value as needed
+
+    // Interpolate rotation using slerp
+    btQuaternion interpolatedRotation = lastVehicleRotation.slerp(vehicleRotation, interpolationFactor);
 
     // Interpolated position
     btVector3 interpolatedPosition = lastVehiclePosition.lerp(vehiclePosition, interpolationFactor);
@@ -278,16 +348,20 @@ terrainModelMatrix = glm::translate(glm::vec3(-5, -(18.1) / 2, -5))
 
     if(interpolated_transforms){
       vehiclePosition = interpolatedPosition;
+      vehicleRotation = interpolatedRotation;
+    }
+
+    glm::quat glmVehicleRotation = glm::quat(vehicleRotation.w(), vehicleRotation.x(), vehicleRotation.y(), vehicleRotation.z());
+    if(interpolated_transforms){
+        glmVehicleRotation = glm::quat(interpolatedRotation.w(), interpolatedRotation.x(), interpolatedRotation.y(), interpolatedRotation.z());
     }
 
     //TODO: ==== Vehicle Rendering Code, To be Abstracted from this class ====
 
-    btQuaternion vehicleRotation = vehicleTransform.getRotation();
-
     //Position Translation
     glm::mat4 translation = glm::translate(glm::mat4(1.0f), glm::vec3(vehiclePosition.x(), vehiclePosition.y(), vehiclePosition.z()));
 
-    glm::mat4 rotation = glm::mat4_cast(glm::quat(vehicleRotation.w(), vehicleRotation.x(), vehicleRotation.y(), vehicleRotation.z()));
+    glm::mat4 rotation = glm::mat4_cast(glmVehicleRotation);
     glm::mat4 rotate90DEG_Adjustment = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
     vehicleModelMatrix = translation * rotation * rotate90DEG_Adjustment * glm::scale(glm::vec3(0.75f));
@@ -330,9 +404,10 @@ terrainModelMatrix = glm::translate(glm::vec3(-5, -(18.1) / 2, -5))
         camera.Position += dirVec * 0.03f;
 
       glm::vec3 lookAtPosition = glm::vec3(vehiclePosition.x(), vehiclePosition.y(), vehiclePosition.z());
-      // camera.LookAt = lookAtPosition; //Naive Approach
+      
+      camera.LookAt = lookAtPosition; //Naive Approach
 
-      camera.LookAt = lerpVec3(camera.LookAt, lookAtPosition, 0.35f);
+      //camera.LookAt = lerpVec3(camera.LookAt, lookAtPosition, 0.35f);
     
     } else { camera.Inputs(Window); }
 
@@ -341,13 +416,12 @@ terrainModelMatrix = glm::translate(glm::vec3(-5, -(18.1) / 2, -5))
   //*############## OpenGL - Draw Calls ################
 
     pCarTex.Bind();
+    
     vehicle.GetGeometry().Draw(modelMatrixLocation, vehicleModelMatrix, 0, false);
+
+    vehicle.renderWheelGeometries(modelMatrixLocation, vI.wheelVec);
+    
     pCarTex.Unbind();
-
-    //! idk why i'm not binding textures and it's still workign...?
-    // glBindTexture(GL_TEXTURE_2D, carTexID);
-
-    //vehicle.renderWheelGeometries(modelMatrixLocation, vPhy.vehicle);
 
     //! All Draw Calls below use no Texturing, and just Positonal coloring:
 
@@ -361,6 +435,16 @@ terrainModelMatrix = glm::translate(glm::vec3(-5, -(18.1) / 2, -5))
     cobbleTex.Bind();
     terrainGeom.Draw(modelMatrixLocation, terrainModelMatrix, colorUniformLocation, false);
     
+    cobbleTex.Unbind();
+
+    roadCobbleTex.Bind();
+
+    // roadGeom.Draw(modelMatrixLocation, terrainModelMatrix, colorUniformLocation, false);
+
+    roadCobbleTex.Unbind();
+
+    
+
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Reset to default mode
 
 
@@ -394,9 +478,21 @@ terrainModelMatrix = glm::translate(glm::vec3(-5, -(18.1) / 2, -5))
   cobbleTex.Delete();
   pCarTex.Delete();
 
+    // Cleanup
+    Mix_FreeMusic(backgroundMusic);
+    Mix_CloseAudio();
+
+
+    SDL_JoystickClose( gGameController );
+    gGameController = nullptr;
+
+    SDL_DestroyWindow( Window );
+    Window = nullptr;
+    SDL_Quit();
+
 }
 
 void XJZoomEngine::Init()
 {
-  // SDL_ShowSimpleMessageBox(0, "hello", "cppkart", nullptr);
+  // SDL_ShowSimpleMessageBox(0, "hello", "cppkart", nullptrptr);
 }

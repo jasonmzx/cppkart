@@ -16,7 +16,7 @@ public:
                   VAO *vaoPtr1, VBO *vboPtr1, EBO *eboPtr1, const std::vector<GLfloat> &wheelVertices, const std::vector<GLuint> &wheelIndices);
 
     // Render Functions to be called every iteration
-    void renderWheelGeometries(GLuint modelMatrixLocation, const btRaycastVehicle* vehicle);
+    void renderWheelGeometries(GLuint modelMatrixLocation, const std::vector<btWheelInfo>& wheelVec);
 
     // Getter for direct access to VehiclePhysics
     RenderableGeometry &GetGeometry();

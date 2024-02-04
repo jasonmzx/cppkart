@@ -4,15 +4,13 @@
 #include <bullet/btBulletCollisionCommon.h>
 #include <bullet/btBulletDynamicsCommon.h>
 
-
 #include <mutex>
+#include <vector>
 
 struct vehiclePhysicsInfo {
     btTransform transform;
+    std::vector<btWheelInfo> wheelVec;
 };
-
-
-
 
 class SharedPhysicsResource {
 

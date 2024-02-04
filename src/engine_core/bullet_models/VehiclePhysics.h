@@ -8,6 +8,7 @@ private:
     btRigidBody* vehicleRigidBody;
     btVehicleRaycaster* vehicleRayCaster;
 
+    //Bullet manages body interpolation through MotionStates
     btDefaultMotionState *vehicleMotionState;
 
     btRaycastVehicle::btVehicleTuning tuning;

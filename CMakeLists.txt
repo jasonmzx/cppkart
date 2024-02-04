@@ -13,6 +13,7 @@ find_package(OpenGL REQUIRED)
 find_package(Bullet REQUIRED)
 find_package(assimp REQUIRED)
 
+
 # External Source Libraries
 
 include_directories(src/glad/include src ${BULLET_INCLUDE_DIRS} src/imgui src/imgui/backends)
@@ -125,4 +126,6 @@ add_executable(cppkart
 target_compile_options(cppkart PRIVATE -fsanitize=address)
 target_link_libraries(cppkart PRIVATE -fsanitize=address)
 
-target_link_libraries(cppkart PRIVATE SDL2::SDL2 OpenGL::GL ${BULLET_LIBRARIES} assimp::assimp)
+# I'm assuming SDL2_mixer is already installed, FIX THIS!
+
+target_link_libraries(cppkart PRIVATE SDL2_mixer SDL2::SDL2 OpenGL::GL ${BULLET_LIBRARIES} assimp::assimp)

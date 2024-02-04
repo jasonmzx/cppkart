@@ -12,7 +12,7 @@ VehiclePhysics::VehiclePhysics()
     tuning.m_suspensionCompression = 0.83f;
     tuning.m_suspensionDamping = 0.88f;
     tuning.m_maxSuspensionTravelCm = 100.0f;
-    tuning.m_frictionSlip = 10.5f;
+    tuning.m_frictionSlip = 1.5f;
     tuning.m_maxSuspensionForce = 6000.0f;
 
     // Vehicle setup
