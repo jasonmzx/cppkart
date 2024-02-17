@@ -9,7 +9,7 @@
 #include<glm/gtx/vector_angle.hpp>
 
 //For User Input on Windows
-#include<SDL.h>
+#include <SDL2/SDL.h>
 
 #include"shaderClass.h"
 

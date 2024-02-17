@@ -1,5 +1,5 @@
-#ifndef OBJMODEL_CLASS_H
-#define OBJMODEL_CLASS_H
+#ifndef OBJMODEL_CLASS_HPP
+#define OBJMODEL_CLASS_HPP
 
 #include <vector>
 #include <string>

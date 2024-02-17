@@ -1,12 +1,11 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <assert.h>
-#include "engine_core/XJZoomEngine.h"
+#include "game/JXGame.hpp"
 
 int main(int ArgCount, char **Args)
 {
-  XJZoomEngine engine;
-  engine.Init();
-  engine.Run();
+  JXGame game;
+  game.Run();
   return 0;
 }

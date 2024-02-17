@@ -30,96 +30,131 @@ add_executable(cppkart
      src/stb/stb_image.h
      src/stb/stb.cpp
 
-     #### Project Source Code: ####
+#    ######## Project Source Code: ########
 
-     #Core Engine Imports:
-     src/engine_core/XJZoomEngine.h
-     src/engine_core/XJZoomEngine.cpp
+      src/main.cpp 
+      src/game/GameWindow.cpp
+      src/game/GameWindow.hpp
 
-     src/engine_core/PhysicsThread.h
-     src/engine_core/PhysicsThread.cpp
+      src/game/JXGame.cpp
+      src/game/JXGame.hpp
+      
+     ##### Core:
 
-     #Core Engine; Managers Imports:
+          # Rendering:
+          src/core/gl/EBO.cpp 
+          src/core/gl/VAO.cpp 
+          src/core/gl/VBO.cpp 
+          src/core/gl/shaderClass.cpp
+          src/core/gl/Camera.cpp
 
-     src/engine_core/singletons/PhysicsWorldSingleton.h
-     src/engine_core/singletons/PhysicsWorldSingleton.cpp
+          src/core/gl/Texture.h
+          src/core/gl/Texture.cpp
 
-     ### Bullet Physics Models for Entites
+          # Loaders:
+          
+          src/core/loaders/ObjModel.cpp
+          src/core/loaders/ObjModel.hpp
 
-     src/engine_core/bullet_models/VehiclePhysics.h
-     src/engine_core/bullet_models/VehiclePhysics.cpp
+     
+      ##### Engine:
 
-     src/engine_core/bullet_models/TerrainPhysics.h
-     src/engine_core/bullet_models/TerrainPhysics.cpp
+     src/engine/objects/SimulationObject.cpp
+     src/engine/objects/SimulationObject.hpp
 
-     src/engine_core/bullet_models/StaticTriangleMeshPhysics.h
-     src/engine_core/bullet_models/StaticTriangleMeshPhysics.cpp
+     src/engine/objects/VehicleObject.cpp
+     src/engine/objects/VehicleObject.hpp
+     
+     src/engine/SimulationWorld.cpp
+     src/engine/SimulationWorld.hpp
 
-     ### Physics Chunking Manager
+     src/engine/physics/PhysicsWorldSingleton.cpp
+     src/engine/physics/PhysicsWorldSingleton.h
 
-     src/engine_core/managers/PhysicsChunkManager.h
-     src/engine_core/managers/PhysicsChunkManager.cpp
-
-     ## Bullet Debug Rendering
-
-     src/engine_core/geometries/BulletDebugDrawer.cpp
+     
 
 
-     src/engine_core/managers/SceneManager.h
-     src/engine_core/managers/SceneManager.cpp
+#    --------------------- Old imports below 
 
-     ## GL Renderable classes
-     src/engine_core/geometries/RenderableGeometry.h
-     src/engine_core/geometries/RenderableGeometry.cpp
+#      #Core Engine Imports:
+#      src/engine_core/XJZoomEngine.h
+#      src/engine_core/XJZoomEngine.cpp
 
-     ## Obj Model Loaders
-     src/engine_core/loaders/ObjModel.h
-     src/engine_core/loaders/ObjModel.cpp
+#      src/engine_core/PhysicsThread.h
+#      src/engine_core/PhysicsThread.cpp
 
-     #Terrain / Map Generator & Chunking Imports:
-     src/terrain_gen/MapChunker.h
-     src/terrain_gen/MapChunker.cpp
+#      #Core Engine; Managers Imports:
 
-     #Entities
-     src/engine_core/entities/VehicleEntity.h 
-     src/engine_core/entities/VehicleEntity.cpp
+#      src/engine_core/singletons/PhysicsWorldSingleton.h
+#      src/engine_core/singletons/PhysicsWorldSingleton.cpp
 
-     src/engine_core/entities/SolidEntity.h
-     src/engine_core/entities/SolidEntity.cpp
+#      ### Bullet Physics Models for Entites
 
-     ##Renderers
+#      src/engine_core/bullet_models/VehiclePhysics.h
+#      src/engine_core/bullet_models/VehiclePhysics.cpp
 
-     src/engine_core/renderers/TerrainRenderer.h
-     src/engine_core/renderers/TerrainRenderer.cpp
+#      src/engine_core/bullet_models/TerrainPhysics.h
+#      src/engine_core/bullet_models/TerrainPhysics.cpp
 
-     # Main Imports for Rendering
+#      src/engine_core/bullet_models/StaticTriangleMeshPhysics.h
+#      src/engine_core/bullet_models/StaticTriangleMeshPhysics.cpp
 
-     src/main.cpp 
-     src/rendering/EBO.cpp 
-     src/rendering/VAO.cpp 
-     src/rendering/VBO.cpp 
-     src/rendering/shaderClass.cpp
-     src/rendering/Camera.cpp
+#      ### Physics Chunking Manager
 
-     src/rendering/Texture.h
-     src/rendering/Texture.cpp
+#      src/engine_core/managers/PhysicsChunkManager.h
+#      src/engine_core/managers/PhysicsChunkManager.cpp
 
-     ## Data structs
-     src/data_structs/TSQueue.cpp
+#      ## Bullet Debug Rendering
+
+#      src/engine_core/geometries/BulletDebugDrawer.cpp
+
+
+#      src/engine_core/managers/SceneManager.h
+#      src/engine_core/managers/SceneManager.cpp
+
+#      ## GL Renderable classes
+#      src/engine_core/geometries/RenderableGeometry.h
+#      src/engine_core/geometries/RenderableGeometry.cpp
+
+#      ## Obj Model Loaders
+#      src/engine_core/loaders/ObjModel.h
+#      src/engine_core/loaders/ObjModel.cpp
+
+#      #Terrain / Map Generator & Chunking Imports:
+#      src/terrain_gen/MapChunker.h
+#      src/terrain_gen/MapChunker.cpp
+
+#      #Entities
+#      src/engine_core/entities/VehicleEntity.h 
+#      src/engine_core/entities/VehicleEntity.cpp
+
+#      src/engine_core/entities/SolidEntity.h
+#      src/engine_core/entities/SolidEntity.cpp
+
+#      ##Renderers
+
+#      src/engine_core/renderers/TerrainRenderer.h
+#      src/engine_core/renderers/TerrainRenderer.cpp
+
+#      # Main Imports for Rendering
+
+#      src/main.cpp 
+#      src/core/gl/EBO.cpp 
+#      src/core/gl/VAO.cpp 
+#      src/core/gl/VBO.cpp 
+#      src/core/gl/shaderClass.cpp
+#      src/core/gl/Camera.cpp
+
+#      src/core/gl/Texture.h
+#      src/core/gl/Texture.cpp
+
+#      ## Data structs
+#      src/data_structs/TSQueue.cpp
 
     
-    #Shared Ressources:
-    src/engine_core/shared_resources/SharedPhysicsResource.cpp
-    src/engine_core/shared_resources/SharedPhysicsResource.h
-     
-    src/engine_core/shared_resources/DebugDrawQueue.cpp
-    src/engine_core/shared_resources/DebugDrawQueue.h
-     
 
-     src/controllers/VehicleInputAdapter.h
-     src/controllers/VehicleInputAdapter.cpp
 
-     
+
      
 )
 

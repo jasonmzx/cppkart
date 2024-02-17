@@ -405,9 +405,9 @@ terrainModelMatrix = glm::translate(glm::vec3(-5, -(18.1) / 2, -5))
 
       glm::vec3 lookAtPosition = glm::vec3(vehiclePosition.x(), vehiclePosition.y(), vehiclePosition.z());
       
-      camera.LookAt = lookAtPosition; //Naive Approach
+      //camera.LookAt = lookAtPosition; //Naive Approach
 
-      //camera.LookAt = lerpVec3(camera.LookAt, lookAtPosition, 0.35f);
+      camera.LookAt = lerpVec3(camera.LookAt, lookAtPosition, 0.35f);
     
     } else { camera.Inputs(Window); }
 
@@ -437,13 +437,6 @@ terrainModelMatrix = glm::translate(glm::vec3(-5, -(18.1) / 2, -5))
     
     cobbleTex.Unbind();
 
-    roadCobbleTex.Bind();
-
-    // roadGeom.Draw(modelMatrixLocation, terrainModelMatrix, colorUniformLocation, false);
-
-    roadCobbleTex.Unbind();
-
-    
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Reset to default mode
 
