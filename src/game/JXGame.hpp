@@ -6,6 +6,7 @@
 #include <assert.h>
 #include <SDL2/SDL.h>
 #include <glad/glad.h>
+#include <memory>
 
 // ImGUI Imports:
 #include "imgui.h"
@@ -14,17 +15,24 @@
 
 // Source Imports:
 #include "GameWindow.hpp"
+#include "core/gl/Camera.h"
+#include "engine/rendering/GameRenderer.hpp"
+#include "engine/SimulationWorld.hpp"
 
 class JXGame {
 
     public:
         JXGame();
-        
+        //~JXGame();
+
         void Run();
         void Render();
     private:
         GameWindow window{};
 
+        std::unique_ptr<Camera> camera;
+        std::unique_ptr<GameRenderer> renderer;
+        std::unique_ptr<SimulationWorld> world;
 
 };
 
