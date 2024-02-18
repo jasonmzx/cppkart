@@ -22,6 +22,7 @@ void GameWindow::create(const std::string& title, size_t w, size_t h, bool fulls
   double prevTime = SDL_GetTicks(); // Window Tick Rate (SDL thing)
 
   gladLoadGLLoader(SDL_GL_GetProcAddress);
+  glEnable(GL_DEPTH_TEST);
 
 }
 

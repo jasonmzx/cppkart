@@ -23,7 +23,7 @@ GameRenderer::GameRenderer(int winWidth, int winHeight, Camera* cam, SimulationW
 
     colorUniformLocation = glGetUniformLocation(mainShader.get()->ID, "FragColor");
 
-    //Initialize:
+    //Initialize Textures:
 
 }
 
@@ -47,15 +47,19 @@ void GameRenderer::renderObjects() {
     
 auto drawList = createObjectRenderList();
 
+    glUniform1i(useTextureLOC, GL_TRUE); 
+
   for (const auto& instruction : drawList) {
+
+    instruction.tex.get()->Bind();
+
     glm::mat4 tempMatrix = instruction.modelMatrix; // Create a non-const copy
       instruction.geometry->Draw(modelMatrixLOC, tempMatrix, colorUniformLocation, false);
+    
+    instruction.tex.get()->Unbind();
   }
 
 }
-
-
-
 
 RenderList GameRenderer::createObjectRenderList() {
     RenderList drawList;
@@ -63,14 +67,22 @@ RenderList GameRenderer::createObjectRenderList() {
     for (auto& entity : world->entities) {
         RenderInstruction instruction;
         
-        std::string modelIdentifier = "1";
+        std::string modelIdentifier = entity->model->modelID;
         
         std::vector<GLfloat> verts = entity->model->GetVertices();
         std::vector<GLuint> indices = entity->model->GetIndices();
         
+        //! THIS IS TERRIBLE AS EVERY DRAW ITERATION IT INITS ! NO GOOD
+        instruction.tex = entity->tex0;
+        instruction.tex.get()->texUnit(mainShader, "tex0", 0);
+
         auto geometry = getOrCreateGeometry(modelIdentifier, entity->model->GetVertices(), entity->model->GetIndices());
         instruction.geometry = geometry;
-        instruction.modelMatrix = glm::translate(glm::mat4(1.0f), entity->getPosition()) * glm::toMat4(entity->getRotation());
+
+        glm::vec3 scaleFactors = glm::vec3(1.0f, 1.0f, 1.0f); // Example scale factors, adjust as necessary
+        instruction.modelMatrix = glm::translate(glm::mat4(1.0f), entity->getPosition())
+                                  * glm::mat4_cast(entity->getRotation()) // Convert quaternion to rotation matrix
+                                  * glm::scale(glm::mat4(1.0f), scaleFactors);
 
         drawList.push_back(instruction);
     }

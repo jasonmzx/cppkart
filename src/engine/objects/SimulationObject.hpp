@@ -2,6 +2,7 @@
 #define SIMULATIONOBJECT_HPP
 
 #include "core/loaders/ObjModel.hpp"
+#include "core/gl/Texture.h"
 
 #include<glm/glm.hpp>
 #include<glm/gtc/matrix_transform.hpp>
@@ -15,6 +16,7 @@ class SimulationObject {
 
     public:
         std::shared_ptr<ObjModel> model; // Shared geometry
+        std::shared_ptr<Texture> tex0;
 
         glm::vec3 position;
         glm::quat rotation;
@@ -28,7 +30,7 @@ class SimulationObject {
         Projectile,
     };
 
-    SimulationObject(std::shared_ptr<ObjModel> modelPtr);
+    SimulationObject(std::shared_ptr<ObjModel> modelPtr, std::shared_ptr<Texture> texPtr);
 
    // virtual void setPosition(const glm::vec3& pos);
 

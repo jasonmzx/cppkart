@@ -3,8 +3,33 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+#include <random>
+#include <string>
+#include <algorithm> // For std::generate
+
+std::string generateRandomString(size_t length) {
+    const std::string chars =
+        "0123456789"
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        "abcdefghijklmnopqrstuvwxyz";
+    std::random_device rd;
+    std::mt19937 generator(rd());
+    std::uniform_int_distribution<> distribution(0, chars.size() - 1);
+
+    std::string random_string;
+    random_string.reserve(length);
+
+    for (size_t i = 0; i < length; ++i) {
+        random_string += chars[distribution(generator)];
+    }
+
+    return random_string;
+}
+
+
 ObjModel::ObjModel(const std::string& filepath) {
     LoadObj(filepath);
+    modelID = generateRandomString(5);
 }
 
 const std::vector<GLfloat>& ObjModel::GetVertices() const {

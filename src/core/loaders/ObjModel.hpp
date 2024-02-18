@@ -13,6 +13,8 @@ public:
     const std::vector<GLfloat>& GetVertices() const;
     const std::vector<GLuint>& GetIndices() const;
 
+    std::string modelID;
+
 private:
     std::vector<GLfloat> vertices; // Combined vertex positions, normals, and texture coordinates
     std::vector<GLuint> indices; // Vertex indices
