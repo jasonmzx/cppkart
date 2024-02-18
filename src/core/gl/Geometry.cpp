@@ -1,33 +1,35 @@
 #include "Geometry.hpp"
 
-Geometry::Geometry(VAO* vaoPtr, VBO* vboPtr, EBO* eboPtr, const std::vector<GLfloat>& vertices, const std::vector<GLuint>& indices)
-: 
-    vbo(vboPtr), 
-    vao(vaoPtr),
-    ebo(eboPtr)
+Geometry::Geometry(const std::vector<GLfloat>& vertices, const std::vector<GLuint>& indices)
 {
+    
+    vao = std::make_shared<VAO>();
+    vbo = std::make_shared<VBO>(vertices.data(), vertices.size() * sizeof(GLfloat));
+    ebo = std::make_shared<EBO>(indices.data(), indices.size() * sizeof(GLuint));
+    
     _indices = indices;
     
-    printf("Amount of triangles: %zu !\n", indices.size());
+    std::cout << "Amount of triangles: " << indices.size() / 3 << "!\n";
 
-    // Use the dereference operator (*) to access members of objects through their pointers.
     vao->Bind();
+
+    // Assuming each vertex consists of 8 floats: position (x, y, z), normal (x, y, z), texture (u, v)
 
     vao->LinkAttrib(*vbo, 0, 3, GL_FLOAT, 8 * sizeof(float), (void *)0);
     vao->LinkAttrib(*vbo, 1, 3, GL_FLOAT, 8 * sizeof(float), (void *)(3 * sizeof(float)));
     vao->LinkAttrib(*vbo, 2, 2, GL_FLOAT, 8 * sizeof(float), (void *)(6 * sizeof(float)));
     
+    ebo->Bind(); // Bind EBO to VAO
+
     vao->Unbind();
-    vbo->Unbind();
-    ebo->Unbind();
 }
 
-Geometry::~Geometry()
-{
-    // vao->Delete();
-    // vbo->Delete();
-    // ebo->Delete();
-}
+// Geometry::~Geometry()
+// {
+//     // vao->Delete();
+//     // vbo->Delete();
+//     // ebo->Delete();
+// }
 
 void Geometry::Draw(GLuint modelMatrixLocation, glm::mat4& modelMatrix, GLuint colorUniformLocation, bool debugTriangles)
 {

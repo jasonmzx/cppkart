@@ -21,9 +21,9 @@ GameRenderer::GameRenderer(int winWidth, int winHeight, Camera* cam, SimulationW
     modelMatrixLOC = glGetUniformLocation(mainShader.get()->ID, "modelMatrix");
     useTextureLOC = glGetUniformLocation(mainShader.get()->ID, "useTexture");
 
+    colorUniformLocation = glGetUniformLocation(mainShader.get()->ID, "FragColor");
 
-  VAO1.Bind();
-  auto drawList = createObjectRenderList(world);
+    //Initialize:
 
 }
 
@@ -35,38 +35,59 @@ void GameRenderer::RenderALL() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     mainShader.get()->Activate();
+
+    renderObjects();
+
+    camera->Matrix(45.0f, 0.1f, 1000.0f, mainShader, "camMatrix"); //! IMPORTANT
+
 }
 
 void GameRenderer::renderObjects() {
+   //terrainGeom.Draw(modelMatrixLocation, terrainModelMatrix, colorUniformLocation, false);
+    
+auto drawList = createObjectRenderList();
 
+  for (const auto& instruction : drawList) {
+    glm::mat4 tempMatrix = instruction.modelMatrix; // Create a non-const copy
+      instruction.geometry->Draw(modelMatrixLOC, tempMatrix, colorUniformLocation, false);
+  }
 
-  // for (const auto& instruction : drawList) {
-  //       // glBindVertexArray(instruction.VertexArrayObject->ID);
-  //       // // Set uniforms like modelMatrix here
-  //       // glUniformMatrix4fv(modelMatrixLOC, 1, GL_FALSE, glm::value_ptr(instruction.modelMatrix));
-  //       // //instruction.VertexArrayObject->meshes[0].Draw(); // Draw the mesh
-  // }
 }
 
-RenderList GameRenderer::createObjectRenderList(const SimulationWorld *world) {
+
+
+
+RenderList GameRenderer::createObjectRenderList() {
     RenderList drawList;
     
     for (auto& entity : world->entities) {
         RenderInstruction instruction;
         
-        //! Crashes
-        // instruction.modelMatrix = glm::translate(glm::mat4(1.0f), entity->getPosition()) * glm::toMat4(entity->getRotation());
+        std::string modelIdentifier = "1";
         
-        // std::vector<GLfloat> verts = entity->model->GetVertices();
-        // std::vector<GLuint> indices = entity->model->GetIndices();
-
-        //instruction.geometry(&VA);
-
-        //RenderableGeometry roadGeom(&VAO5, &VBO5, &EBO5, roadVertices, roadIndices);
-
-
+        std::vector<GLfloat> verts = entity->model->GetVertices();
+        std::vector<GLuint> indices = entity->model->GetIndices();
+        
+        auto geometry = getOrCreateGeometry(modelIdentifier, entity->model->GetVertices(), entity->model->GetIndices());
+        instruction.geometry = geometry;
+        instruction.modelMatrix = glm::translate(glm::mat4(1.0f), entity->getPosition()) * glm::toMat4(entity->getRotation());
 
         drawList.push_back(instruction);
     }
     return drawList;
+}
+
+std::shared_ptr<Geometry> GameRenderer::getOrCreateGeometry(const std::string& modelIdentifier, 
+const std::vector<GLfloat>& verts, const std::vector<GLuint>& indices) {
+
+    auto iter = geometryCache.find(modelIdentifier);
+    if (iter != geometryCache.end()) {
+        // Found existing geometry, reuse it
+        return iter->second;
+    } else {
+        // Create new Geometry object
+        auto geometry = std::make_shared<Geometry>(verts, indices);
+        geometryCache[modelIdentifier] = geometry;
+        return geometry;
+    }
 }

@@ -55,7 +55,9 @@ void JXGame::Run() {
     SDL_PumpEvents(); 
 
     Render();
-
+    
+    camera.get()->Inputs(window.getWindow());
+    
     window.swapWindow();
 
   }

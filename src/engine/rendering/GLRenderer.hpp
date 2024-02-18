@@ -14,7 +14,7 @@ struct RenderInstruction {
     glm::mat4 modelMatrix; //Still unsure if I should have this here
 
     std::shared_ptr<Geometry> geometry; // Use shared_ptr to Geometry
-
+    
 };
 
 typedef std::vector<RenderInstruction> RenderList;

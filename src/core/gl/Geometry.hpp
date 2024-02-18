@@ -5,6 +5,7 @@
 
 #include<glad/glad.h>
 #include <vector>
+#include <memory>
 
 #include "shaderClass.h"
 #include "VAO.h"
@@ -15,16 +16,17 @@
 class Geometry
 {
 public:
-    Geometry(VAO* vaoPtr, VBO* vboPtr, EBO* eboPtr, const std::vector<GLfloat>& vertices, const std::vector<GLuint>& indices);
-    ~Geometry();
+    Geometry(const std::vector<GLfloat>& vertices, const std::vector<GLuint>& indices);
+    ~Geometry() = default; 
 
-    VAO* vao;
-    VBO* vbo;
-    EBO* ebo;
-    
     void Draw(GLuint modelMatrixLocation, glm::mat4& modelMatrix, GLuint colorUniformLocation, bool debugTriangles);
 
 private:
+
+    std::shared_ptr<VAO> vao;
+    std::shared_ptr<VBO> vbo;
+    std::shared_ptr<EBO> ebo;
+
     std::vector<GLuint> _indices; // Storing indices for use in the Draw function
 };
 

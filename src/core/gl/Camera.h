@@ -7,6 +7,7 @@
 #include<glm/gtc/type_ptr.hpp>
 #include<glm/gtx/rotate_vector.hpp>
 #include<glm/gtx/vector_angle.hpp>
+#include <memory> // For std::unique_ptr
 
 //For User Input on Windows
 #include <SDL2/SDL.h>
@@ -40,7 +41,7 @@ public:
 	Camera(int width, int height, glm::vec3 position);
 
 	// Updates and exports the camera matrix to the Vertex Shader
-	void Matrix(float FOVdeg, float nearPlane, float farPlane, Shader& shader, const char* uniform);
+	void Matrix(float FOVdeg, float nearPlane, float farPlane, std::unique_ptr<Shader>& shader, const char* uniform);
 	
 	void Inputs(SDL_Window* window);
 };

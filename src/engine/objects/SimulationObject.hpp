@@ -19,6 +19,8 @@ class SimulationObject {
         glm::vec3 position;
         glm::quat rotation;
 
+        glm::mat4 objModelMatrix; //Object's Model Matrix
+
     enum SimType {
         Instance,
         Character,

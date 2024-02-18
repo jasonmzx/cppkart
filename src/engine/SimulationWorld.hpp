@@ -9,9 +9,7 @@ class SimulationWorld {
 
     public:
         SimulationWorld();
-        std::vector<SimulationObject*> entities;
-
-
+        std::vector<std::shared_ptr<SimulationObject>> entities;
 
 };
 
