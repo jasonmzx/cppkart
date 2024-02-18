@@ -48,6 +48,9 @@ add_executable(cppkart
           src/core/gl/shaderClass.cpp
           src/core/gl/Camera.cpp
 
+          src/core/gl/Geometry.cpp
+          src/core/gl/Geometry.hpp
+
           src/core/gl/Texture.h
           src/core/gl/Texture.cpp
 
@@ -63,12 +66,12 @@ add_executable(cppkart
           src/engine/objects/SimulationObject.cpp
           src/engine/objects/SimulationObject.hpp
 
-          src/engine/objects/VehicleObject.cpp
-          src/engine/objects/VehicleObject.hpp
-     
           # Physics:
           src/engine/physics/PhysicsWorldSingleton.cpp
           src/engine/physics/PhysicsWorldSingleton.h
+
+          src/engine/physics/VehiclePhysics.cpp
+          src/engine/physics/VehiclePhysics.hpp
 
           # Rendering:
           src/engine/rendering/GameRenderer.cpp          
@@ -76,6 +79,7 @@ add_executable(cppkart
 
           src/engine/rendering/GLRenderer.cpp
           src/engine/rendering/GLRenderer.hpp
+
      
      src/engine/SimulationWorld.cpp
      src/engine/SimulationWorld.hpp

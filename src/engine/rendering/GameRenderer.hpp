@@ -14,18 +14,22 @@
 class GameRenderer {
 
     public:
-        GameRenderer(int winWidth, int winHeight, Camera* cam);
-        void RenderALL(SimulationWorld* world);
+        GameRenderer(int winWidth, int winHeight, Camera* cam, SimulationWorld* world);
+        void RenderALL();
 
     private:
         Camera* camera;
-        void renderObjects(const SimulationWorld* world);
+        SimulationWorld* world;
+
+        void renderObjects();
         RenderList createObjectRenderList(const SimulationWorld *world);
 
         std::unique_ptr<Shader> mainShader;
 
         GLint modelMatrixLOC;
         GLint useTextureLOC;
+
+        VAO VAO1;
 
 };
 

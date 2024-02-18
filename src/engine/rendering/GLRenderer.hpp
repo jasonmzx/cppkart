@@ -7,14 +7,13 @@
 #include "core/gl/VAO.h"
 #include "core/gl/Camera.h"
 
+#include "core/gl/Geometry.hpp"
 
 struct RenderInstruction {
     uint64_t sortKey;
     glm::mat4 modelMatrix; //Still unsure if I should have this here
 
-    //Some kind of Draw Patameters data structure
-
-    VAO* VertexArrayObject;
+    std::shared_ptr<Geometry> geometry; // Use shared_ptr to Geometry
 
 };
 

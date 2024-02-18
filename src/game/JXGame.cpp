@@ -10,7 +10,8 @@ JXGame::JXGame() {
     window.showCursor();
 
     camera = std::make_unique<Camera>(WIN_WIDTH, WIN_HEIGHT, glm::vec3(0.0f, 0.0f, 2.0f));
-    renderer = std::make_unique<GameRenderer>(WIN_WIDTH, WIN_HEIGHT, camera.get());
+    world = std::make_unique<SimulationWorld>();
+    renderer = std::make_unique<GameRenderer>(WIN_WIDTH, WIN_HEIGHT, camera.get(), world.get());
     
   // Initialize SDL_mixer
     // if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
@@ -63,5 +64,5 @@ void JXGame::Run() {
 
 void JXGame::Render() {
 
-  renderer.get()->RenderALL(world.get());
+  renderer.get()->RenderALL();
 }
