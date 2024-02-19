@@ -1,6 +1,6 @@
 #include"Texture.h"
 
-Texture::Texture(const char* image, GLenum texType, GLenum slot, GLenum format, GLenum pixelType)
+Texture::Texture(std::string image, GLenum texType, GLenum slot, GLenum format, GLenum pixelType)
 {
 	// Assigns the type of the texture ot the texture object
 	type = texType;
@@ -10,7 +10,7 @@ Texture::Texture(const char* image, GLenum texType, GLenum slot, GLenum format, 
 	// Flips the image so it appears right side up
 	stbi_set_flip_vertically_on_load(true);
 	// Reads the image from a file and stores it in bytes
-	unsigned char* bytes = stbi_load(image, &widthImg, &heightImg, &numColCh, 0);
+	unsigned char* bytes = stbi_load(image.c_str(), &widthImg, &heightImg, &numColCh, 0);
 
 	// Generates an OpenGL texture object
 	glGenTextures(1, &ID);
@@ -40,6 +40,8 @@ Texture::Texture(const char* image, GLenum texType, GLenum slot, GLenum format, 
 
 	// Unbinds the OpenGL Texture object so that it can't accidentally be modified
 	glBindTexture(texType, 0);
+
+    hashID = createHashedID(image);
 }
 
 void Texture::texUnit(std::unique_ptr<Shader>& shader, const char* uniform, GLuint unit)

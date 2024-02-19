@@ -3,12 +3,13 @@
 
 #include <memory>
 #include <glad/glad.h>
-#include <unordered_map> // For geometry caching
 
-#include "GLRenderer.hpp"
+#include "RenderRsrcManager.hpp"
+
 #include "core/gl/Camera.h"
 #include "core/gl/shaderClass.h"
 #include "engine/SimulationWorld.hpp"
+
 
 class GameRenderer {
 
@@ -17,6 +18,9 @@ class GameRenderer {
         void RenderALL();
 
     private:
+
+        RenderRsrcManager ressources;
+
         Camera* camera;
         SimulationWorld* world;
         std::unique_ptr<Shader> mainShader;
@@ -26,13 +30,11 @@ class GameRenderer {
         GLint modelMatrixLOC;
         GLint useTextureLOC;
 
-        //Caching Geoms. to avoid duplications of identical geometries
-        std::unordered_map<std::string, std::shared_ptr<Geometry>> geometryCache;
+
 
         void renderObjects();
         RenderList createObjectRenderList();
-        std::shared_ptr<Geometry> getOrCreateGeometry(const std::string& modelIdentifier, 
-        const std::vector<GLfloat>& verts, const std::vector<GLuint>& indices);
+
 };
 
 #endif

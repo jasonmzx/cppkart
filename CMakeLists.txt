@@ -59,6 +59,9 @@ add_executable(cppkart
           src/core/loaders/ObjModel.cpp
           src/core/loaders/ObjModel.hpp
 
+          src/core/ID.hpp
+          src/core/ID.cpp
+
      
       ##### Engine:
 
@@ -74,6 +77,9 @@ add_executable(cppkart
           src/engine/physics/VehiclePhysics.hpp
 
           # Rendering:
+          src/engine/rendering/RenderRsrcManager.hpp
+          src/engine/rendering/RenderRsrcManager.cpp
+
           src/engine/rendering/GameRenderer.cpp          
           src/engine/rendering/GameRenderer.hpp
 

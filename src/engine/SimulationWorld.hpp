@@ -1,9 +1,13 @@
 #ifndef SIMULATIONWORLD_HPP
 #define SIMULATIONWORLD_HPP
 
+#include <memory>
+
 #include "engine/objects/SimulationObject.hpp"
 #include "core/loaders/ObjModel.hpp"
-#include <memory>
+
+//Physics Imports:
+#include "engine/physics/PhysicsWorldSingleton.h"
 
 class SimulationWorld {
 

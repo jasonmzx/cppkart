@@ -16,7 +16,8 @@ class SimulationObject {
 
     public:
         std::shared_ptr<ObjModel> model; // Shared geometry
-        std::shared_ptr<Texture> tex0;
+        
+        std::string texPath;
 
         glm::vec3 position;
         glm::quat rotation;
@@ -30,7 +31,7 @@ class SimulationObject {
         Projectile,
     };
 
-    SimulationObject(std::shared_ptr<ObjModel> modelPtr, std::shared_ptr<Texture> texPtr);
+    SimulationObject(std::shared_ptr<ObjModel> modelPtr, std::string texPath);
 
    // virtual void setPosition(const glm::vec3& pos);
 

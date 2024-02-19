@@ -45,6 +45,7 @@ void GameRenderer::RenderALL() {
 void GameRenderer::renderObjects() {
    //terrainGeom.Draw(modelMatrixLocation, terrainModelMatrix, colorUniformLocation, false);
     
+    ressources.debugPrint();
 auto drawList = createObjectRenderList();
 
     glUniform1i(useTextureLOC, GL_TRUE); 
@@ -67,16 +68,34 @@ RenderList GameRenderer::createObjectRenderList() {
     for (auto& entity : world->entities) {
         RenderInstruction instruction;
         
-        std::string modelIdentifier = entity->model->modelID;
-        
-        std::vector<GLfloat> verts = entity->model->GetVertices();
-        std::vector<GLuint> indices = entity->model->GetIndices();
-        
-        //! THIS IS TERRIBLE AS EVERY DRAW ITERATION IT INITS ! NO GOOD
-        instruction.tex = entity->tex0;
-        instruction.tex.get()->texUnit(mainShader, "tex0", 0);
+        std::string modelID = entity->model->hashID; //ObjModel's String ID
 
-        auto geometry = getOrCreateGeometry(modelIdentifier, entity->model->GetVertices(), entity->model->GetIndices());
+        //* ================= Geometry ====================
+
+        auto geometry = ressources.tryGetGeometry(modelID);
+
+        if(geometry == nullptr) { //If geometry doesn't exist, make it
+        
+          printf("New Model Loaded!");
+
+          std::vector<GLfloat> verts = entity->model->GetVertices();
+          std::vector<GLuint> indices = entity->model->GetIndices();
+          geometry = ressources.getOrCreateGeometry(modelID, entity->model->GetVertices(), entity->model->GetIndices());
+        }
+
+        //* ================= Tex ====================
+
+        //TODO: Maybe Hash This into a smaller ID?
+        std::string texID = entity->texPath; //Texture's String ID
+
+        auto texture = ressources.tryGetTex(texID);
+
+        if(texture == nullptr){
+          instruction.tex.get()->texUnit(mainShader, "tex0", 0);
+          texture = ressources.loadTex(texID, entity.get()->texPath);  
+        }
+
+        instruction.tex = texture;
         instruction.geometry = geometry;
 
         glm::vec3 scaleFactors = glm::vec3(1.0f, 1.0f, 1.0f); // Example scale factors, adjust as necessary
@@ -89,17 +108,3 @@ RenderList GameRenderer::createObjectRenderList() {
     return drawList;
 }
 
-std::shared_ptr<Geometry> GameRenderer::getOrCreateGeometry(const std::string& modelIdentifier, 
-const std::vector<GLfloat>& verts, const std::vector<GLuint>& indices) {
-
-    auto iter = geometryCache.find(modelIdentifier);
-    if (iter != geometryCache.end()) {
-        // Found existing geometry, reuse it
-        return iter->second;
-    } else {
-        // Create new Geometry object
-        auto geometry = std::make_shared<Geometry>(verts, indices);
-        geometryCache[modelIdentifier] = geometry;
-        return geometry;
-    }
-}
