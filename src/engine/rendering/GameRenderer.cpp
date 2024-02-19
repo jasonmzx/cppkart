@@ -68,7 +68,7 @@ RenderList GameRenderer::createObjectRenderList() {
     for (auto& entity : world->entities) {
         RenderInstruction instruction;
         
-        std::string modelID = entity->model->hashID; //ObjModel's String ID
+        std::string modelID = entity->modelPath; //ObjModel's String ID
 
         //* ================= Geometry ====================
 
@@ -76,11 +76,17 @@ RenderList GameRenderer::createObjectRenderList() {
 
         if(geometry == nullptr) { //If geometry doesn't exist, make it
         
+          //Load Model:
+          auto model = ressources.tryGetModel(modelID);
+          if(model == nullptr) {
+            model = ressources.loadModel(modelID, modelID);
+          }
+
           printf("New Model Loaded!");
 
-          std::vector<GLfloat> verts = entity->model->GetVertices();
-          std::vector<GLuint> indices = entity->model->GetIndices();
-          geometry = ressources.getOrCreateGeometry(modelID, entity->model->GetVertices(), entity->model->GetIndices());
+          std::vector<GLfloat> verts = model->GetVertices();
+          std::vector<GLuint> indices = model->GetIndices();
+          geometry = ressources.getOrCreateGeometry(modelID, model->GetVertices(), model->GetIndices());
         }
 
         //* ================= Tex ====================

@@ -54,7 +54,35 @@ std::shared_ptr<Texture> RenderRsrcManager::tryGetTex(const std::string& texId) 
     }
 }
 
-void RenderRsrcManager::debugPrint() {
-    printf("Number of Textures active: %zu \n", textureCache.size());
-    printf("Number of Geometries active: %zu \n", geometryCache.size());
+// ----- model
+
+std::shared_ptr<ObjModel> RenderRsrcManager::loadModel(const std::string& modelId, const std::string& filePath) {
+    auto iter = modelCache.find(modelId);
+    if (iter != modelCache.end()) {
+        // Model found in cache, return it
+        return iter->second;
+    } else {
+        // Model not found, load and cache it
+        std::shared_ptr<ObjModel> mdl = std::make_shared<ObjModel>(filePath);
+        modelCache[modelId] = mdl;
+        return mdl;
+    }
 }
+
+std::shared_ptr<ObjModel> RenderRsrcManager::tryGetModel(const std::string& modelId) {
+    auto iter = modelCache.find(modelId);
+    
+    if (iter != modelCache.end()) {
+        // Found existing model, return it
+        return iter->second;
+    } else {
+        // Model not found, return nullptr
+        return nullptr;
+    }
+}
+
+void RenderRsrcManager::debugPrint() {
+    printf("RSRC MGMT [ : TEX %zu , GEOM %zu , MODEL %zu ] \n", textureCache.size(), geometryCache.size(), modelCache.size());
+
+}
+

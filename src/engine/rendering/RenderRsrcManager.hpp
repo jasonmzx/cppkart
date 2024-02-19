@@ -6,9 +6,12 @@
 
 #include "GLRenderer.hpp"
 #include "core/gl/Texture.h"
+#include "core/loaders/ObjModel.hpp"
 
 typedef std::unordered_map<std::string, std::shared_ptr<Geometry>> GeometryCache;
 typedef std::unordered_map<std::string, std::shared_ptr<Texture>> TextureCache;
+typedef std::unordered_map<std::string, std::shared_ptr<ObjModel>> ModelCache;
+
 
 class RenderRsrcManager {
 
@@ -16,21 +19,26 @@ class RenderRsrcManager {
         RenderRsrcManager() = default;
         void debugPrint();
         
-        //Caching Geoms. to avoid duplications of identical geometries
+        //* Caching Geoms, Textures, Models to avoid duplications of identical objects
         GeometryCache geometryCache;
         TextureCache textureCache;
+        ModelCache modelCache;
 
-        // Function that checks Geometry Cache, and handles creation of geometry or lookup
         
         std::shared_ptr<Geometry> getOrCreateGeometry(const std::string& modelIdentifier, 
                         const std::vector<GLfloat>& verts, const std::vector<GLuint>& indices);
 
         std::shared_ptr<Geometry> tryGetGeometry(const std::string& modelIdentifier);
 
-
         std::shared_ptr<Texture> loadTex(const std::string& texId, const std::string& filePath);
 
         std::shared_ptr<Texture> tryGetTex(const std::string& texId);
+
+        std::shared_ptr<ObjModel> loadModel(const std::string& modelId, const std::string& filePath);
+
+        std::shared_ptr<ObjModel> tryGetModel(const std::string& modelId);
+
+
 
 };
 
