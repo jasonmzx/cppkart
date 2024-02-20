@@ -69,47 +69,55 @@ void Camera::Inputs(SDL_Window *window)
 
     // Handles mouse inputs
     int mouseX, mouseY;
-    Uint32 mouseState = SDL_GetMouseState(&mouseX, &mouseY);
-
-    // Trackpad just doesn't work...
-
-    if (mouseState & SDL_BUTTON(SDL_BUTTON_LEFT))
-    {
-        // Hides mouse cursor
-        SDL_ShowCursor(SDL_DISABLE);
-
-        // Prevents camera from jumping on the first click
-        if (firstClick)
-        {
+    Uint32 mouseButtons = SDL_GetMouseState(&mouseX, &mouseY);
+    if (mouseButtons & SDL_BUTTON(SDL_BUTTON_LEFT)) {
+        if (firstClick) {
+            // Center the mouse cursor
             SDL_WarpMouseInWindow(window, width / 2, height / 2);
             firstClick = false;
+            SDL_ShowCursor(SDL_DISABLE); // Hide the mouse cursor
+        } else {
+            // SDL doesn't directly give us the previous position of the cursor,
+            // so we compute the motion based on the current position and centering the cursor.
+            int deltaX = mouseX - width / 2;
+            int deltaY = mouseY - height / 2;
+
+            // Process mouse look
+            ProcessMouseLook(deltaX, deltaY, window);
+
+            // Re-center the mouse cursor to avoid reaching the screen edge
+            SDL_WarpMouseInWindow(window, width / 2, height / 2);
         }
-
-        // Normalizes and shifts the coordinates of the cursor such that they begin in the middle of the screen
-        // and then "transforms" them into degrees
-        float rotX = sensitivity * (float)(mouseY - (height / 2)) / height;
-        float rotY = sensitivity * (float)(mouseX - (width / 2)) / width;
-
-        // Calculates upcoming vertical change in the Orientation
-        glm::vec3 newOrientation = glm::rotate(Orientation, glm::radians(-rotX), glm::normalize(glm::cross(Orientation, Up)));
-
-        // Decides whether or not the next vertical Orientation is legal or not
-        if (abs(glm::angle(newOrientation, Up) - glm::radians(90.0f)) <= glm::radians(85.0f))
-        {
-            Orientation = newOrientation;
+    } else {
+        if (!firstClick) {
+            // Show the cursor when the left button is released and reset firstClick
+            SDL_ShowCursor(SDL_ENABLE);
+            firstClick = true;
         }
-
-        // Rotates the Orientation left and right
-        Orientation = glm::rotate(Orientation, glm::radians(-rotY), Up);
-
-        // Sets mouse cursor to the middle of the screen so that it doesn't end up roaming around
-        SDL_WarpMouseInWindow(window, width / 2, height / 2);
     }
-    else
-    {
-        // Unhides cursor since the camera is not looking around anymore
-        SDL_ShowCursor(SDL_ENABLE);
-        // Makes sure the next time the camera looks around it doesn't jump
-        firstClick = true;
-    }
+
 }
+
+void Camera::ProcessMouseLook(int mouseXRel, int mouseYRel, SDL_Window* window) {
+    // Assuming firstClick has been handled outside this function
+
+    // Convert the relative mouse movement into rotation angles
+    float yaw = mouseXRel * sensitivity * 0.001f; // Adjust sensitivity as needed
+    float pitch = mouseYRel * sensitivity * 0.001f; // Adjust sensitivity as needed
+
+    // Apply yaw - Rotate around the global up axis (Y-axis)
+    glm::vec3 right = glm::normalize(glm::cross(Orientation, Up));
+    Orientation = glm::rotate(Orientation, glm::radians(-yaw), Up);
+
+    // Calculate pitch - Rotate around the camera's right axis
+    glm::vec3 newOrientation = glm::rotate(Orientation, glm::radians(-pitch), right);
+
+    // Prevent flipping over at the zenith/nadir (top/bottom)
+    if (glm::dot(newOrientation, Up) < 0.99f && glm::dot(newOrientation, Up) > -0.99f) {
+        Orientation = newOrientation;
+    }
+
+    // Update LookAt based on the new orientation
+    LookAt = Position + Orientation;
+}
+

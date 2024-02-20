@@ -4,10 +4,12 @@
 #define WIN_WIDTH 1820
 #define WIN_HEIGHT 980
 
+#define IMGUI_MODE 1
+
 JXGame::JXGame() {
 
     window.create("JEX [0.0.1]", 1820,980, false);
-    window.showCursor();
+    //window.showCursor();
 
     camera = std::make_unique<Camera>(WIN_WIDTH, WIN_HEIGHT, glm::vec3(0.0f, 0.0f, 2.0f));
     world = std::make_unique<SimulationWorld>();
@@ -18,6 +20,24 @@ JXGame::JXGame() {
     //     printf("SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError());
     // }
 
+  if(IMGUI_MODE == 1) {
+        // Setup Dear ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
+    //ImGui::StyleColorsLight();
+
+    // Setup Platform/Renderer backends for Imgui
+    const char* glsl_version = "#version 330 core";
+    ImGui_ImplSDL2_InitForOpenGL(window.getWindow(), window.getSDLContext());
+    ImGui_ImplOpenGL3_Init(glsl_version);
+    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+  }
 
 }
 
@@ -28,6 +48,9 @@ void JXGame::Run() {
 
   while (Running)
   {
+
+    SDL_PumpEvents(); 
+    Camera* cameraPtr = camera.get();
 
     SDL_Event Event;
     while (SDL_PollEvent(&Event))
@@ -50,19 +73,16 @@ void JXGame::Run() {
       {
         Running = 0;
       }
-    }
 
-    SDL_PumpEvents(); 
+    }
+    cameraPtr->Inputs(window.getWindow());
 
     Render();
-    
-    camera.get()->Inputs(window.getWindow());
     
     window.swapWindow();
 
   }
 }
-
 
 void JXGame::Render() {
 

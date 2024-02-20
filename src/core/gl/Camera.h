@@ -35,7 +35,7 @@ public:
 
 	// Adjust the speed of the camera and it's sensitivity when looking around
 	float speed = 1.0f;
-	float sensitivity = 100.0f;
+	float sensitivity = 50.0f;
 
 	// Camera constructor to set up initial values
 	Camera(int width, int height, glm::vec3 position);
@@ -44,5 +44,6 @@ public:
 	void Matrix(float FOVdeg, float nearPlane, float farPlane, std::unique_ptr<Shader>& shader, const char* uniform);
 	
 	void Inputs(SDL_Window* window);
+	void ProcessMouseLook(int mouseXRel, int mouseYRel, SDL_Window* window);
 };
 #endif

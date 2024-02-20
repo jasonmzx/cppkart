@@ -27,12 +27,20 @@ public:
         SDL_GL_SwapWindow(window);
     }
 
+
+
+    bool isOpen() const {
+        return !!window;
+    }
+
+     //======= Getters ========
+    
     SDL_Window* getWindow() {
         return window;
     }
 
-    bool isOpen() const {
-        return !!window;
+    SDL_GLContext* getSDLContext() {
+        return &glContext;
     }
 
     // glm::ivec2 getSize() const;
