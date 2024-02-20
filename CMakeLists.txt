@@ -54,6 +54,8 @@ add_executable(cppkart
           src/core/gl/Texture.h
           src/core/gl/Texture.cpp
 
+          src/core/gl/BulletDebugDrawer.cpp
+
           # Loaders:
 
           src/core/loaders/ObjModel.cpp

@@ -19,6 +19,8 @@
 #include "engine/rendering/GameRenderer.hpp"
 #include "engine/SimulationWorld.hpp"
 
+#define GAME_TIMESTEP (1.f / 60.f)
+
 class JXGame {
 
     public:
@@ -27,6 +29,8 @@ class JXGame {
 
         void Run();
         void Render();
+
+        float tickWorld(const float deltaTime, float accumulatedTime);
     private:
         GameWindow window{};
 

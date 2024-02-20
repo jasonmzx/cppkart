@@ -29,7 +29,7 @@ void Camera::Matrix(float FOVdeg, float nearPlane, float farPlane, std::unique_p
     glUniformMatrix4fv(glGetUniformLocation(shader->ID, uniform), 1, GL_FALSE, glm::value_ptr(viewProjection));
 }
 
-void Camera::Inputs(SDL_Window *window)
+void Camera::Inputs(SDL_Window *window, bool isMouse)
 {
     // Handles key inputs
     const Uint8 *keyState = SDL_GetKeyboardState(NULL);
@@ -67,6 +67,9 @@ void Camera::Inputs(SDL_Window *window)
         speed = 0.1f;
     }
 
+
+    if(isMouse) {
+
     // Handles mouse inputs
     int mouseX, mouseY;
     Uint32 mouseButtons = SDL_GetMouseState(&mouseX, &mouseY);
@@ -96,6 +99,7 @@ void Camera::Inputs(SDL_Window *window)
         }
     }
 
+    }   
 }
 
 void Camera::ProcessMouseLook(int mouseXRel, int mouseYRel, SDL_Window* window) {

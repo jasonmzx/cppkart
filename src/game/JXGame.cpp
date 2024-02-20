@@ -46,6 +46,8 @@ void JXGame::Run() {
   bool Running = true;
   bool Fullscreen = false;
 
+  bool CameraInputs = true;
+
   while (Running)
   {
 
@@ -55,8 +57,8 @@ void JXGame::Run() {
     SDL_Event Event;
     while (SDL_PollEvent(&Event))
     {
-
-      //ImGui_ImplSDL2_ProcessEvent(&Event);
+      if(IMGUI_MODE == 1)
+        ImGui_ImplSDL2_ProcessEvent(&Event);
 
       if (Event.type == SDL_KEYDOWN)
       {
@@ -65,6 +67,8 @@ void JXGame::Run() {
         case SDLK_ESCAPE:
           Running = 0;
           break;
+        case SDLK_F10:
+          CameraInputs = !CameraInputs;
         default:
           break;
         }
@@ -75,16 +79,59 @@ void JXGame::Run() {
       }
 
     }
-    cameraPtr->Inputs(window.getWindow());
+    
+    if(IMGUI_MODE == 1) {
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplSDL2_NewFrame();
+    ImGui::NewFrame();
+
+    float framerate = ImGui::GetIO().Framerate;
+    char formatted_fps_STR[50]; 
+    // Use sprintf to format the float as a string
+    sprintf(formatted_fps_STR, "FPS: %f", framerate);
+
+    ImGui::Begin("Debug Menu");
+
+    if (ImGui::BeginTabBar("DebugTabBar")) {
+        // Tab for FPS & Physics Debug
+        if (ImGui::BeginTabItem("General")) {
+            ImGui::Text("%s", formatted_fps_STR);
+            ImGui::EndTabItem();
+        }
+
+        // Tab for Vehicle
+        if (ImGui::BeginTabItem("Vehicle Debug")) {
+
+            //std::string v_debug_str = vPhy.debugStateSTR(); 
+            std::string v_debug_str = "helo";
+            ImGui::Text("%s", v_debug_str.c_str());
+            ImGui::EndTabItem();
+        }
+
+        ImGui::EndTabBar();
+    }
+    ImGui::End();
+
+    }
+
+    cameraPtr->Inputs(window.getWindow(),CameraInputs);
 
     Render();
     
-    window.swapWindow();
+    if(IMGUI_MODE == 1){
+      ImGui::Render();
+      ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    }
 
+    window.swapWindow();
   }
 }
 
 void JXGame::Render() {
-
+  
   renderer.get()->RenderALL();
+}
+
+float JXGame::tickWorld(const float deltaTime, float accumulatedTime) {
+
 }

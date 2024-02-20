@@ -13,6 +13,7 @@ class SimulationWorld {
 
     public:
         SimulationWorld();
+        PhysicsWorldSingleton *physicsWorld;
         std::vector<std::shared_ptr<SimulationObject>> entities;
 
 };

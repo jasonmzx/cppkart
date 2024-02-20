@@ -10,12 +10,15 @@
 #include "core/gl/shaderClass.h"
 #include "engine/SimulationWorld.hpp"
 
+#include "core/gl/BulletDebugDrawer.cpp"
 
 class GameRenderer {
 
     public:
         GameRenderer(int winWidth, int winHeight, Camera* cam, SimulationWorld* world);
         void RenderALL();
+
+        BulletDebugDrawer* debugDrawer;
 
     private:
 

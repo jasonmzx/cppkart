@@ -1,6 +1,8 @@
 #include "GameRenderer.hpp"
 
 
+#define BULLET_DEBUG_DRAW 1
+
 const std::string SHADER_PATH = "../src/game/shader/";
 
 GameRenderer::GameRenderer(int winWidth, int winHeight, Camera* cam, SimulationWorld* worldArg)
@@ -23,7 +25,13 @@ GameRenderer::GameRenderer(int winWidth, int winHeight, Camera* cam, SimulationW
 
     colorUniformLocation = glGetUniformLocation(mainShader.get()->ID, "FragColor");
 
-    //Initialize Textures:
+    //init bullet debug
+    
+    if(BULLET_DEBUG_DRAW == 1)
+      debugDrawer = new BulletDebugDrawer(mainShader.get()->ID);
+      
+      world->physicsWorld->dynamicsWorld->setDebugDrawer(debugDrawer);
+
 
 }
 
@@ -35,6 +43,17 @@ void GameRenderer::RenderALL() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     mainShader.get()->Activate();
+
+
+
+
+    glUniform1i(useTextureLOC, GL_FALSE); 
+        
+        world->physicsWorld->dynamicsWorld->debugDrawWorld();
+        debugDrawer->flushLines();
+
+    glUniform1i(useTextureLOC, GL_TRUE); 
+
 
     renderObjects();
 
