@@ -44,7 +44,7 @@ Texture::Texture(std::string image, GLenum texType, GLenum slot, GLenum format, 
     hashID = createHashedID(image);
 }
 
-void Texture::texUnit(std::unique_ptr<Shader>& shader, const char* uniform, GLuint unit)
+void Texture::texUnit(std::shared_ptr<Shader>& shader, const char* uniform, GLuint unit)
 {
 	// Gets the location of the uniform
 	GLuint texUni = glGetUniformLocation(shader->ID, uniform);

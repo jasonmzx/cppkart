@@ -11,6 +11,7 @@
 #include "engine/SimulationWorld.hpp"
 
 #include "core/gl/BulletDebugDrawer.cpp"
+#include "ObjectRenderer.hpp"
 
 class GameRenderer {
 
@@ -26,7 +27,10 @@ class GameRenderer {
 
         Camera* camera;
         SimulationWorld* world;
-        std::unique_ptr<Shader> mainShader;
+
+        std::shared_ptr<Shader> mainShader;
+        std::unique_ptr<ObjectRenderer> objectRender;
+
         
         GLint colorUniformLocation; //Debug purposes, might move
 

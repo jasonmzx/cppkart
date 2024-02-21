@@ -4,10 +4,19 @@
 #include "core/loaders/ObjModel.hpp"
 #include "SimulationObject.hpp"
 
-class VehicleObject final : public SimulationObject {
+#include "engine/physics/VehiclePhysics.hpp"
+
+class VehicleObject : public SimulationObject {
 
     public:
-    
+
+        VehicleObject(std::string carObjPath, std::string wheelObjPath, std::string texPath);
+
+        std::string wheelObjPath;
+
+        VehiclePhysics vehicle;
+        
+        void UpdateModelMatrix();
 
 };
 

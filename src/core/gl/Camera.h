@@ -41,7 +41,7 @@ public:
 	Camera(int width, int height, glm::vec3 position);
 
 	// Updates and exports the camera matrix to the Vertex Shader
-	void Matrix(float FOVdeg, float nearPlane, float farPlane, std::unique_ptr<Shader>& shader, const char* uniform);
+	void Matrix(float FOVdeg, float nearPlane, float farPlane, std::shared_ptr<Shader>& shader, const char* uniform);
 	
 	void Inputs(SDL_Window* window, bool isMouse);
 	void ProcessMouseLook(int mouseXRel, int mouseYRel, SDL_Window* window);

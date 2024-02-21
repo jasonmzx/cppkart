@@ -244,7 +244,6 @@ terrainModelMatrix = glm::translate(glm::vec3(-5, -(18.1) / 2, -5))
   while (Running)
   {
 
-
   //* POLLING INPUTS for Multiple Keyboard Input and Handle Simultaneously?
 
   SDL_PumpEvents(); 

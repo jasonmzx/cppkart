@@ -30,6 +30,8 @@ class SimulationObject {
         Projectile,
     };
 
+        SimType type;
+
     SimulationObject(std::string objPath, std::string texturePath);
 
    // virtual void setPosition(const glm::vec3& pos);

@@ -17,7 +17,7 @@ public:
 	Texture(std::string image, GLenum texType, GLenum slot, GLenum format, GLenum pixelType);
 
 	// Assigns a texture unit to a texture
-	void texUnit(std::unique_ptr<Shader>& shader, const char* uniform, GLuint unit);
+	void texUnit(std::shared_ptr<Shader>& shader, const char* uniform, GLuint unit);
 	// Binds a texture
 	void Bind();
 	// Unbinds a texture

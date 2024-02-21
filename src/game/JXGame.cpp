@@ -123,6 +123,8 @@ void JXGame::Run() {
       ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }
 
+    tickWorld(0.0f, 0.0f);
+
     window.swapWindow();
   }
 }
@@ -133,5 +135,10 @@ void JXGame::Render() {
 }
 
 float JXGame::tickWorld(const float deltaTime, float accumulatedTime) {
+    
+    world.get()->physicsWorld->dynamicsWorld->stepSimulation(GAME_TIMESTEP, 2, GAME_TIMESTEP);
 
+    //TODO: Impl
+
+    return 0.0f; //TODO
 }

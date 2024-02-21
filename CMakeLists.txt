@@ -71,6 +71,9 @@ add_executable(cppkart
           src/engine/objects/SimulationObject.cpp
           src/engine/objects/SimulationObject.hpp
 
+          src/engine/objects/VehicleObject.cpp
+          src/engine/objects/VehicleObject.hpp
+
           # Physics:
           src/engine/physics/PhysicsWorldSingleton.cpp
           src/engine/physics/PhysicsWorldSingleton.h
@@ -84,6 +87,9 @@ add_executable(cppkart
 
           src/engine/rendering/GameRenderer.cpp          
           src/engine/rendering/GameRenderer.hpp
+
+          src/engine/rendering/ObjectRenderer.cpp
+          src/engine/rendering/ObjectRenderer.hpp
 
           src/engine/rendering/GLRenderer.cpp
           src/engine/rendering/GLRenderer.hpp

@@ -17,7 +17,7 @@ GameRenderer::GameRenderer(int winWidth, int winHeight, Camera* cam, SimulationW
     // Initialize shaders
     std::string vertexShaderPath = SHADER_PATH + "default.vert";
     std::string fragmentShaderPath = SHADER_PATH + "default.frag";
-    mainShader = std::make_unique<Shader>(vertexShaderPath.c_str(), fragmentShaderPath.c_str());
+    mainShader = std::make_shared<Shader>(vertexShaderPath.c_str(), fragmentShaderPath.c_str());
 
     // Get locations of uniforms in the shader
     modelMatrixLOC = glGetUniformLocation(mainShader.get()->ID, "modelMatrix");
@@ -25,13 +25,13 @@ GameRenderer::GameRenderer(int winWidth, int winHeight, Camera* cam, SimulationW
 
     colorUniformLocation = glGetUniformLocation(mainShader.get()->ID, "FragColor");
 
-    //init bullet debug
-    
+    // Initialize Object Renderer
+    objectRender = std::make_unique<ObjectRenderer>(world, &ressources, mainShader);
+      
     if(BULLET_DEBUG_DRAW == 1)
       debugDrawer = new BulletDebugDrawer(mainShader.get()->ID);
       
-      world->physicsWorld->dynamicsWorld->setDebugDrawer(debugDrawer);
-
+    world->physicsWorld->dynamicsWorld->setDebugDrawer(debugDrawer);
 
 }
 
@@ -65,7 +65,7 @@ void GameRenderer::renderObjects() {
    //terrainGeom.Draw(modelMatrixLocation, terrainModelMatrix, colorUniformLocation, false);
     
     ressources.debugPrint();
-auto drawList = createObjectRenderList();
+    auto drawList = createObjectRenderList();
 
     glUniform1i(useTextureLOC, GL_TRUE); 
 
@@ -78,57 +78,61 @@ auto drawList = createObjectRenderList();
     
     instruction.tex.get()->Unbind();
   }
-
 }
 
 RenderList GameRenderer::createObjectRenderList() {
     RenderList drawList;
     
-    for (auto& entity : world->entities) {
-        RenderInstruction instruction;
+    for (auto& entity : world->entities) { //Simulation object entities
+
+
+      objectRender.get()->addToBuildlist(entity.get(), drawList);
+
+        //Uncooment below blck
+
+        // RenderInstruction instruction;
         
-        std::string modelID = entity->modelPath; //ObjModel's String ID
+        // std::string modelID = entity->modelPath; //entity's primary modelpath String ID
 
-        //* ================= Geometry ====================
+        // //* ================= Geometry ====================
 
-        auto geometry = ressources.tryGetGeometry(modelID);
+        // auto geometry = ressources.tryGetGeometry(modelID);
 
-        if(geometry == nullptr) { //If geometry doesn't exist, make it
+        // if(geometry == nullptr) { //If geometry doesn't exist, make it
         
-          //Load Model:
-          auto model = ressources.tryGetModel(modelID);
-          if(model == nullptr) {
-            model = ressources.loadModel(modelID, modelID);
-          }
+        //   //Load Model:
+        //   auto model = ressources.tryGetModel(modelID);
+        //   if(model == nullptr) {
+        //     model = ressources.loadModel(modelID, modelID);
+        //   }
 
-          printf("New Model Loaded!");
+        //   printf("New Model Loaded!");
 
-          std::vector<GLfloat> verts = model->GetVertices();
-          std::vector<GLuint> indices = model->GetIndices();
-          geometry = ressources.getOrCreateGeometry(modelID, model->GetVertices(), model->GetIndices());
-        }
+        //   std::vector<GLfloat> verts = model->GetVertices();
+        //   std::vector<GLuint> indices = model->GetIndices();
+        //   geometry = ressources.getOrCreateGeometry(modelID, model->GetVertices(), model->GetIndices());
+        // }
 
-        //* ================= Tex ====================
+        // //* ================= Tex ====================
 
-        //TODO: Maybe Hash This into a smaller ID?
-        std::string texID = entity->texPath; //Texture's String ID
+        // //TODO: Maybe Hash This into a smaller ID?
+        // std::string texID = entity->texPath; //Texture's String ID
 
-        auto texture = ressources.tryGetTex(texID);
+        // auto texture = ressources.tryGetTex(texID);
 
-        if(texture == nullptr){
-          instruction.tex.get()->texUnit(mainShader, "tex0", 0);
-          texture = ressources.loadTex(texID, entity.get()->texPath);  
-        }
+        // if(texture == nullptr){
+        //   instruction.tex.get()->texUnit(mainShader, "tex0", 0);
+        //   texture = ressources.loadTex(texID, entity.get()->texPath);  
+        // }
+        // instruction.tex = texture;
+        // instruction.geometry = geometry;
 
-        instruction.tex = texture;
-        instruction.geometry = geometry;
+        // glm::vec3 scaleFactors = glm::vec3(1.0f, 1.0f, 1.0f); // Example scale factors, adjust as necessary
+        // instruction.modelMatrix = glm::translate(glm::mat4(1.0f), entity->getPosition())
+        //                           * glm::mat4_cast(entity->getRotation()) // Convert quaternion to rotation matrix
+        //                           * glm::scale(glm::mat4(1.0f), scaleFactors);
 
-        glm::vec3 scaleFactors = glm::vec3(1.0f, 1.0f, 1.0f); // Example scale factors, adjust as necessary
-        instruction.modelMatrix = glm::translate(glm::mat4(1.0f), entity->getPosition())
-                                  * glm::mat4_cast(entity->getRotation()) // Convert quaternion to rotation matrix
-                                  * glm::scale(glm::mat4(1.0f), scaleFactors);
-
-        drawList.push_back(instruction);
+        // drawList.push_back(instruction);
     }
     return drawList;
 }

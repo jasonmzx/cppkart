@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "engine/objects/SimulationObject.hpp"
+#include "engine/objects/VehicleObject.hpp"
 #include "core/loaders/ObjModel.hpp"
 
 //Physics Imports:
@@ -15,6 +15,7 @@ class SimulationWorld {
         SimulationWorld();
         PhysicsWorldSingleton *physicsWorld;
         std::vector<std::shared_ptr<SimulationObject>> entities;
+
 
 };
 
