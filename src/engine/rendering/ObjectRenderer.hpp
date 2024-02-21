@@ -14,6 +14,8 @@ class ObjectRenderer {
         : world(worldArg), ressources(rsrc), gameShader(shader) {}
 
         void addToBuildlist(SimulationObject* simObj, RenderList& renderList);
+
+        void renderObject(SimulationObject* obj, RenderList& renderList);
         void renderVehicle(VehicleObject* vehicleObj, RenderList& renderList);
     private:
 

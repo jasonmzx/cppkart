@@ -41,18 +41,11 @@ JXGame::JXGame() {
 
 }
 
-void JXGame::Run() {
-  
   bool Running = true;
   bool Fullscreen = false;
-
   bool CameraInputs = true;
 
-  while (Running)
-  {
-
-    SDL_PumpEvents(); 
-    Camera* cameraPtr = camera.get();
+void JXGame::getUpdateInput() {
 
     SDL_Event Event;
     while (SDL_PollEvent(&Event))
@@ -78,7 +71,23 @@ void JXGame::Run() {
         Running = 0;
       }
 
+      gameInput.keyboardUpdateInput(Event);
+      auto activeControls = gameInput.getActiveControls();
+      world.get()->updateWithPlayerInput(activeControls);
+
+
     }
+}
+
+void JXGame::Run() {
+  
+  while (Running)
+  {
+
+    SDL_PumpEvents(); 
+    Camera* cameraPtr = camera.get();
+
+    getUpdateInput();
     
     if(IMGUI_MODE == 1) {
     ImGui_ImplOpenGL3_NewFrame();
@@ -137,6 +146,7 @@ void JXGame::Render() {
 float JXGame::tickWorld(const float deltaTime, float accumulatedTime) {
     
     world.get()->physicsWorld->dynamicsWorld->stepSimulation(GAME_TIMESTEP, 2, GAME_TIMESTEP);
+
 
     //TODO: Impl
 

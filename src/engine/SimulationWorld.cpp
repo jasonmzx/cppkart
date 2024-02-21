@@ -25,9 +25,8 @@ SimulationWorld::SimulationWorld() {
     
     //* Beta Testing 
 
-    auto simObj = std::make_shared<VehicleObject>("../src/ressources/first_car.obj", "../src/ressources/first_car_wheel.obj", "../src/ressources/first_car.png");
+    simObj = std::make_shared<VehicleObject>("../src/ressources/first_car.obj", "../src/ressources/first_car_wheel.obj", "../src/ressources/first_car.png");
 
-    simObj->position = glm::vec3(0.0f, 0.0f, 0.0f);
     simObj->rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
     
     entities.push_back(simObj);
@@ -41,3 +40,23 @@ SimulationWorld::SimulationWorld() {
 }
 
 
+void SimulationWorld::updateWithPlayerInput(const ActiveInput& inputs) {
+    for (const auto& input : inputs) {
+        switch (input) {
+            case GameInputState::VehicleAccelerate:
+                printf("Trying to hit the gass!");
+                simObj->vehicle.ApplyEngineForce(1000); // Example force, adjust as needed
+                break;
+            case GameInputState::VehicleBrake:
+                simObj->vehicle.Brake(100); // Example brake force
+                break;
+            case GameInputState::VehicleTurnLeft:
+                simObj->vehicle.ApplySteer(-0.1); // Example steering increment, adjust as needed
+                break;
+            case GameInputState::VehicleTurnRight:
+                simObj->vehicle.ApplySteer(0.1); // Example steering increment
+                break;
+            // Handle other inputs as needed
+        }
+    }
+}

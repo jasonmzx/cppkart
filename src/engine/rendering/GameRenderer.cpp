@@ -64,7 +64,6 @@ void GameRenderer::RenderALL() {
 void GameRenderer::renderObjects() {
    //terrainGeom.Draw(modelMatrixLocation, terrainModelMatrix, colorUniformLocation, false);
     
-    ressources.debugPrint();
     auto drawList = createObjectRenderList();
 
     glUniform1i(useTextureLOC, GL_TRUE); 

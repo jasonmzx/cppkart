@@ -19,6 +19,8 @@
 #include "engine/rendering/GameRenderer.hpp"
 #include "engine/SimulationWorld.hpp"
 
+#include "game/state/GameInput.hpp"
+
 #define GAME_TIMESTEP (1.f / 60.f)
 
 class JXGame {
@@ -27,11 +29,15 @@ class JXGame {
         JXGame();
         //~JXGame();
 
+        void getUpdateInput();
+
         void Run();
         void Render();
 
         float tickWorld(const float deltaTime, float accumulatedTime);
     private:
+
+        GameInput gameInput{};
         GameWindow window{};
 
         std::unique_ptr<Camera> camera;

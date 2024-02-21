@@ -33,12 +33,18 @@ add_executable(cppkart
 #    ######## Project Source Code: ########
 
       src/main.cpp 
+
+     ##### Game:
+
       src/game/GameWindow.cpp
       src/game/GameWindow.hpp
 
       src/game/JXGame.cpp
       src/game/JXGame.hpp
-      
+
+     src/game/state/GameInput.cpp
+     src/game/state/GameInput.hpp
+
      ##### Core:
 
           # Rendering:
@@ -94,6 +100,8 @@ add_executable(cppkart
           src/engine/rendering/GLRenderer.cpp
           src/engine/rendering/GLRenderer.hpp
 
+          # State:
+          src/engine/state/GameInputState.hpp
      
      src/engine/SimulationWorld.cpp
      src/engine/SimulationWorld.hpp
