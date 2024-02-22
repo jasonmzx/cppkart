@@ -48,6 +48,13 @@ JXGame::JXGame() {
 void JXGame::getUpdateInput() {
 
     SDL_Event Event;
+    SDL_PumpEvents(); 
+    const Uint8 *state = SDL_GetKeyboardState(NULL);
+
+    gameInput.keyboardUpdateInput(state);
+
+    world.get()->updateVehicleControls(gameInput.currentAcceleration, gameInput.currentTurn);
+
     while (SDL_PollEvent(&Event))
     {
       if(IMGUI_MODE == 1)
@@ -71,10 +78,6 @@ void JXGame::getUpdateInput() {
         Running = 0;
       }
 
-      gameInput.keyboardUpdateInput(Event);
-      auto activeControls = gameInput.getActiveControls();
-      world.get()->updateWithPlayerInput(activeControls);
-
 
     }
 }
@@ -84,7 +87,7 @@ void JXGame::Run() {
   while (Running)
   {
 
-    SDL_PumpEvents(); 
+
     Camera* cameraPtr = camera.get();
 
     getUpdateInput();

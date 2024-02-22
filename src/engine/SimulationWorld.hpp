@@ -17,12 +17,11 @@ class SimulationWorld {
         SimulationWorld();
         PhysicsWorldSingleton *physicsWorld;
         std::vector<std::shared_ptr<SimulationObject>> entities;
-        void updateWithPlayerInput(const ActiveInput& inputs);
+        void updateVehicleControls(GameInputState::Control accelerationControl, GameInputState::Control turnControl);
 
         //* hardcoded for now global phy objs
 
         std::shared_ptr<VehicleObject> simObj;
-
 };
 
 #endif

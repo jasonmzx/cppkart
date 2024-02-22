@@ -34,22 +34,23 @@ void Camera::Inputs(SDL_Window *window, bool isMouse)
     // Handles key inputs
     const Uint8 *keyState = SDL_GetKeyboardState(NULL);
 
-    if (keyState[SDL_SCANCODE_W])
+    if (keyState[SDL_SCANCODE_UP])
     {
         Position += speed * Orientation;
     }
-    if (keyState[SDL_SCANCODE_A])
+    if (keyState[SDL_SCANCODE_LEFT])
     {
         Position += speed * -glm::normalize(glm::cross(Orientation, Up));
     }
-    if (keyState[SDL_SCANCODE_S])
+    if (keyState[SDL_SCANCODE_DOWN])
     {
         Position += speed * -Orientation;
     }
-    if (keyState[SDL_SCANCODE_D])
+    if (keyState[SDL_SCANCODE_RIGHT])
     {
         Position += speed * glm::normalize(glm::cross(Orientation, Up));
     }
+
     if (keyState[SDL_SCANCODE_SPACE])
     {
         Position += speed * Up;

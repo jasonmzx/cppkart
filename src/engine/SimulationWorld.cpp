@@ -40,23 +40,30 @@ SimulationWorld::SimulationWorld() {
 }
 
 
-void SimulationWorld::updateWithPlayerInput(const ActiveInput& inputs) {
-    for (const auto& input : inputs) {
-        switch (input) {
-            case GameInputState::VehicleAccelerate:
-                printf("Trying to hit the gass!");
-                simObj->vehicle.ApplyEngineForce(1000); // Example force, adjust as needed
-                break;
-            case GameInputState::VehicleBrake:
-                simObj->vehicle.Brake(100); // Example brake force
-                break;
-            case GameInputState::VehicleTurnLeft:
-                simObj->vehicle.ApplySteer(-0.1); // Example steering increment, adjust as needed
-                break;
-            case GameInputState::VehicleTurnRight:
-                simObj->vehicle.ApplySteer(0.1); // Example steering increment
-                break;
-            // Handle other inputs as needed
-        }
+void SimulationWorld::updateVehicleControls(GameInputState::Control accelerationControl, GameInputState::Control turnControl) {
+    // Handle acceleration or braking based on the accelerationControl parameter
+    switch (accelerationControl) {
+        case GameInputState::VehicleAccelerate:
+            simObj.get()->vehicle.ApplyEngineForce(2000);
+            break;
+        case GameInputState::VehicleBrake:
+            simObj.get()->vehicle.ApplyEngineForce(-2500);
+            break;
+        default: // Covers GameInputState::Null and any other unspecified cases
+            simObj.get()->vehicle.ApplyEngineForce(0);
+            break;
+    }
+
+    // Handle turning based on the turnControl parameter
+    switch (turnControl) {
+        case GameInputState::VehicleTurnLeft:
+            simObj.get()->vehicle.ApplySteer(0.13);
+            break;
+        case GameInputState::VehicleTurnRight:
+            simObj.get()->vehicle.ApplySteer(-0.13);
+            break;
+        default: // Covers GameInputState::Null and any other unspecified cases
+            simObj.get()->vehicle.ApplySteer(0);
+            break;
     }
 }

@@ -15,7 +15,7 @@ class VehicleObject : public SimulationObject {
         std::string wheelObjPath;
 
         VehiclePhysics vehicle;
-        
+
         void UpdateModelMatrix();
 
 };
