@@ -36,7 +36,7 @@ std::shared_ptr<Texture> RenderRsrcManager::loadTex(const std::string& texId, co
         return iter->second;
     } else {
         // Texture not found, load and cache it
-        std::shared_ptr<Texture> texture = std::make_shared<Texture>(filePath.c_str(), GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
+        std::shared_ptr<Texture> texture = std::make_shared<Texture>(filePath.c_str(), GL_TEXTURE_2D, GL_TEXTURE0, GL_UNSIGNED_BYTE);
         textureCache[texId] = texture;
         return texture;
     }

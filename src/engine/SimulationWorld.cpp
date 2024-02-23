@@ -31,7 +31,8 @@ SimulationWorld::SimulationWorld() {
     
     entities.push_back(simObj);
 
-    auto simObj2 = std::make_shared<SimulationObject>("../src/ressources/box_1.obj", "../src/ressources/first_car.png");
+    auto simObj2 = std::make_shared<SimulationObject>("../src/ressources/Landscape01.obj", "../src/ressources/Map01_Albedo.png");
+
 
     simObj2->position = glm::vec3(3.5f, 0.0f, 0.0f);
     simObj2->rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);

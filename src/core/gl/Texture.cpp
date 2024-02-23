@@ -1,14 +1,17 @@
 #include"Texture.h"
 
-Texture::Texture(std::string image, GLenum texType, GLenum slot, GLenum format, GLenum pixelType)
+Texture::Texture(std::string image, GLenum texType, GLenum slot, GLenum pixelType)
 {
-	// Assigns the type of the texture ot the texture object
 	type = texType;
 
 	// Stores the width, height, and the number of color channels of the image
 	int widthImg, heightImg, numColCh;
-	// Flips the image so it appears right side up
-	stbi_set_flip_vertically_on_load(true);
+	
+	//Equivalent to a UV Flip
+	stbi_set_flip_vertically_on_load(false);
+
+	GLenum format = (numColCh == 4) ? GL_RGBA : GL_RGB; //* Import, will segfault if wrong
+
 	// Reads the image from a file and stores it in bytes
 	unsigned char* bytes = stbi_load(image.c_str(), &widthImg, &heightImg, &numColCh, 0);
 
