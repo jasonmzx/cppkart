@@ -64,10 +64,10 @@ void JXGame::getUpdateInput() {
       {
         switch (Event.key.keysym.sym)
         {
-        case SDLK_ESCAPE:
+        case SDLK_F10:
           Running = 0;
           break;
-        case SDLK_F10:
+        case SDLK_ESCAPE:
           CameraInputs = !CameraInputs;
         default:
           break;

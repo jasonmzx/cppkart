@@ -38,6 +38,7 @@ SimulationWorld::SimulationWorld() {
     simObj2->rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
 
     entities.push_back(simObj2);
+
 }
 
 

@@ -20,8 +20,6 @@ class GameInput {
 
     private:
         GameInputState gameInputState;
-        
-
 
         ActiveInput activeControlsBuffer;
 };

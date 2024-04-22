@@ -22,8 +22,17 @@ std::shared_ptr<Geometry> RenderRsrcManager::tryGetGeometry(const std::string& m
         // Found existing geometry, return it
         return iter->second;
     } else {
-        // Geometry not found, return nullptr
-        return nullptr;
+        // Geometry not found, So Load Model and Create Geometry
+        
+        auto model = tryGetModel(modelIdentifier);
+        if(model == nullptr) {
+            model = loadModel(modelIdentifier, modelIdentifier);
+          }
+
+        //printf("New Model Loaded!");
+          std::vector<GLfloat> verts = model->GetVertices();
+          std::vector<GLuint> indices = model->GetIndices();
+          return getOrCreateGeometry(modelIdentifier, model->GetVertices(), model->GetIndices());  
     }
 }
 

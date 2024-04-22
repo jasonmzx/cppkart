@@ -1,102 +1,75 @@
 #include "ObjectRenderer.hpp"
 
+void ObjectRenderer::renderObject(SimulationObject *obj, RenderList &renderList)
+{
 
-void ObjectRenderer::renderObject(SimulationObject* obj, RenderList& renderList) {
-    
-    RenderInstruction instruction;
+  RenderInstruction instruction;
+  auto geometry = ressources->tryGetGeometry(obj->modelPath);
 
-    auto geometry = ressources->tryGetGeometry(obj->modelPath);
+  //* ================= Texturing ====================
 
-    if(geometry == nullptr) { //If geometry doesn't exist, make it
-        
-          //Load Model:
-          auto model = ressources->tryGetModel(obj->modelPath);
-          if(model == nullptr) {
-            model = ressources->loadModel(obj->modelPath, obj->modelPath);
-          }
+  std::string texID = obj->texPath; // Texture's String ID
+  auto texture = ressources->tryGetTex(texID);
 
-          printf("New Model Loaded!");
+  if (texture == nullptr)
+  {
+    instruction.tex.get()->texUnit(gameShader, "tex0", 0);
+    texture = ressources->loadTex(texID, texID);
+  }
 
-          std::vector<GLfloat> verts = model->GetVertices();
-          std::vector<GLuint> indices = model->GetIndices();
-          geometry = ressources->getOrCreateGeometry(obj->modelPath, model->GetVertices(), model->GetIndices());
-    }
+  //* ================= Build Instruction ====================
 
-            //* ================= Tex ====================
+  instruction.tex = texture;
+  instruction.geometry = geometry;
 
-        //TODO: Maybe Hash This into a smaller ID?
-        std::string texID = obj->texPath; //Texture's String ID
+  glm::vec3 scaleFactors = glm::vec3(1.0f, 1.0f, 1.0f); // Example scale factors, adjust as necessary
 
-        auto texture = ressources->tryGetTex(texID);
+  instruction.modelMatrix = glm::translate(glm::mat4(1.0f), obj->getPosition()) * glm::mat4_cast(obj->getRotation()) // Convert quaternion to rotation matrix
+                            * glm::scale(glm::mat4(1.0f), scaleFactors);
 
-        if(texture == nullptr){
-          instruction.tex.get()->texUnit(gameShader, "tex0", 0);
-          texture = ressources->loadTex(texID, texID);  
-        }
-        instruction.tex = texture;
-        instruction.geometry = geometry;
-
-        glm::vec3 scaleFactors = glm::vec3(1.0f, 1.0f, 1.0f); // Example scale factors, adjust as necessary
-        instruction.modelMatrix = glm::translate(glm::mat4(1.0f), obj->getPosition())
-                                  * glm::mat4_cast(obj->getRotation()) // Convert quaternion to rotation matrix
-                                  * glm::scale(glm::mat4(1.0f), scaleFactors);
-        
-        renderList.push_back(instruction);
-
+  renderList.push_back(instruction);
 }
 
-void ObjectRenderer::renderVehicle(VehicleObject* vehicleObj, RenderList& renderList) {
-    
-    RenderInstruction instruction;
+void ObjectRenderer::renderVehicle(VehicleObject *vehicleObj, RenderList &renderList)
+{
 
-    auto geometry = ressources->tryGetGeometry(vehicleObj->modelPath);
+  RenderInstruction instruction;
+  auto geometry = ressources->tryGetGeometry(vehicleObj->modelPath);
 
-    if(geometry == nullptr) { //If geometry doesn't exist, make it
-        
-          //Load Model:
-          auto model = ressources->tryGetModel(vehicleObj->modelPath);
-          if(model == nullptr) {
-            model = ressources->loadModel(vehicleObj->modelPath, vehicleObj->modelPath);
-          }
+  //* ================= Texturing ====================
 
-          printf("New Model Loaded!");
+  std::string texID = vehicleObj->texPath; // Texture's String ID
 
-          std::vector<GLfloat> verts = model->GetVertices();
-          std::vector<GLuint> indices = model->GetIndices();
-          geometry = ressources->getOrCreateGeometry(vehicleObj->modelPath, model->GetVertices(), model->GetIndices());
-    }
+  auto texture = ressources->tryGetTex(texID);
 
-            //* ================= Tex ====================
+  if (texture == nullptr)
+  {
+    instruction.tex.get()->texUnit(gameShader, "tex0", 0);
+    texture = ressources->loadTex(texID, texID);
+  }
+  
+  //* ================= Build Instruction ====================
 
-        //TODO: Maybe Hash This into a smaller ID?
-        std::string texID = vehicleObj->texPath; //Texture's String ID
+  instruction.tex = texture;
+  instruction.geometry = geometry;
 
-        auto texture = ressources->tryGetTex(texID);
+  vehicleObj->UpdateModelMatrix();
+  instruction.modelMatrix = vehicleObj->objModelMatrix;
 
-        if(texture == nullptr){
-          instruction.tex.get()->texUnit(gameShader, "tex0", 0);
-          texture = ressources->loadTex(texID, texID);  
-        }
-        instruction.tex = texture;
-        instruction.geometry = geometry;
-
-         vehicleObj->UpdateModelMatrix();
-        instruction.modelMatrix = vehicleObj->objModelMatrix;
-        
-        renderList.push_back(instruction);
-
+  renderList.push_back(instruction);
 }
 
+void ObjectRenderer::addToBuildlist(SimulationObject *simObj, RenderList &renderList)
+{
 
-void ObjectRenderer::addToBuildlist(SimulationObject* simObj, RenderList& renderList){
+  switch (simObj->type)
+  {
+  case SimulationObject::Vehicle:
+    renderVehicle(static_cast<VehicleObject *>(simObj), renderList);
+    break;
 
-    switch(simObj->type) {
-        case SimulationObject::Vehicle:
-            renderVehicle(static_cast<VehicleObject*>(simObj), renderList);
-            break;
-
-        default:
-            renderObject(simObj, renderList); 
-            break;
-    }
+  default:
+    renderObject(simObj, renderList);
+    break;
+  }
 }

@@ -8,6 +8,7 @@ Geometry::Geometry(const std::vector<GLfloat>& vertices, const std::vector<GLuin
     ebo = std::make_shared<EBO>(indices.data(), indices.size() * sizeof(GLuint));
     
     _indices = indices;
+    _vertices = vertices;
     
     std::cout << "Amount of triangles: " << indices.size() / 3 << "!\n";
 

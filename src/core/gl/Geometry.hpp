@@ -27,6 +27,7 @@ private:
     std::shared_ptr<VBO> vbo;
     std::shared_ptr<EBO> ebo;
 
+    std::vector<GLfloat> _vertices;
     std::vector<GLuint> _indices; // Storing indices for use in the Draw function
 };
 

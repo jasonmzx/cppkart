@@ -46,7 +46,6 @@ void GameRenderer::RenderALL() {
 
 
 
-
     glUniform1i(useTextureLOC, GL_FALSE); 
         
         world->physicsWorld->dynamicsWorld->debugDrawWorld();
@@ -83,7 +82,6 @@ RenderList GameRenderer::createObjectRenderList() {
     RenderList drawList;
     
     for (auto& entity : world->entities) { //Simulation object entities
-
 
       objectRender.get()->addToBuildlist(entity.get(), drawList);
 
