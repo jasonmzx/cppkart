@@ -46,12 +46,15 @@ void GameRenderer::RenderALL() {
 
 
 
-    glUniform1i(useTextureLOC, GL_FALSE); 
-        
-        world->physicsWorld->dynamicsWorld->debugDrawWorld();
-        debugDrawer->flushLines();
+glUniform1i(useTextureLOC, GL_FALSE); 
+// Explicitly setting the model matrix to an identity matrix
+glm::mat4 identityMatrix = glm::mat4(1.0f);
+glUniformMatrix4fv(modelMatrixLOC, 1, GL_FALSE, glm::value_ptr(identityMatrix));
 
-    glUniform1i(useTextureLOC, GL_TRUE); 
+world->physicsWorld->dynamicsWorld->debugDrawWorld();
+debugDrawer->flushLines();
+
+glUniform1i(useTextureLOC, GL_TRUE); 
 
 
     renderObjects();
@@ -82,55 +85,9 @@ RenderList GameRenderer::createObjectRenderList() {
     RenderList drawList;
     
     for (auto& entity : world->entities) { //Simulation object entities
-
       objectRender.get()->addToBuildlist(entity.get(), drawList);
-
-        //Uncooment below blck
-
-        // RenderInstruction instruction;
-        
-        // std::string modelID = entity->modelPath; //entity's primary modelpath String ID
-
-        // //* ================= Geometry ====================
-
-        // auto geometry = ressources.tryGetGeometry(modelID);
-
-        // if(geometry == nullptr) { //If geometry doesn't exist, make it
-        
-        //   //Load Model:
-        //   auto model = ressources.tryGetModel(modelID);
-        //   if(model == nullptr) {
-        //     model = ressources.loadModel(modelID, modelID);
-        //   }
-
-        //   printf("New Model Loaded!");
-
-        //   std::vector<GLfloat> verts = model->GetVertices();
-        //   std::vector<GLuint> indices = model->GetIndices();
-        //   geometry = ressources.getOrCreateGeometry(modelID, model->GetVertices(), model->GetIndices());
-        // }
-
-        // //* ================= Tex ====================
-
-        // //TODO: Maybe Hash This into a smaller ID?
-        // std::string texID = entity->texPath; //Texture's String ID
-
-        // auto texture = ressources.tryGetTex(texID);
-
-        // if(texture == nullptr){
-        //   instruction.tex.get()->texUnit(mainShader, "tex0", 0);
-        //   texture = ressources.loadTex(texID, entity.get()->texPath);  
-        // }
-        // instruction.tex = texture;
-        // instruction.geometry = geometry;
-
-        // glm::vec3 scaleFactors = glm::vec3(1.0f, 1.0f, 1.0f); // Example scale factors, adjust as necessary
-        // instruction.modelMatrix = glm::translate(glm::mat4(1.0f), entity->getPosition())
-        //                           * glm::mat4_cast(entity->getRotation()) // Convert quaternion to rotation matrix
-        //                           * glm::scale(glm::mat4(1.0f), scaleFactors);
-
-        // drawList.push_back(instruction);
     }
+
     return drawList;
 }
 

@@ -114,8 +114,7 @@ void JXGame::Run() {
         // Tab for Vehicle
         if (ImGui::BeginTabItem("Vehicle Debug")) {
 
-            //std::string v_debug_str = vPhy.debugStateSTR(); 
-            std::string v_debug_str = "helo";
+            std::string v_debug_str = world.get()->simObj->vehicle.debugStateSTR();
             ImGui::Text("%s", v_debug_str.c_str());
             ImGui::EndTabItem();
         }
@@ -149,9 +148,6 @@ void JXGame::Render() {
 float JXGame::tickWorld(const float deltaTime, float accumulatedTime) {
     
     world.get()->physicsWorld->dynamicsWorld->stepSimulation(GAME_TIMESTEP, 2, GAME_TIMESTEP);
-
-
-    //TODO: Impl
 
     return 0.0f; //TODO
 }

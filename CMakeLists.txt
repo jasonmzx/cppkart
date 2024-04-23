@@ -67,6 +67,9 @@ add_executable(cppkart
           src/core/loaders/ObjModel.cpp
           src/core/loaders/ObjModel.hpp
 
+          src/core/loaders/ChunkedMapLoader.cpp
+          src/core/loaders/ChunkedMapLoader.hpp
+
           src/core/ID.hpp
           src/core/ID.cpp
 

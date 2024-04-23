@@ -24,8 +24,10 @@ void ObjectRenderer::renderObject(SimulationObject *obj, RenderList &renderList)
 
   glm::vec3 scaleFactors = glm::vec3(1.0f, 1.0f, 1.0f); // Example scale factors, adjust as necessary
 
-  instruction.modelMatrix = glm::translate(glm::mat4(1.0f), obj->getPosition()) * glm::mat4_cast(obj->getRotation()) // Convert quaternion to rotation matrix
-                            * glm::scale(glm::mat4(1.0f), scaleFactors);
+  //instruction.modelMatrix = glm::translate(glm::mat4(1.0f), obj->getPosition()) * glm::mat4_cast(obj->getRotation()) // Convert quaternion to rotation matrix
+  //                          * glm::scale(glm::mat4(1.0f), scaleFactors);
+
+  instruction.modelMatrix = obj->objModelMatrix;
 
   renderList.push_back(instruction);
 }

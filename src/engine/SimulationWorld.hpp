@@ -7,6 +7,7 @@
 #include "engine/state/GameInputState.hpp"
 
 #include "core/loaders/ObjModel.hpp"
+#include "core/loaders/ChunkedMapLoader.hpp"
 
 //Physics Imports:
 #include "engine/physics/PhysicsWorldSingleton.h"
