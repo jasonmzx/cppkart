@@ -1,5 +1,7 @@
 *.mp3
+*.txt
 
 build*/
 .vscode/
 .gdb_history
+

@@ -21,6 +21,9 @@ class GameRenderer {
 
         BulletDebugDrawer* debugDrawer;
 
+        //! Dirty Hack
+        RenderRsrcManager& getRessourcePtr();
+
     private:
 
         RenderRsrcManager ressources;

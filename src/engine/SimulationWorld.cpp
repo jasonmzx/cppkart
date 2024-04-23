@@ -23,19 +23,21 @@ SimulationWorld::SimulationWorld() {
 
   //* ############ PROTOTYPE Collision Plane ^^^ ############
     
+
+
+
     //* Beta Testing 
 
     simObj = std::make_shared<VehicleObject>("../src/ressources/first_car.obj", "../src/ressources/first_car_wheel.obj", "../src/ressources/first_car.png");
 
-    simObj->position = glm::vec3(3.5f, 0.0f, 0.0f);
+    simObj->position = glm::vec3(50.0f, 0.0f, 0.0f);
     simObj->rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
     
     entities.push_back(simObj);
 
     auto simObj2 = std::make_shared<SimulationObject>("../src/ressources/Landscape01.obj", "../src/ressources/Map01_Albedo.png");
 
-    std::vector<LoadedChunk> chunks = ChunkedMapLoader::loadChunks("../src/ressources/chunk_map.txt");
-
+    //std::vector<LoadedChunk> chunks = ChunkedMapLoader::loadChunks("../src/ressources/chunk_map.txt");
 
     simObj2->rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
 

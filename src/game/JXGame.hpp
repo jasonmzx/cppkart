@@ -21,6 +21,12 @@
 
 #include "game/state/GameInput.hpp"
 
+//! Dirty hack for now
+#include "engine/rendering/RenderRsrcManager.hpp"
+#include "core/loaders/ChunkedMapLoader.hpp"
+
+#include "engine/physics/StaticTriangleMeshPhysics.hpp"
+
 #define GAME_TIMESTEP (1.f / 60.f)
 
 class JXGame {

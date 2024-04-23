@@ -11,7 +11,7 @@ JXGame::JXGame() {
     window.create("JEX [0.0.1]", 1820,980, false);
     //window.showCursor();
 
-    camera = std::make_unique<Camera>(WIN_WIDTH, WIN_HEIGHT, glm::vec3(0.0f, 0.0f, 2.0f));
+    camera = std::make_unique<Camera>(WIN_WIDTH, WIN_HEIGHT, glm::vec3(0.0f, 10.0f, 2.0f));
     world = std::make_unique<SimulationWorld>();
     renderer = std::make_unique<GameRenderer>(WIN_WIDTH, WIN_HEIGHT, camera.get(), world.get());
     
@@ -37,6 +37,41 @@ JXGame::JXGame() {
     ImGui_ImplSDL2_InitForOpenGL(window.getWindow(), window.getSDLContext());
     ImGui_ImplOpenGL3_Init(glsl_version);
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+  }
+
+  //! Disgusting Hack for Physics Chunks (Getting Shared Vertices from Geometry Object)
+  RenderRsrcManager& res = renderer.get()->getRessourcePtr();
+
+  std::shared_ptr<Geometry> terrainGeom = res.tryGetGeometry("../src/ressources/Landscape01.obj");
+
+  if(terrainGeom == nullptr) {
+    printf("Terrain Geometry not found\n");
+  }
+
+  std::vector<GLfloat> terrainVerts = terrainGeom.get()->_vertices;
+  std::vector<GLuint> terrainIndices = terrainGeom.get()->_indices;
+
+  // Pretty print all indices, 3 indices every line
+
+  printf("---X1\n");
+
+  for(int i = 0; i < terrainVerts.size(); i+=8) {
+
+    printf("VID: %d, (%f, %f, %f)\n", i/8, terrainVerts[i], terrainVerts[i+1], terrainVerts[i+2]);
+  }
+
+  printf("---X1\n");
+  
+  std::vector<LoadedChunk> chunks = ChunkedMapLoader::loadChunks("../src/ressources/chunk_map.txt");
+
+  //for(int i = 0; i < chunks.size(); i++) {
+  for(int i = 0; i < 4; i++) { //3 for testing
+
+    LoadedChunk chunk = chunks[i];
+
+    glm::mat4 chunkModelMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(10.0f, 10.0f, 10.0f));
+
+    StaticTriangleMeshPhysics phyChunk = StaticTriangleMeshPhysics(terrainVerts, chunk.faces, chunkModelMatrix);
   }
 
 }

@@ -21,14 +21,18 @@ public:
 
     void Draw(GLuint modelMatrixLocation, glm::mat4& modelMatrix, GLuint colorUniformLocation, bool debugTriangles);
 
+    std::vector<GLfloat> _vertices;
+    std::vector<GLuint> _indices; // Storing indices for use in the Draw function
+
+
 private:
 
     std::shared_ptr<VAO> vao;
     std::shared_ptr<VBO> vbo;
     std::shared_ptr<EBO> ebo;
 
-    std::vector<GLfloat> _vertices;
-    std::vector<GLuint> _indices; // Storing indices for use in the Draw function
+    //std::vector<GLfloat> _vertices;
+    //std::vector<GLuint> _indices; // Storing indices for use in the Draw function
 };
 
 #endif

@@ -90,6 +90,9 @@ add_executable(cppkart
           src/engine/physics/VehiclePhysics.cpp
           src/engine/physics/VehiclePhysics.hpp
 
+          src/engine/physics/StaticTriangleMeshPhysics.cpp
+          src/engine/physics/StaticTriangleMeshPhysics.hpp
+
           # Rendering:
           src/engine/rendering/RenderRsrcManager.hpp
           src/engine/rendering/RenderRsrcManager.cpp

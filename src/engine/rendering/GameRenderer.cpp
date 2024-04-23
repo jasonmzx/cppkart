@@ -35,6 +35,10 @@ GameRenderer::GameRenderer(int winWidth, int winHeight, Camera* cam, SimulationW
 
 }
 
+RenderRsrcManager& GameRenderer::getRessourcePtr() {
+    return ressources;
+}
+
 void GameRenderer::RenderALL() {
 
     glClearColor(0.07f, 0.13f, 0.17f, 1.0f);

@@ -13,7 +13,7 @@
 struct LoadedChunk {
 
     glm::vec3 centre_point;
-    std::vector<glm::vec3> faces;
+    std::vector<GLuint> faces;
 };
 
 class ChunkedMapLoader {
@@ -54,8 +54,15 @@ class ChunkedMapLoader {
 
             } else { //* Face line (V0,V1,V2) : part of latest chunk
                     
-                    // Push corresponding face to latest chunk
-                    chunks.back().faces.push_back(parseVec3(line));
+
+                    //printf("Chunk Current Length: %d\n", chunks.size());
+
+                    glm::vec3 triangle_idx = parseVec3(line);
+
+                    // Convert and push each face to vector faces (flat GLuint array)
+                    chunks.back().faces.push_back(triangle_idx.x);
+                    chunks.back().faces.push_back(triangle_idx.y);
+                    chunks.back().faces.push_back(triangle_idx.z);
             }
 
         }
@@ -63,11 +70,11 @@ class ChunkedMapLoader {
         chunkfile.close();
 
         //! Debug print chunks with centre points
-        // for (const LoadedChunk& chunk : chunks) {
-        //     std::cout << "Chunk at " << chunk.centre_point.x << ", " << chunk.centre_point.y << ", " << chunk.centre_point.z << std::endl;
+        // for (int i = 0; i < chunks.size(); i++) {
+        //     std::cout << "Chunk " << i << " Centre Point: " << chunks[i].centre_point.x << ", " << chunks[i].centre_point.y << ", " << chunks[i].centre_point.z << std::endl;
         
-        //     for (const glm::vec3& face : chunk.faces) {
-        //         std::cout << "Face at " << face.x << ", " << face.y << ", " << face.z << std::endl;
+        //     for (int j = 0; j < chunks[i].faces.size(); j+=3) {
+        //         std::cout << "Face " << j/3 << ": " << chunks[i].faces[j] << ", " << chunks[i].faces[j+1] << ", " << chunks[i].faces[j+2] << std::endl;
         //     }
         // }
 
