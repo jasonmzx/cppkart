@@ -97,6 +97,10 @@ void JXGame::getUpdateInput() {
 
 void JXGame::Run() {
   
+  //* Some debug variables
+
+  bool freeCam = 0;
+
   while (Running)
   {
 
@@ -129,6 +133,11 @@ void JXGame::Run() {
 
             std::string v_debug_str = world.get()->simObj->vehicle.debugStateSTR();
             ImGui::Text("%s", v_debug_str.c_str());
+            
+            // Checkbox toggle switch 
+
+            ImGui::Checkbox("Toggle Free Camera", &freeCam);
+
             ImGui::EndTabItem();
         }
 
@@ -138,7 +147,19 @@ void JXGame::Run() {
 
     }
 
-    cameraPtr->Inputs(window.getWindow(),CameraInputs);
+    // Player Vehicle position (XYZ)
+
+    float pX = world.get()->simObj->vehicle.getX();
+    float pY = world.get()->simObj->vehicle.getY();
+    float pZ = world.get()->simObj->vehicle.getZ();
+
+    if(freeCam) {
+      cameraPtr->Inputs(window.getWindow(),CameraInputs);
+    } else {
+      cameraPtr->VehicleFollowCamera(pX,pY,pZ);
+    }
+
+    //cameraPtr->Inputs(window.getWindow(),CameraInputs);
 
     Render();
     
@@ -150,8 +171,6 @@ void JXGame::Run() {
 
     // Update Terrain Physics
 
-    float pX = world.get()->simObj->vehicle.getX();
-    float pZ = world.get()->simObj->vehicle.getZ();
 
     physicsChunkManager.get()->update(pX,pZ);
 

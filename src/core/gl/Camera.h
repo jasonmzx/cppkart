@@ -45,5 +45,7 @@ public:
 	
 	void Inputs(SDL_Window* window, bool isMouse);
 	void ProcessMouseLook(int mouseXRel, int mouseYRel, SDL_Window* window);
+
+	void VehicleFollowCamera(float pX, float pY, float pZ);
 };
 #endif

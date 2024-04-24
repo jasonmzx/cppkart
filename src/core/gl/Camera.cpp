@@ -101,6 +101,19 @@ void Camera::Inputs(SDL_Window *window, bool isMouse)
     }
 }
 
+void Camera::VehicleFollowCamera(float pX, float pY, float pZ)
+{
+    auto targetVec = glm::vec3(pX + 1.0f, pY + 3.0f, pZ - 5.0f); //* Camera Offset
+    auto dirVec = targetVec - Position;
+     
+     if (glm::distance2(targetVec, Position) > 0.02f)
+        Position += dirVec * 0.03f;
+
+      glm::vec3 lookAtPosition = glm::vec3(pX, pY, pZ);
+      
+      LookAt = lookAtPosition;
+}
+
 void Camera::ProcessMouseLook(int mouseXRel, int mouseYRel, SDL_Window *window)
 {
     // Assuming firstClick has been handled outside this function

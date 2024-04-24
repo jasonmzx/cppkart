@@ -21,6 +21,7 @@ VehiclePhysics::VehiclePhysics()
 
     localTransform.setIdentity();
     localTransform.setOrigin(btVector3(0, 20, -120));
+    //localTransform.setOrigin(btVector3(0, 40, -240));
     
     vehicleMotionState->setWorldTransform(localTransform);
 
@@ -199,6 +200,11 @@ std::string VehiclePhysics::debugStateSTR()
 float VehiclePhysics::getX() const
 {
     return vehicleRigidBody->getWorldTransform().getOrigin().getX();
+}
+
+float VehiclePhysics::getY() const
+{
+    return vehicleRigidBody->getWorldTransform().getOrigin().getY();
 }
 
 float VehiclePhysics::getZ() const

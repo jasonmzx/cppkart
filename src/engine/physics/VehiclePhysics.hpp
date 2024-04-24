@@ -38,6 +38,7 @@ public:
     btTransform GetTransform() const;  // Useful for rendering
 
     float getX() const;
+    float getY() const;
     float getZ() const;
 };
 
