@@ -15,9 +15,10 @@
 
 class StaticTriangleMeshPhysics {
 private:
-    btRigidBody* terrainRigidBody;
 
 public:
+    btRigidBody* meshRigidBody;
+
     StaticTriangleMeshPhysics(
         const std::vector<GLfloat> &vertices,
         const std::vector<GLuint> &indices,

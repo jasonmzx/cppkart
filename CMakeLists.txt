@@ -93,6 +93,10 @@ add_executable(cppkart
           src/engine/physics/StaticTriangleMeshPhysics.cpp
           src/engine/physics/StaticTriangleMeshPhysics.hpp
 
+          # Physics Managers (Controllers):
+          src/engine/physics/managers/PhysicsChunkManager.cpp 
+          src/engine/physics/managers/PhysicsChunkManager.hpp
+
           # Rendering:
           src/engine/rendering/RenderRsrcManager.hpp
           src/engine/rendering/RenderRsrcManager.cpp
@@ -117,8 +121,8 @@ add_executable(cppkart
      
 )
 
-target_compile_options(cppkart PRIVATE -fsanitize=address)
-target_link_libraries(cppkart PRIVATE -fsanitize=address)
+# target_compile_options(cppkart PRIVATE -fsanitize=address)
+# target_link_libraries(cppkart PRIVATE -fsanitize=address)
 
 # I'm assuming SDL2_mixer is already installed, FIX THIS!
 

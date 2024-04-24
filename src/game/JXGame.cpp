@@ -51,29 +51,7 @@ JXGame::JXGame() {
   std::vector<GLfloat> terrainVerts = terrainGeom.get()->_vertices;
   std::vector<GLuint> terrainIndices = terrainGeom.get()->_indices;
 
-  // Pretty print all indices, 3 indices every line
-
-  printf("---X1\n");
-
-  for(int i = 0; i < terrainVerts.size(); i+=8) {
-
-    printf("VID: %d, (%f, %f, %f)\n", i/8, terrainVerts[i], terrainVerts[i+1], terrainVerts[i+2]);
-  }
-
-  printf("---X1\n");
-  
-  std::vector<LoadedChunk> chunks = ChunkedMapLoader::loadChunks("../src/ressources/chunk_map.txt");
-
-  //for(int i = 0; i < chunks.size(); i++) {
-  for(int i = 0; i < 4; i++) { //3 for testing
-
-    LoadedChunk chunk = chunks[i];
-
-    glm::mat4 chunkModelMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(10.0f, 10.0f, 10.0f));
-
-    StaticTriangleMeshPhysics phyChunk = StaticTriangleMeshPhysics(terrainVerts, chunk.faces, chunkModelMatrix);
-  }
-
+  physicsChunkManager = std::make_unique<PhysicsChunkManager>(terrainVerts, "../src/ressources/chunk_map.txt");
 }
 
   bool Running = true;
@@ -168,6 +146,15 @@ void JXGame::Run() {
       ImGui::Render();
       ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }
+
+
+    // Update Terrain Physics
+
+    float pX = world.get()->simObj->vehicle.getX();
+    float pZ = world.get()->simObj->vehicle.getZ();
+
+    physicsChunkManager.get()->update(pX,pZ);
+
 
     tickWorld(0.0f, 0.0f);
 

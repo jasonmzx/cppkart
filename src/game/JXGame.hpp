@@ -23,9 +23,8 @@
 
 //! Dirty hack for now
 #include "engine/rendering/RenderRsrcManager.hpp"
-#include "core/loaders/ChunkedMapLoader.hpp"
 
-#include "engine/physics/StaticTriangleMeshPhysics.hpp"
+#include "engine/physics/managers/PhysicsChunkManager.hpp"
 
 #define GAME_TIMESTEP (1.f / 60.f)
 
@@ -49,6 +48,8 @@ class JXGame {
         std::unique_ptr<Camera> camera;
         std::unique_ptr<GameRenderer> renderer;
         std::unique_ptr<SimulationWorld> world;
+
+        std::unique_ptr<PhysicsChunkManager> physicsChunkManager;
 
 };
 

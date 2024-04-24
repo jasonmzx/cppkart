@@ -3,8 +3,7 @@
 
 #include <vector>
 #include <glm/glm.hpp>
-
-// Imports for file reading
+#include <sstream>  // Include for std::istringstream
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -14,6 +13,9 @@ struct LoadedChunk {
 
     glm::vec3 centre_point;
     std::vector<GLuint> faces;
+
+    float X_origin;
+    float Z_origin;
 };
 
 class ChunkedMapLoader {
@@ -50,6 +52,10 @@ class ChunkedMapLoader {
 
                 LoadedChunk chunk;
                 chunk.centre_point = parseVec3(line);
+                
+                chunk.X_origin = chunk.centre_point.x;
+                chunk.Z_origin = chunk.centre_point.z;
+                
                 chunks.push_back(chunk);
 
             } else { //* Face line (V0,V1,V2) : part of latest chunk

@@ -30,7 +30,7 @@ StaticTriangleMeshPhysics::StaticTriangleMeshPhysics(
     btTransform staticMeshTransform;
     staticMeshTransform.setFromOpenGLMatrix(glm::value_ptr(modelMatrix));
 
-    btVector3 scale(10.0f, 10.0f, 10.0f);
+    btVector3 scale(20.0f, 20.0f, 20.0f);
     triangleShape->setLocalScaling(scale);
 
     staticMeshTransform.setIdentity();
@@ -42,6 +42,6 @@ StaticTriangleMeshPhysics::StaticTriangleMeshPhysics(
     btRigidBody::btRigidBodyConstructionInfo info(0.0, motion, triangleShape);
     info.m_friction = 2.0f;
 
-    btRigidBody *staticTriRigidBody = new btRigidBody(info);
-    physicsWorld->dynamicsWorld->addRigidBody(staticTriRigidBody);
+    meshRigidBody = new btRigidBody(info);
+    //physicsWorld->dynamicsWorld->addRigidBody(meshRigidBody);
 }

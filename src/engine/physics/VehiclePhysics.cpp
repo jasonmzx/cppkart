@@ -20,7 +20,7 @@ VehiclePhysics::VehiclePhysics()
     btTransform localTransform;
 
     localTransform.setIdentity();
-    localTransform.setOrigin(btVector3(0, 10, -60));
+    localTransform.setOrigin(btVector3(0, 20, -120));
     
     vehicleMotionState->setWorldTransform(localTransform);
 
@@ -194,4 +194,14 @@ std::string VehiclePhysics::debugStateSTR()
             vehicle->getSteeringValue(0), vehicle->getSteeringValue(1));
 
     return std::string(debugVehicle_STR);
+}
+
+float VehiclePhysics::getX() const
+{
+    return vehicleRigidBody->getWorldTransform().getOrigin().getX();
+}
+
+float VehiclePhysics::getZ() const
+{
+    return vehicleRigidBody->getWorldTransform().getOrigin().getZ();
 }

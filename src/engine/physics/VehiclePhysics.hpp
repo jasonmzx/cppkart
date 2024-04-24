@@ -36,6 +36,9 @@ public:
     std::string debugStateSTR();
     void Update();  // For updating any vehicle logic, physics simulation steps, etc.
     btTransform GetTransform() const;  // Useful for rendering
+
+    float getX() const;
+    float getZ() const;
 };
 
 #endif
