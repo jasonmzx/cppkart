@@ -39,7 +39,7 @@ RenderRsrcManager& GameRenderer::getRessourcePtr() {
     return ressources;
 }
 
-void GameRenderer::RenderALL() {
+void GameRenderer::RenderALL(bool bulletDebugDraw) {
 
     glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
     
@@ -55,8 +55,11 @@ glUniform1i(useTextureLOC, GL_FALSE);
 glm::mat4 identityMatrix = glm::mat4(1.0f);
 glUniformMatrix4fv(modelMatrixLOC, 1, GL_FALSE, glm::value_ptr(identityMatrix));
 
-world->physicsWorld->dynamicsWorld->debugDrawWorld();
-debugDrawer->flushLines();
+
+if(bulletDebugDraw) {
+  world->physicsWorld->dynamicsWorld->debugDrawWorld();
+  debugDrawer->flushLines();
+}
 
 glUniform1i(useTextureLOC, GL_TRUE); 
 

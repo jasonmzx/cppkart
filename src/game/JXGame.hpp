@@ -49,6 +49,9 @@ class JXGame {
         std::unique_ptr<GameRenderer> renderer;
         std::unique_ptr<SimulationWorld> world;
 
+      bool bulletDebug;
+
+
         std::unique_ptr<PhysicsChunkManager> physicsChunkManager;
 
 };

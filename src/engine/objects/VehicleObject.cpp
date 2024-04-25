@@ -12,12 +12,12 @@ VehicleObject::VehicleObject(std::string carObjPath, std::string wObjPath, std::
 void VehicleObject::UpdateModelMatrix() {
 
     btTransform vTrans = vehicle.GetTransform();
-    btVector3 vehiclePosition = vTrans.getOrigin();
+    btVector3 vehiclePosition = vehicle.GetTransform().getOrigin();
     btQuaternion vehicleRotation = vTrans.getRotation();
     
     //TODO: fix +3.35 magic_number
 
-    glm::mat4 translation = glm::translate(glm::mat4(1.0f), glm::vec3(vehiclePosition.x() + 3.35f, vehiclePosition.y(), vehiclePosition.z()));
+    glm::mat4 translation = glm::translate(glm::mat4(1.0f), glm::vec3(vehiclePosition.x(), vehiclePosition.y(), vehiclePosition.z()));
 
     glm::quat glmVehicleRotation = glm::quat(vehicleRotation.w(), vehicleRotation.x(), vehicleRotation.y(), vehicleRotation.z());
 

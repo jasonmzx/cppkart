@@ -15,6 +15,11 @@ JXGame::JXGame() {
     world = std::make_unique<SimulationWorld>();
     renderer = std::make_unique<GameRenderer>(WIN_WIDTH, WIN_HEIGHT, camera.get(), world.get());
     
+
+    //* Global Debug Variables
+    bulletDebug = 0;
+
+
   // Initialize SDL_mixer
     // if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
     //     printf("SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError());
@@ -125,6 +130,11 @@ void JXGame::Run() {
         // Tab for FPS & Physics Debug
         if (ImGui::BeginTabItem("General")) {
             ImGui::Text("%s", formatted_fps_STR);
+
+            ImGui::Checkbox("Toggle Free Camera", &freeCam);
+            ImGui::Checkbox("Toggle Bullet Debug", &bulletDebug);
+
+
             ImGui::EndTabItem();
         }
 
@@ -136,7 +146,6 @@ void JXGame::Run() {
             
             // Checkbox toggle switch 
 
-            ImGui::Checkbox("Toggle Free Camera", &freeCam);
 
             ImGui::EndTabItem();
         }
@@ -183,7 +192,7 @@ void JXGame::Run() {
 
 void JXGame::Render() {
   
-  renderer.get()->RenderALL();
+  renderer.get()->RenderALL(bulletDebug);
 }
 
 float JXGame::tickWorld(const float deltaTime, float accumulatedTime) {

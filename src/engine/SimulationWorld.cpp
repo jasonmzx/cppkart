@@ -42,7 +42,7 @@ SimulationWorld::SimulationWorld() {
     simObj2->rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
 
     // Set model matrix to 10x
-    simObj2->objModelMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(20.0f, 20.0f, 20.0f));
+    simObj2->objModelMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(40.0f, 40.0f, 40.0f));
 
     entities.push_back(simObj2);
 

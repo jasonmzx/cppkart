@@ -30,7 +30,7 @@ StaticTriangleMeshPhysics::StaticTriangleMeshPhysics(
     btTransform staticMeshTransform;
     staticMeshTransform.setFromOpenGLMatrix(glm::value_ptr(modelMatrix));
 
-    btVector3 scale(20.0f, 20.0f, 20.0f);
+    btVector3 scale(40.0f, 40.0f, 40.0f);
     triangleShape->setLocalScaling(scale);
 
     staticMeshTransform.setIdentity();

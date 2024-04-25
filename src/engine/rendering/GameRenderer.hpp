@@ -17,7 +17,7 @@ class GameRenderer {
 
     public:
         GameRenderer(int winWidth, int winHeight, Camera* cam, SimulationWorld* world);
-        void RenderALL();
+        void RenderALL(bool bulletDebugDraw);
 
         BulletDebugDrawer* debugDrawer;
 

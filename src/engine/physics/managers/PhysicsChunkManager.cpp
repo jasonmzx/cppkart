@@ -3,7 +3,7 @@
 //Constructor
 PhysicsChunkManager::PhysicsChunkManager(const std::vector<GLfloat>& verts, const std::string& filename){
 
-    SCALE_FACTOR = 20.0f;
+    SCALE_FACTOR = 40.0f;
 
     std::vector<LoadedChunk> chunks = ChunkedMapLoader::loadChunks(filename);
 
