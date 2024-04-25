@@ -106,6 +106,14 @@ void JXGame::Run() {
 
   bool freeCam = 0;
 
+
+  //* Physics Timestep variables
+
+  auto lastFrame = std::chrono::steady_clock::now();
+
+  const float deltaTime = GAME_TIMESTEP;
+  float accumulatedTime = 0.0f;
+
   while (Running)
   {
 
@@ -169,8 +177,8 @@ void JXGame::Run() {
     }
 
     //cameraPtr->Inputs(window.getWindow(),CameraInputs);
-
     Render();
+
     
     if(IMGUI_MODE == 1){
       ImGui::Render();
@@ -183,8 +191,23 @@ void JXGame::Run() {
 
     physicsChunkManager.get()->update(pX,pZ);
 
+    
+    auto currentFrame = std::chrono::steady_clock::now();
+      
+    auto frameTime = std::chrono::duration<float>(currentFrame - lastFrame).count();
+    
+    lastFrame = currentFrame;
 
-    tickWorld(0.0f, 0.0f);
+
+    accumulatedTime += frameTime;
+
+            // Clamp frameTime, so we won't freeze completely
+            if (frameTime > 0.1f) {
+                frameTime = 0.1f;
+            }
+
+    accumulatedTime = tickWorld(deltaTime, accumulatedTime);
+
 
     window.swapWindow();
   }
@@ -197,7 +220,12 @@ void JXGame::Render() {
 
 float JXGame::tickWorld(const float deltaTime, float accumulatedTime) {
     
-    world.get()->physicsWorld->dynamicsWorld->stepSimulation(GAME_TIMESTEP, 2, GAME_TIMESTEP);
+    auto deltaTimeWithTimeScale = deltaTime * 1.0f; //They got a hard-coded time scale also, and can change it for slow motion (ex. they do 0.5)
 
-    return 0.0f; //TODO
+    while (accumulatedTime >= deltaTime) {
+        world.get()->physicsWorld->dynamicsWorld->stepSimulation(deltaTimeWithTimeScale, 2, deltaTime);
+        accumulatedTime -= deltaTime;
+    }
+
+    return accumulatedTime;
 }

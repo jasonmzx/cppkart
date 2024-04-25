@@ -62,13 +62,13 @@ void Camera::Inputs(SDL_Window *window, bool isMouse)
     {
         Position += speed * -Up;
     }
-    if (keyState[SDL_SCANCODE_LCTRL])
+    if (keyState[SDL_SCANCODE_RCTRL])
     {
-        speed = 0.4f;
+        speed = 1.2f;
     }
     else
     {
-        speed = 0.1f;
+        speed = 0.4f;
     }
 
     if (isMouse)
