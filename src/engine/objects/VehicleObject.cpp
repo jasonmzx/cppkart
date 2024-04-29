@@ -32,42 +32,21 @@ void VehicleObject::UpdateModelMatrix() {
 
     wheelMatrices.clear();
 
-    for (int i = 0; i < vehicle.vehicle->getNumWheels(); i++) {
-        btWheelInfo &wheelinfo = vehicle.vehicle->getWheelInfo(i);
+for (int i = 0; i < vehicle.vehicle->getNumWheels(); i++) {
+    btWheelInfo &wheelinfo = vehicle.vehicle->getWheelInfo(i);
 
-        //*Stuff from GTA 3 RW
+    glm::mat4 wheelM{1.0f};
+    wheelinfo.m_worldTransform.getOpenGLMatrix(glm::value_ptr(wheelM));
 
-        // auto up = -wheelinfo.m_wheelDirectionCS;    
-        // auto right = wheelinfo.m_wheelAxleCS;
-        // auto fwd = up.cross(right);
+    glm::vec3 wheelCenterOffset(0.0f, -0.5f, 0.0f); // Adjust Y offset based on your model specifics
+    glm::mat4 centeringTranslation = glm::translate(glm::mat4(1.0f), wheelCenterOffset);
 
-        // btQuaternion steerQ(up, 0.0f);
-        // btQuaternion rollQ(right, -wheelinfo.m_rotation);
+    // Optionally apply rotation adjustments if necessary
+    glm::mat4 rotateAdjustment = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-        // btMatrix3x3 basis(right[0], fwd[0], up[0], right[1], fwd[1], up[1],
-        //                   right[2], fwd[2], up[2]);
-
-        // btTransform t(
-        //     btMatrix3x3(steerQ) * btMatrix3x3(rollQ) * basis,
-        //     wi.m_chassisConnectionPointCS +
-        //         wi.m_wheelDirectionCS * wheelinfo.m_raycastInfo.m_suspensionLength);
-
-
-        // glm::mat4 wheelM{1.0f};
-        // t.getOpenGLMatrix(glm::value_ptr(wheelM));
-
-        // wheelM = glm::scale(wheelM, glm::vec3(0.5f));
-
-        float wX = wheelinfo.m_worldTransform.getOrigin().getX();
-        float wY = wheelinfo.m_worldTransform.getOrigin().getY() - 1;
-        float wZ = wheelinfo.m_worldTransform.getOrigin().getZ();
-
-        glm::mat4 wheelTranslation = glm::translate(glm::mat4(1.0f), glm::vec3(wX, wY, wZ));
-
-
-        wheelMatrices.push_back(
-            wheelTranslation * glm::scale(glm::vec3(0.5f))
-        );
-    }
+    wheelMatrices.push_back(
+        wheelM * centeringTranslation * rotateAdjustment * glm::scale(glm::vec3(0.5f)) // Apply scaling last to maintain proportions
+    );
+}
 }
 
