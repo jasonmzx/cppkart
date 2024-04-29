@@ -4,28 +4,6 @@ SimulationWorld::SimulationWorld() {
 
     physicsWorld = PhysicsWorldSingleton::getInstance();
 
-     //* ############ PROTOTYPE Collision Plane ############
-
-  btTransform protoPlaneTransform;
-  protoPlaneTransform.setIdentity();
-  protoPlaneTransform.setOrigin(btVector3(0, 0, 0));
-  btStaticPlaneShape *plane = new btStaticPlaneShape(btVector3(0, 1, 0), btScalar(0));
-
-  // Create Motion shape:
-  btMotionState *motion = new btDefaultMotionState(protoPlaneTransform); //! He put btDefaultMotionShape
-
-  btRigidBody::btRigidBodyConstructionInfo info(0.0, motion, plane);
-  info.m_friction = 2.0f;
-
-  btRigidBody *planeBody = new btRigidBody(info);
-  physicsWorld->dynamicsWorld->addRigidBody(planeBody);
-  
-
-  //* ############ PROTOTYPE Collision Plane ^^^ ############
-    
-
-
-
     //* Beta Testing 
 
     simObj = std::make_shared<VehicleObject>("../src/ressources/volga/volga.obj", "../src/ressources/first_car_wheel.obj", "../src/ressources/volga/volga.png");
