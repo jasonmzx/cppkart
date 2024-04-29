@@ -28,7 +28,7 @@ SimulationWorld::SimulationWorld() {
 
     //* Beta Testing 
 
-    simObj = std::make_shared<VehicleObject>("../src/ressources/first_car.obj", "../src/ressources/first_car_wheel.obj", "../src/ressources/first_car.png");
+    simObj = std::make_shared<VehicleObject>("../src/ressources/volga/volga.obj", "../src/ressources/first_car_wheel.obj", "../src/ressources/volga/volga.png");
 
     simObj->position = glm::vec3(50.0f, 0.0f, 0.0f);
     simObj->rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);

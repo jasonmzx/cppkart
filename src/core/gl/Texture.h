@@ -14,7 +14,7 @@ class Texture : public ID
 public:
 	GLuint ID;
 	GLenum type;
-	Texture(std::string image, GLenum texType, GLenum slot, GLenum pixelType);
+	Texture(std::string image, GLenum texType, GLenum slot, GLenum pixelType, bool rgbAlpha);
 
 	// Assigns a texture unit to a texture
 	void texUnit(std::shared_ptr<Shader>& shader, const char* uniform, GLuint unit);

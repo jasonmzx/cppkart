@@ -14,7 +14,7 @@ void ObjectRenderer::renderObject(SimulationObject *obj, RenderList &renderList)
   if (texture == nullptr)
   {
     instruction.tex.get()->texUnit(gameShader, "tex0", 0);
-    texture = ressources->loadTex(texID, texID);
+    texture = ressources->loadTex(texID, texID, false);
   }
 
   //* ================= Build Instruction ====================
@@ -47,7 +47,7 @@ void ObjectRenderer::renderVehicle(VehicleObject *vehicleObj, RenderList &render
   if (texture == nullptr)
   {
     instruction.tex.get()->texUnit(gameShader, "tex0", 0);
-    texture = ressources->loadTex(texID, texID);
+    texture = ressources->loadTex(texID, texID, true);
   }
   
   //* ================= Build Instruction ====================

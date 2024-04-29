@@ -18,8 +18,8 @@ void GameWindow::create(const std::string& title, size_t w, size_t h, bool fulls
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
-  SDL_GL_SetSwapInterval(1); // Enable V-Sync
-  //SDL_GL_SetSwapInterval(0); // Disable V-Sync
+  //SDL_GL_SetSwapInterval(1); // Enable V-Sync
+  SDL_GL_SetSwapInterval(0); // Disable V-Sync
   
   glContext = SDL_GL_CreateContext(window);
   double prevTime = SDL_GetTicks(); // Window Tick Rate (SDL thing)

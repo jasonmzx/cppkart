@@ -38,14 +38,14 @@ std::shared_ptr<Geometry> RenderRsrcManager::tryGetGeometry(const std::string& m
 
 //----- tex
 
-std::shared_ptr<Texture> RenderRsrcManager::loadTex(const std::string& texId, const std::string& filePath) {
+std::shared_ptr<Texture> RenderRsrcManager::loadTex(const std::string& texId, const std::string& filePath, bool rgbAlpha) {
     auto iter = textureCache.find(texId);
     if (iter != textureCache.end()) {
         // Texture found in cache, return it
         return iter->second;
     } else {
         // Texture not found, load and cache it
-        std::shared_ptr<Texture> texture = std::make_shared<Texture>(filePath.c_str(), GL_TEXTURE_2D, GL_TEXTURE0, GL_UNSIGNED_BYTE);
+        std::shared_ptr<Texture> texture = std::make_shared<Texture>(filePath.c_str(), GL_TEXTURE_2D, GL_TEXTURE0, GL_UNSIGNED_BYTE, rgbAlpha);
         textureCache[texId] = texture;
         return texture;
     }

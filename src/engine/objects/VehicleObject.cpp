@@ -15,16 +15,14 @@ void VehicleObject::UpdateModelMatrix() {
     btVector3 vehiclePosition = vehicle.GetTransform().getOrigin();
     btQuaternion vehicleRotation = vTrans.getRotation();
     
-    //TODO: fix +3.35 magic_number
-
-    glm::mat4 translation = glm::translate(glm::mat4(1.0f), glm::vec3(vehiclePosition.x(), vehiclePosition.y(), vehiclePosition.z()));
+    glm::mat4 translation = glm::translate(glm::mat4(1.0f), glm::vec3(vehiclePosition.x(), vehiclePosition.y() - 1.2f, vehiclePosition.z()));
 
     glm::quat glmVehicleRotation = glm::quat(vehicleRotation.w(), vehicleRotation.x(), vehicleRotation.y(), vehicleRotation.z());
 
     glm::mat4 rotation = glm::mat4_cast(glmVehicleRotation);
     glm::mat4 rotate90DEG_Adjustment = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     
-    objModelMatrix = translation * rotation * rotate90DEG_Adjustment * glm::scale(glm::vec3(1.25f));
+    objModelMatrix = translation * rotation * rotate90DEG_Adjustment * glm::scale(glm::vec3(0.7f));
 
 }
 
