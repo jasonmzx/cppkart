@@ -30,7 +30,7 @@ class RenderRsrcManager {
 
         std::shared_ptr<Geometry> tryGetGeometry(const std::string& modelIdentifier);
 
-        std::shared_ptr<Texture> loadTex(const std::string& texId, const std::string& filePath);
+        std::shared_ptr<Texture> loadTex(const std::string& texId, const std::string& filePath, bool rgbAlpha);
 
         std::shared_ptr<Texture> tryGetTex(const std::string& texId);
 

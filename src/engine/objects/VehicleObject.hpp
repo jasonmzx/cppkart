@@ -6,18 +6,21 @@
 
 #include "engine/physics/VehiclePhysics.hpp"
 
-class VehicleObject : public SimulationObject {
 
-    public:
+class VehicleObject : public SimulationObject
+{
 
-        VehicleObject(std::string carObjPath, std::string wheelObjPath, std::string texPath);
+public:
+    VehicleObject(std::string carObjPath, std::string wheelObjPath, std::string texPath);
 
-        std::string wheelObjPath;
+    std::string wheelObjPath;
 
-        VehiclePhysics vehicle;
+    VehiclePhysics vehicle;
 
-        void UpdateModelMatrix();
+    int wheelMatrixLength;
+    std::vector<glm::mat4> wheelMatrices; // TODO: Make this N. Wheels
 
+    void UpdateModelMatrix();
 };
 
 #endif

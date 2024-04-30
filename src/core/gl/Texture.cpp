@@ -1,7 +1,8 @@
 #include"Texture.h"
 
-Texture::Texture(std::string image, GLenum texType, GLenum slot, GLenum pixelType)
+Texture::Texture(std::string image, GLenum texType, GLenum slot, GLenum pixelType, bool rgbAlpha)
 {
+	static int debug = 0;
 	type = texType;
 
 	// Stores the width, height, and the number of color channels of the image
@@ -10,7 +11,12 @@ Texture::Texture(std::string image, GLenum texType, GLenum slot, GLenum pixelTyp
 	//Equivalent to a UV Flip
 	stbi_set_flip_vertically_on_load(false);
 
-	GLenum format = (numColCh == 4) ? GL_RGBA : GL_RGB; //* Import, will segfault if wrong
+	GLenum format = GL_RGB;
+
+	if(rgbAlpha)
+		format = GL_RGBA;
+
+	printf("FORMAT IN HEX: %x\n", format);
 
 	// Reads the image from a file and stores it in bytes
 	unsigned char* bytes = stbi_load(image.c_str(), &widthImg, &heightImg, &numColCh, 0);

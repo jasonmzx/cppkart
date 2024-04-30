@@ -14,7 +14,7 @@ void ObjectRenderer::renderObject(SimulationObject *obj, RenderList &renderList)
   if (texture == nullptr)
   {
     instruction.tex.get()->texUnit(gameShader, "tex0", 0);
-    texture = ressources->loadTex(texID, texID);
+    texture = ressources->loadTex(texID, texID, false);
   }
 
   //* ================= Build Instruction ====================
@@ -35,8 +35,15 @@ void ObjectRenderer::renderObject(SimulationObject *obj, RenderList &renderList)
 void ObjectRenderer::renderVehicle(VehicleObject *vehicleObj, RenderList &renderList)
 {
 
+  vehicleObj->UpdateModelMatrix(); //Update all transforms before rendering (Body and wheels)
+
   RenderInstruction instruction;
-  auto geometry = ressources->tryGetGeometry(vehicleObj->modelPath);
+  
+  auto vehicleGeometry = ressources->tryGetGeometry(vehicleObj->modelPath);
+
+  auto wheelGeometry = ressources->tryGetGeometry(vehicleObj->wheelObjPath);
+
+
 
   //* ================= Texturing ====================
 
@@ -47,18 +54,29 @@ void ObjectRenderer::renderVehicle(VehicleObject *vehicleObj, RenderList &render
   if (texture == nullptr)
   {
     instruction.tex.get()->texUnit(gameShader, "tex0", 0);
-    texture = ressources->loadTex(texID, texID);
+    texture = ressources->loadTex(texID, texID, true);
   }
   
-  //* ================= Build Instruction ====================
+  //* ================= Build Instructions ====================
 
   instruction.tex = texture;
-  instruction.geometry = geometry;
+  instruction.geometry = vehicleGeometry;
 
-  vehicleObj->UpdateModelMatrix();
   instruction.modelMatrix = vehicleObj->objModelMatrix;
 
   renderList.push_back(instruction);
+
+  //* ================= Wheel Instructions ====================
+
+  for (glm::mat4 wheelMatrix : vehicleObj->wheelMatrices)
+  {
+    RenderInstruction wheelInstruction;
+    wheelInstruction.tex = texture;
+    wheelInstruction.geometry = wheelGeometry;
+    wheelInstruction.modelMatrix = wheelMatrix;
+
+    renderList.push_back(wheelInstruction);
+  }
 }
 
 void ObjectRenderer::addToBuildlist(SimulationObject *simObj, RenderList &renderList)
