@@ -114,6 +114,9 @@ void JXGame::Run() {
   const float deltaTime = GAME_TIMESTEP;
   float accumulatedTime = 0.0f;
 
+  glCullFace(GL_BACK);
+  glEnable(GL_CULL_FACE);
+
   while (Running)
   {
 

@@ -13,7 +13,7 @@ Install ASSIMP (Model/Asset loader)
 `sudo apt install build-essential cmake`
 
 2. SDL Development Library Install:
-`sudo apt install libsdl2-dev`
+`sudo apt install libsdl2-dev libsdl2-mixer-dev`
 
 3. Bullet Physics Development Library Install:
 `sudo apt install libbullet-dev`
