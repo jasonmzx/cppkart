@@ -7,7 +7,7 @@
 #include <SDL2/SDL.h>
 #include <glad/glad.h>
 #include <memory>
-
+#include <chrono>
 
 // ImGUI Imports:
 #include "imgui.h"
@@ -22,42 +22,41 @@
 
 #include "game/state/GameInput.hpp"
 
-#include <chrono>
+// Debug Imports:
+
+#include "game/debug/GameDebugHelper.hpp"
 
 //! Dirty hack for now
 #include "engine/rendering/RenderRsrcManager.hpp"
-
 #include "engine/physics/managers/PhysicsChunkManager.hpp"
-
 
 #define GAME_TIMESTEP (1.f / 60.f)
 
-class JXGame {
+class JXGame
+{
 
-    public:
-        JXGame();
-        //~JXGame();
+public:
+  JXGame();
+  //~JXGame();
 
-        void getUpdateInput();
+  void getUpdateInput();
 
-        void Run();
-        void Render();
+  void Run();
+  void Render();
 
-        float tickWorld(const float deltaTime, float accumulatedTime);
-    private:
+  float tickWorld(const float deltaTime, float accumulatedTime);
 
-        GameInput gameInput{};
-        GameWindow window{};
+private:
+  GameInput gameInput{};
+  GameWindow window{};
 
-        std::unique_ptr<Camera> camera;
-        std::unique_ptr<GameRenderer> renderer;
-        std::unique_ptr<SimulationWorld> world;
+  std::unique_ptr<Camera> camera;
+  std::unique_ptr<GameRenderer> renderer;
+  std::unique_ptr<SimulationWorld> world;
 
-      bool bulletDebug;
+  bool bulletDebug;
 
-
-        std::unique_ptr<PhysicsChunkManager> physicsChunkManager;
-
+  std::unique_ptr<PhysicsChunkManager> physicsChunkManager;
 };
 
 #endif

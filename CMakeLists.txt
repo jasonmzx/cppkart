@@ -45,6 +45,9 @@ add_executable(cppkart
      src/game/state/GameInput.cpp
      src/game/state/GameInput.hpp
 
+     src/game/debug/GameDebugHelper.cpp
+     src/game/debug/GameDebugHelper.hpp
+
      ##### Core:
 
           # Rendering:

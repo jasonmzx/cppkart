@@ -44,9 +44,8 @@ JXGame::JXGame() {
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
   }
 
-  //! Disgusting Hack for Physics Chunks (Getting Shared Vertices from Geometry Object)
+  //! Disgusting Hack for Physics Chunks Init (Getting Shared Vertices from Geometry Object)
   RenderRsrcManager& res = renderer.get()->getRessourcePtr();
-
   std::shared_ptr<Geometry> terrainGeom = res.tryGetGeometry("../src/ressources/Landscape01.obj");
 
   if(terrainGeom == nullptr) {
@@ -106,7 +105,6 @@ void JXGame::Run() {
 
   bool freeCam = 0;
 
-
   //* Physics Timestep variables
 
   auto lastFrame = std::chrono::steady_clock::now();
@@ -116,7 +114,6 @@ void JXGame::Run() {
 
   while (Running)
   {
-
 
     Camera* cameraPtr = camera.get();
 
@@ -135,8 +132,9 @@ void JXGame::Run() {
     ImGui::Begin("Debug Menu");
 
     if (ImGui::BeginTabBar("DebugTabBar")) {
+        
         // Tab for FPS & Physics Debug
-        if (ImGui::BeginTabItem("General")) {
+        if (ImGui::BeginTabItem("PERF")) {
             ImGui::Text("%s", formatted_fps_STR);
 
             ImGui::Checkbox("Toggle Free Camera", &freeCam);
@@ -147,7 +145,7 @@ void JXGame::Run() {
         }
 
         // Tab for Vehicle
-        if (ImGui::BeginTabItem("Vehicle Debug")) {
+        if (ImGui::BeginTabItem("Vehicle")) {
 
             std::string v_debug_str = world.get()->simObj->vehicle.debugStateSTR();
             ImGui::Text("%s", v_debug_str.c_str());
@@ -155,6 +153,25 @@ void JXGame::Run() {
             // Checkbox toggle switch 
 
 
+            ImGui::EndTabItem();
+        }
+
+        // Tab for Misc
+        if (ImGui::BeginTabItem("MISC")) {
+            
+            //Button
+            if (ImGui::Button("Export Terrain Chunk Map")) {
+                
+                //! Hacky way to get shared vertices from Geometry Object
+
+                RenderRsrcManager& res = renderer.get()->getRessourcePtr();
+                std::shared_ptr<Geometry> terrainGeom = res.tryGetGeometry("../src/ressources/Landscape01.obj");
+                std::vector<GLfloat> terrainVerts = terrainGeom.get()->_vertices;
+
+                GameDebugHelper::ExportVertexMappingToFile(terrainVerts, "../src/ressources/cpp_vertex_mapping.txt");
+
+            }
+            
             ImGui::EndTabItem();
         }
 
