@@ -56,6 +56,12 @@ void ObjModel::LoadObj(const std::string& filepath) {
             vertices.push_back(mesh->mTextureCoords[0][i].x);
             vertices.push_back(mesh->mTextureCoords[0][i].y);
         }
+
+        if (mesh->mNormals) { // If there are normals
+            vertices.push_back(mesh->mNormals[i].x);
+            vertices.push_back(mesh->mNormals[i].y);
+            vertices.push_back(mesh->mNormals[i].z);
+        }
     }
 
     // Extract index data

@@ -13,8 +13,8 @@ StaticTriangleMeshPhysics::StaticTriangleMeshPhysics(
     btTriangleMesh *mesh = new btTriangleMesh();
     for (size_t i = 0; i < indices.size(); i += 3)
     {
-        // x y z r g b u v , 8
-        int VERT_LEN = 8;
+        // x y z r g b u v Nx Ny Nz     (11)
+        int VERT_LEN = 11;
         GLuint idx0 = indices[i]; GLuint idx1 = indices[i+1]; GLuint idx2 = indices[i+2];
         
         btVector3 vertex0(vertices[idx0 * VERT_LEN], vertices[idx0 * VERT_LEN + 1], vertices[idx0 * VERT_LEN + 2]);

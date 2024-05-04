@@ -14,11 +14,12 @@ Geometry::Geometry(const std::vector<GLfloat>& vertices, const std::vector<GLuin
 
     vao->Bind();
 
-    // Assuming each vertex consists of 8 floats: position (x, y, z), normal (x, y, z), texture (u, v)
+    // Assuming each vertex consists of 8 floats: position (x, y, z), color (r, g, b), texture (u, v), normal (x, y, z)
 
-    vao->LinkAttrib(*vbo, 0, 3, GL_FLOAT, 8 * sizeof(float), (void *)0);
-    vao->LinkAttrib(*vbo, 1, 3, GL_FLOAT, 8 * sizeof(float), (void *)(3 * sizeof(float)));
-    vao->LinkAttrib(*vbo, 2, 2, GL_FLOAT, 8 * sizeof(float), (void *)(6 * sizeof(float)));
+    vao->LinkAttrib(*vbo, 0, 3, GL_FLOAT, 11 * sizeof(float), (void *)0);
+    vao->LinkAttrib(*vbo, 1, 3, GL_FLOAT, 11 * sizeof(float), (void *)(3 * sizeof(float)));
+    vao->LinkAttrib(*vbo, 2, 2, GL_FLOAT, 11 * sizeof(float), (void *)(6 * sizeof(float)));
+    vao->LinkAttrib(*vbo, 3, 3, GL_FLOAT, 11 * sizeof(float), (void*)(8 * sizeof(float)));
     
     ebo->Bind(); // Bind EBO to VAO
 
