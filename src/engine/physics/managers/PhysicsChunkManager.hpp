@@ -2,6 +2,7 @@
 #define PHYSICSCHUNKMANAGER_CLASS_HPP
 
 #include <vector>
+#include <memory>
 #include <bullet/btBulletDynamicsCommon.h>
 
 // Local Imports:
@@ -9,17 +10,15 @@
 #include "engine/physics/StaticTriangleMeshPhysics.hpp"
 #include "core/loaders/ChunkedMapLoader.hpp"
 
-// NOTE: TerrainPhysics doesn't have a default empty constructor, so this struct needs to be isntanciated immediately
 struct PhysicsChunk
 {
-    StaticTriangleMeshPhysics rigidMeshChunk;
+    std::unique_ptr<StaticTriangleMeshPhysics> rigidMeshChunk;
     bool active;
-
     float X_origin;
     float Z_origin;
 
-    PhysicsChunk(bool isActive, const StaticTriangleMeshPhysics &mesh)
-        : active(isActive), rigidMeshChunk(mesh) {}
+    PhysicsChunk(bool isActive, std::unique_ptr<StaticTriangleMeshPhysics> mesh)
+        : active(isActive), rigidMeshChunk(std::move(mesh)) {}
 };
 
 class PhysicsChunkManager
@@ -37,7 +36,7 @@ public:
     // btScalar globalChunkMax;
 
 private:
-    std::vector<PhysicsChunk> chunkVector;
+    std::vector<std::unique_ptr<PhysicsChunk>> chunkVector;
 
     float SCALE_FACTOR;
 };

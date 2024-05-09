@@ -124,8 +124,8 @@ add_executable(cppkart
      
 )
 
-# target_compile_options(cppkart PRIVATE -fsanitize=address)
-# target_link_libraries(cppkart PRIVATE -fsanitize=address)
+target_compile_options(cppkart PRIVATE -fsanitize=address)
+target_link_libraries(cppkart PRIVATE -fsanitize=address)
 
 # I'm assuming SDL2_mixer is already installed, FIX THIS!
 
