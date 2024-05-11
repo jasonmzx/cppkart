@@ -46,7 +46,7 @@ JXGame::JXGame() {
 
   //! Disgusting Hack for Physics Chunks Init (Getting Shared Vertices from Geometry Object)
   RenderRsrcManager& res = renderer.get()->getRessourcePtr();
-  std::shared_ptr<Geometry> terrainGeom = res.tryGetGeometry("../src/ressources/Landscape01.obj");
+  std::shared_ptr<Geometry> terrainGeom = res.tryGetGeometry("../src/ressources/DE_Map1/Landscape01.obj");
 
   if(terrainGeom == nullptr) {
     printf("Terrain Geometry not found\n");
