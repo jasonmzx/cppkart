@@ -8,7 +8,9 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 #include <vector>
+#include <memory>
 #include <glad/glad.h>
+
 
 //Local Imports
 #include "engine/physics/PhysicsWorldSingleton.h"
@@ -17,7 +19,7 @@ class StaticTriangleMeshPhysics {
 private:
 
 public:
-    btRigidBody* meshRigidBody;
+    std::unique_ptr<btRigidBody> meshRigidBody;
 
     StaticTriangleMeshPhysics(
         const std::vector<GLfloat> &vertices,

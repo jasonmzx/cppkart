@@ -19,7 +19,7 @@ Geometry::Geometry(const std::vector<GLfloat>& vertices, const std::vector<GLuin
     vao->LinkAttrib(*vbo, 0, 3, GL_FLOAT, 11 * sizeof(float), (void *)0);
     vao->LinkAttrib(*vbo, 1, 3, GL_FLOAT, 11 * sizeof(float), (void *)(3 * sizeof(float)));
     vao->LinkAttrib(*vbo, 2, 2, GL_FLOAT, 11 * sizeof(float), (void *)(6 * sizeof(float)));
-    vao->LinkAttrib(*vbo, 3, 3, GL_FLOAT, 11 * sizeof(float), (void*)(8 * sizeof(float)));
+    vao->LinkAttrib(*vbo, 3, 3, GL_FLOAT, 11 * sizeof(float), (void *)(8 * sizeof(float)));
     
     ebo->Bind(); // Bind EBO to VAO
 
@@ -61,5 +61,5 @@ void Geometry::Draw(GLuint modelMatrixLocation, glm::mat4& modelMatrix, GLuint c
         glPolygonMode(GL_BACK, polygonMode[1]);
 
         // Reset the color to the original one (if needed)
-    }
+        }
 }

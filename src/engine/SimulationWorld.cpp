@@ -13,7 +13,7 @@ SimulationWorld::SimulationWorld() {
     
     entities.push_back(simObj);
 
-    auto simObj2 = std::make_shared<SimulationObject>("../src/ressources/Landscape01.obj", "../src/ressources/Map01_Albedo.png");
+    auto simObj2 = std::make_shared<SimulationObject>("../src/ressources/DE_Map1/Landscape01.obj", "../src/ressources/DE_Map1/Map01_Albedo.png");
 
     //std::vector<LoadedChunk> chunks = ChunkedMapLoader::loadChunks("../src/ressources/chunk_map.txt");
 
