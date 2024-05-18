@@ -23,7 +23,9 @@ void main()
 {
     if (useTexture) {
         // Sample the texture if useTexture is true
-        FragColor = texture(tex0, texCoord) * vec4(vec3(1.0,1.0,1.0) * max(dot(normalize(lightDir), normal), 0.0), 1.0);
+        vec3 lightDirNorm = normalize(lightDir);
+        // FragColor = texture(tex0, texCoord) * vec4(vec3(1.0,1.0,1.0) * max(dot(lightDirNorm, normal), 0.0), 1.0);
+
     } else {
         // Output the solid color if useTexture is false
 		FragColor = vec4(color, 1.0); //texture(tex0, texCoord);
