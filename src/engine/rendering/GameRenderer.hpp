@@ -39,6 +39,8 @@ class GameRenderer {
 
         GLint modelMatrixLOC;
         GLint useTextureLOC;
+        
+        float lightCtr = 0.0f;
 
 
 

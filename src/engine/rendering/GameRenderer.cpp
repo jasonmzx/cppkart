@@ -1,4 +1,5 @@
 #include "GameRenderer.hpp"
+#include <chrono>
 
 #define BULLET_DEBUG_DRAW 1
 
@@ -22,6 +23,8 @@ GameRenderer::GameRenderer(int winWidth, int winHeight, Camera *cam, SimulationW
   // Get locations of uniforms in the shader
   modelMatrixLOC = glGetUniformLocation(mainShader.get()->ID, "modelMatrix");
   useTextureLOC = glGetUniformLocation(mainShader.get()->ID, "useTexture");
+
+
 
   colorUniformLocation = glGetUniformLocation(mainShader.get()->ID, "FragColor");
 
@@ -51,6 +54,17 @@ void GameRenderer::RenderALL(bool bulletDebugDraw)
 
   glUniform1i(useTextureLOC, GL_FALSE);
   // Explicitly setting the model matrix to an identity matrix
+
+
+  GLint lightDirLOC = glGetUniformLocation(mainShader.get()->ID, "lightDir");
+  GLint lightColorLOC = glGetUniformLocation(mainShader.get()->ID, "lightColor");
+
+  lightCtr += 0.01f;
+
+  glUniform3f(lightDirLOC, cos(lightCtr), sin(lightCtr), 0.0f); // Rotating light
+  glUniform3f(lightColorLOC, 1.0f, 1.0f, 1.0f); // White light
+
+
   glm::mat4 identityMatrix = glm::mat4(1.0f);
   glUniformMatrix4fv(modelMatrixLOC, 1, GL_FALSE, glm::value_ptr(identityMatrix));
 
