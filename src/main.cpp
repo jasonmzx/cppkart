@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <assert.h>
-#include "game/JXGame.hpp"
+#include "game/DemoGame.hpp"
 
 int main(int ArgCount, char **Args)
 {
-  JXGame game;
+  DemoGame game;
   game.Run();
   return 0;
 }

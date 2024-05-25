@@ -119,10 +119,35 @@ add_executable(cppkart
      src/engine/SimulationWorld.cpp
      src/engine/SimulationWorld.hpp
 
+     #---! Engine Rewrite Files !---:
 
+     src/jx_engine/core/Scene.hpp
+     src/jx_engine/core/Scene.cpp
 
-     
+     src/jx_engine/core/SceneManager.hpp
+     src/jx_engine/core/SceneManager.cpp
+
+     src/jx_engine/entity/ECManager.hpp
+     src/jx_engine/entity/ECManager.cpp
+
+     src/jx_engine/entity/Entity.hpp
+     src/jx_engine/entity/Entity.cpp
+
+     src/jx_engine/component/EComponent.hpp
+     src/jx_engine/component/EComponent.cpp
+
+     #---! Rewrite Game Files !---:
+
+     src/game/DemoGame.hpp
+     src/game/DemoGame.cpp
+
+     src/game/scenes/GameScene.hpp
+     src/game/scenes/GameScene.cpp
 )
+
+
+# Enable AddressSanitizer
+set(SANITIZE_FLAGS "-fsanitize=address -fno-omit-frame-pointer")
 
 target_compile_options(cppkart PRIVATE -fsanitize=address)
 target_link_libraries(cppkart PRIVATE -fsanitize=address)
