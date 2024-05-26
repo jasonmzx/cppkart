@@ -4,6 +4,10 @@
 #include <memory>
 #include "jx_engine/core/SceneManager.hpp"
 
+// Entity Components:
+#include "jx_engine/component/EComponent.hpp"
+#include "jx_engine/component/RenderComponent.hpp"
+
 class ECManager { // Entity Component Manager
     public:
         //void update(float dt);

@@ -136,6 +136,14 @@ add_executable(cppkart
      src/jx_engine/component/EComponent.hpp
      src/jx_engine/component/EComponent.cpp
 
+     src/jx_engine/component/RenderComponent.hpp
+     src/jx_engine/component/RenderComponent.cpp
+
+     # Rendering:
+
+     src/jx_engine/gl/GameGLRenderer.hpp
+     src/jx_engine/gl/GameGLRenderer.cpp
+
      #---! Rewrite Game Files !---:
 
      src/game/DemoGame.hpp

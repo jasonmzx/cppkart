@@ -42,8 +42,13 @@ public:
 private:
   void getUpdateInput();
   void tick();
+
+  // Game Runtime Booleans:
+
   bool WindowRunning = true;
   bool IMGUI_MODE = true;
+  bool CameraInputs = true;
+  
 };
 
 #endif

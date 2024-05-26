@@ -94,8 +94,6 @@ void JXGame::getUpdateInput() {
       {
         Running = 0;
       }
-
-
     }
 }
 

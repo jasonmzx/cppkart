@@ -14,7 +14,7 @@ class Scene {
         virtual void render() = 0;
 
     public:
-        std::vector<std::shared_ptr<Entity>> sceneEntities;
+        std::vector<std::shared_ptr<Entity>> entities;
 
 };
 

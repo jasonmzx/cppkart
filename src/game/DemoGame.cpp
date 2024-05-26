@@ -42,7 +42,8 @@ DemoGame::DemoGame() {
     sceneManager = std::make_shared<SceneManager>();
     printf("Setting Active Scene to GameScene\n");
 
-    std::shared_ptr<GameScene> gameScene = std::make_shared<GameScene>();
+    std::shared_ptr<GameScene> gameScene = std::make_shared<GameScene>(WIN_WIDTH, WIN_HEIGHT);
+    gameScene->init();
     sceneManager->setActiveScene(gameScene);
 
     //* ========== ECManager Setup ==========
@@ -50,7 +51,6 @@ DemoGame::DemoGame() {
     printf("Initializing ECManager\n");
     ecManager = std::make_unique<ECManager>();
     ecManager->setSceneManager(sceneManager);
-    
 }
 
 DemoGame::~DemoGame() {
@@ -69,13 +69,28 @@ void DemoGame::getUpdateInput() {
     SDL_PumpEvents(); 
     const Uint8 *KB_InputState = SDL_GetKeyboardState(NULL);
 
-    while (SDL_PollEvent(&Event)) {
-        if (IMGUI_MODE) {
-            ImGui_ImplSDL2_ProcessEvent(&Event);
+    while (SDL_PollEvent(&Event))
+    {
+      if(IMGUI_MODE == 1)
+        ImGui_ImplSDL2_ProcessEvent(&Event);
+
+      if (Event.type == SDL_KEYDOWN)
+      {
+        switch (Event.key.keysym.sym)
+        {
+        case SDLK_F10:
+          WindowRunning = 0;
+          break;
+        case SDLK_ESCAPE:
+          CameraInputs = !CameraInputs;
+        default:
+          break;
         }
-        if (Event.type == SDL_QUIT) {
-            WindowRunning = false;
-        }
+      }
+      else if (Event.type == SDL_QUIT)
+      {
+        WindowRunning = 0;
+      }
     }
 }
 
