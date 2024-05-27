@@ -44,7 +44,7 @@ public:
 	void Matrix(float FOVdeg, float nearPlane, float farPlane, std::shared_ptr<Shader>& shader, const char* uniform);
 	
 	void Inputs(SDL_Window* window, bool isMouse);
-	void ProcessMouseLook(int mouseXRel, int mouseYRel, SDL_Window* window);
+	void ProcessMouseLook(int mouseXRel, int mouseYRel);
 
 	void VehicleFollowCamera(float pX, float pY, float pZ);
 };

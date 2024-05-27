@@ -93,7 +93,7 @@ void Camera::Inputs(SDL_Window *window, bool isMouse)
             int deltaY = mouseY - height / 2;
 
             // Process mouse look
-            ProcessMouseLook(deltaX, deltaY, window);
+            ProcessMouseLook(deltaX, deltaY);
 
             // Re-center the mouse cursor to avoid reaching the screen edge
             SDL_WarpMouseInWindow(window, width / 2, height / 2);
@@ -114,7 +114,7 @@ void Camera::VehicleFollowCamera(float pX, float pY, float pZ)
       LookAt = lookAtPosition;
 }
 
-void Camera::ProcessMouseLook(int mouseXRel, int mouseYRel, SDL_Window *window)
+void Camera::ProcessMouseLook(int mouseXRel, int mouseYRel)
 {
     // Assuming firstClick has been handled outside this function
 

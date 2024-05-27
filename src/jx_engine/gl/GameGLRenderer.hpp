@@ -15,15 +15,17 @@ class GameGLRenderer {
 
         BulletDebugDrawer* debugDrawer;
 
-    private:
-        Camera* camera;
-
-        std::shared_ptr<Shader> mainShader;
-
         GLint colorUniformLocation; //Debug purposes, might move
         GLint modelMatrixLOC;
         GLint useTextureLOC;
-        
+
+        void RenderPrep();
+        std::shared_ptr<Shader> mainShader;
+
+    private:
+        Camera* camera;
+
+
         float lightCtr = 0.0f;
 };
 

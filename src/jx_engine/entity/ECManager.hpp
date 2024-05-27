@@ -11,9 +11,8 @@
 class ECManager { // Entity Component Manager
     public:
         //void update(float dt);
-        void tick();
+        void tick(std::vector<std::shared_ptr<Entity>> entities);
 
-        void setSceneManager(std::shared_ptr<SceneManager> sceneManager);
     private:
         std::shared_ptr<SceneManager> sceneManager;
         std::shared_ptr<Scene> activeScene;

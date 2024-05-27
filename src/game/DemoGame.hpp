@@ -37,7 +37,7 @@ public:
   GameWindow window{};
 
   std::shared_ptr<SceneManager> sceneManager;
-  std::unique_ptr<ECManager> ecManager;
+
   
 private:
   void getUpdateInput();
@@ -48,6 +48,10 @@ private:
   bool WindowRunning = true;
   bool IMGUI_MODE = true;
   bool CameraInputs = true;
+
+  bool trackMouse = true;
+  bool firstClick = true;
+
   
 };
 
