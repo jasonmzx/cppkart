@@ -1,5 +1,5 @@
-#ifndef GAMERENDERER_hpp
-#define GAMERENDERER_hpp
+#ifndef GAMERENDERER_HPP
+#define GAMERENDERER_HPP
 
 #include <memory>
 #include <glad/glad.h>

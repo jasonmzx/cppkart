@@ -39,8 +39,8 @@ add_executable(cppkart
       src/game/GameWindow.cpp
       src/game/GameWindow.hpp
 
-      src/game/JXGame.cpp
-      src/game/JXGame.hpp
+     #  src/game/JXGame.cpp
+     #  src/game/JXGame.hpp
 
      src/game/state/GameInput.cpp
      src/game/state/GameInput.hpp
@@ -120,6 +120,9 @@ add_executable(cppkart
      src/engine/SimulationWorld.hpp
 
      #---! Engine Rewrite Files !---:
+
+     src/jx_engine/logs/Logger.hpp
+     src/jx_engine/logs/Logger.cpp
 
      src/jx_engine/core/Scene.hpp
      src/jx_engine/core/Scene.cpp

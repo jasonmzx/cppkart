@@ -20,6 +20,7 @@
 // JX Engine Imports:
 #include "jx_engine/core/SceneManager.hpp"
 #include "jx_engine/entity/ECManager.hpp"
+#include "jx_engine/logs/Logger.hpp"
 
 //Game Imports:
 #include "GameWindow.hpp"

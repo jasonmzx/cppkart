@@ -42,20 +42,20 @@ DemoGame::DemoGame()
     }
   }
 
+  Logger* logger = Logger::getInstance();
+
   //* ========== SceneManager Setup ==========
 
-  printf("Initializing SceneManager\n");
   sceneManager = std::make_shared<SceneManager>();
-  printf("Setting Active Scene to GameScene\n");
+  logger->log(Logger::INFO, "SceneManager created !");
 
   std::shared_ptr<GameScene> gameScene = std::make_shared<GameScene>(WIN_WIDTH, WIN_HEIGHT);
   gameScene->init();
   gameScene->initECS(sceneManager);
   sceneManager->setActiveScene(gameScene);
+  logger->log(Logger::INFO, "GameScene created & set as active !");
 
   //* ========== ECManager Setup ==========
-
-
   
 }
 
@@ -126,6 +126,7 @@ void DemoGame::getUpdateInput()
       auto activeScene = sceneManager->getActiveScene();
       if (auto gameScene = dynamic_cast<GameScene *>(activeScene.get()))
       {
+        gameScene->camera->Inputs();
         gameScene->camera->ProcessMouseLook(deltaX, deltaY);
       }
       else

@@ -8,6 +8,8 @@
 
 #include "core/ID.hpp"
 
+#include "jx_engine/logs/Logger.hpp"
+
 class ObjModel : public ID {
 
 public:

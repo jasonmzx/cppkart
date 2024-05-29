@@ -27,8 +27,10 @@ void ObjModel::LoadObj(const std::string& filepath) {
     Assimp::Importer importer;
     const aiScene* scene = importer.ReadFile(filepath, aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs);
 
+    Logger* logger = Logger::getInstance();
+
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-        // Handle error: importer.GetErrorString()
+        logger->log(Logger::ERROR, "ObjModel.cpp | Failed to load the model: " + filepath);
         return;
     }
 
@@ -71,4 +73,6 @@ void ObjModel::LoadObj(const std::string& filepath) {
             indices.push_back(face.mIndices[j]);
         }
     }
+
+    logger->log(Logger::INFO, "ObjModel.cpp | Loaded Model: " + filepath);
 }

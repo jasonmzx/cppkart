@@ -43,7 +43,7 @@ void GameGLRenderer::RenderPrep() {
 
     mainShader->Activate();
 
-    glUniform1i(useTextureLOC, GL_FALSE);
+    glUniform1i(useTextureLOC, GL_TRUE);
 
 
     glm::mat4 identityMatrix = glm::mat4(1.0f);

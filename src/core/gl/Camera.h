@@ -43,7 +43,7 @@ public:
 	// Updates and exports the camera matrix to the Vertex Shader
 	void Matrix(float FOVdeg, float nearPlane, float farPlane, std::shared_ptr<Shader>& shader, const char* uniform);
 	
-	void Inputs(SDL_Window* window, bool isMouse);
+	void Inputs();
 	void ProcessMouseLook(int mouseXRel, int mouseYRel);
 
 	void VehicleFollowCamera(float pX, float pY, float pZ);

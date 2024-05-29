@@ -9,7 +9,7 @@ RenderComponent::RenderComponent(std::string modelPath, std::string texPath, std
 
     // texPath = texPath;
     texture = ressources->tryGetTex(texPath);
-    if (texture == nullptr) { texture = ressources->loadTex(texPath, texPath, true); }
+    if (texture == nullptr) { texture = ressources->loadTex(texPath, texPath, false); }
 }
 
 void RenderComponent::SetGLContext(GLint useTextureLOC, GLint modelMatrixLOC, GLint colorUniformLocation)

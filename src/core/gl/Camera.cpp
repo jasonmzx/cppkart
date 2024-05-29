@@ -32,7 +32,7 @@ void Camera::Matrix(float FOVdeg, float nearPlane, float farPlane, std::shared_p
     glUniformMatrix4fv(glGetUniformLocation(shader->ID, uniform), 1, GL_FALSE, glm::value_ptr(viewProjection));
 }
 
-void Camera::Inputs(SDL_Window *window, bool isMouse)
+void Camera::Inputs()
 {
     // Handles key inputs
     const Uint8 *keyState = SDL_GetKeyboardState(NULL);
@@ -69,35 +69,6 @@ void Camera::Inputs(SDL_Window *window, bool isMouse)
     else
     {
         speed = 0.4f;
-    }
-
-    if (isMouse)
-    { // Let the Mouse handle the camera or not
-
-        // Handles mouse inputs
-        int mouseX, mouseY;
-        Uint32 mouseButtons = SDL_GetMouseState(&mouseX, &mouseY);
-
-        if (firstClick)
-        {
-            // Center the mouse cursor
-            SDL_WarpMouseInWindow(window, width / 2, height / 2);
-            firstClick = false;
-            SDL_ShowCursor(SDL_DISABLE); // Hide the mouse cursor
-        }
-        else
-        {
-            // SDL doesn't directly give us the previous position of the cursor,
-            // so we compute the motion based on the current position and centering the cursor.
-            int deltaX = mouseX - width / 2;
-            int deltaY = mouseY - height / 2;
-
-            // Process mouse look
-            ProcessMouseLook(deltaX, deltaY);
-
-            // Re-center the mouse cursor to avoid reaching the screen edge
-            SDL_WarpMouseInWindow(window, width / 2, height / 2);
-        }
     }
 }
 

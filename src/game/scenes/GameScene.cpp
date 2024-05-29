@@ -24,8 +24,8 @@ void GameScene::init() {
 
     std::shared_ptr<Entity> testEnt = std::make_shared<Entity>();
 
-    auto testRenderComponent = std::make_shared<RenderComponent>("../../src/ressources/DE_Map1/Landscape01.obj",
-                                                           "../../src/ressources/DE_Map1/Map01_Albedo.png", 
+    auto testRenderComponent = std::make_shared<RenderComponent>("../src/ressources/DE_Map1/Landscape01.obj",
+                                                           "../src/ressources/DE_Map1/Map01_Albedo.png", 
                                                            renderRsrcManager);
 
     testRenderComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation);
