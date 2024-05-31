@@ -4,8 +4,8 @@
 #include <memory>
 #include <glad/glad.h>
 
-#include "core/gl/Camera.h"
-#include "core/gl/shaderClass.h"
+#include "gl/Camera.h"
+#include "gl/shaderClass.h"
 #include "core/gl/BulletDebugDrawer.cpp"
 
 class GameGLRenderer {

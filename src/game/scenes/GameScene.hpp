@@ -5,12 +5,13 @@
 #include "jx_engine/core/Scene.hpp"
 #include "jx_engine/component/RenderComponent.hpp"
 #include "jx_engine/entity/ECManager.hpp"
-#include "jx_engine/gl/GameGLRenderer.hpp"
+
+#include "jx_engine/render/GameGLRenderer.hpp"
+#include "jx_engine/render/RenderRsrcManager.hpp"
 
 
 //! Importants below need to be changed eventually
 #include "core/gl/Camera.h"
-#include "engine/rendering/RenderRsrcManager.hpp"
 
 
 class GameScene : public Scene {
@@ -34,6 +35,7 @@ class GameScene : public Scene {
         std::shared_ptr<GameGLRenderer> renderer;
         std::shared_ptr<RenderRsrcManager> renderRsrcManager;
 
+        static Logger* logger;
 };
 
 #endif // SCENE_HPP

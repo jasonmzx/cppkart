@@ -4,8 +4,8 @@
 #include <memory>
 #include <unordered_map> // For geometry caching
 
-#include "GLRenderer.hpp"
-#include "core/gl/Texture.h"
+#include "gl/Geometry.hpp"
+#include "gl/Texture.h"
 #include "core/loaders/ObjModel.hpp"
 
 typedef std::unordered_map<std::string, std::shared_ptr<Geometry>> GeometryCache;

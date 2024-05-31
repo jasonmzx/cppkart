@@ -50,25 +50,9 @@ add_executable(cppkart
 
      ##### Core:
 
-          # Rendering:
-          src/core/gl/EBO.cpp 
-          src/core/gl/VAO.cpp 
-          src/core/gl/VBO.cpp 
-          src/core/gl/shaderClass.cpp
-          src/core/gl/Camera.cpp
-
-          src/core/gl/Geometry.cpp
-          src/core/gl/Geometry.hpp
-
-          src/core/gl/Texture.h
-          src/core/gl/Texture.cpp
-
           src/core/gl/BulletDebugDrawer.cpp
 
           # Loaders:
-
-          src/core/loaders/ObjModel.cpp
-          src/core/loaders/ObjModel.hpp
 
           src/core/loaders/ChunkedMapLoader.cpp
           src/core/loaders/ChunkedMapLoader.hpp
@@ -100,24 +84,14 @@ add_executable(cppkart
           src/engine/physics/managers/PhysicsChunkManager.cpp 
           src/engine/physics/managers/PhysicsChunkManager.hpp
 
-          # Rendering:
-          src/engine/rendering/RenderRsrcManager.hpp
-          src/engine/rendering/RenderRsrcManager.cpp
 
-          src/engine/rendering/GameRenderer.cpp          
-          src/engine/rendering/GameRenderer.hpp
-
-          src/engine/rendering/ObjectRenderer.cpp
-          src/engine/rendering/ObjectRenderer.hpp
-
-          src/engine/rendering/GLRenderer.cpp
-          src/engine/rendering/GLRenderer.hpp
 
           # State:
           src/engine/state/GameInputState.hpp
      
-     src/engine/SimulationWorld.cpp
-     src/engine/SimulationWorld.hpp
+
+
+     #!  ------------------------------ NEW FILES ------------------------------
 
      #---! Engine Rewrite Files !---:
 
@@ -142,10 +116,43 @@ add_executable(cppkart
      src/jx_engine/component/RenderComponent.hpp
      src/jx_engine/component/RenderComponent.cpp
 
+     # Import / Loaders:
+
+     src/jx_engine/import/ObjModel.cpp
+     src/jx_engine/import/ObjModel.hpp
+
      # Rendering:
 
-     src/jx_engine/gl/GameGLRenderer.hpp
-     src/jx_engine/gl/GameGLRenderer.cpp
+     src/jx_engine/render/GameGLRenderer.hpp
+     src/jx_engine/render/GameGLRenderer.cpp
+
+     src/jx_engine/render/RenderRsrcManager.hpp
+     src/jx_engine/render/RenderRsrcManager.cpp
+
+     src/jx_engine/render/gl/Geometry.cpp
+     src/jx_engine/render/gl/Geometry.hpp
+
+     src/jx_engine/render/gl/Texture.h
+     src/jx_engine/render/gl/Texture.cpp
+
+     src/jx_engine/render/gl/misc/ID.hpp
+     src/jx_engine/render/gl/misc/ID.cpp
+
+     src/jx_engine/render/gl/shaderClass.h
+     src/jx_engine/render/gl/shaderClass.cpp
+
+     src/jx_engine/render/gl/EBO.h
+     src/jx_engine/render/gl/EBO.cpp
+
+     src/jx_engine/render/gl/VBO.h
+     src/jx_engine/render/gl/VBO.cpp
+
+     src/jx_engine/render/gl/VAO.h
+     src/jx_engine/render/gl/VAO.cpp
+
+     src/jx_engine/render/gl/Camera.h
+     src/jx_engine/render/gl/Camera.cpp
+
 
      #---! Rewrite Game Files !---:
 

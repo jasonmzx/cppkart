@@ -1,5 +1,7 @@
 #include "GameScene.hpp"
 
+Logger* GameScene::logger = Logger::getInstance();
+
 GameScene::GameScene(int WIN_W, int WIN_H) {
     
     camera = std::make_shared<Camera>(WIN_W, WIN_H, glm::vec3(0.0f, 10.0f, 2.0f));
@@ -33,8 +35,7 @@ void GameScene::init() {
     testEnt->addComponent(testRenderComponent);
     entities.push_back(testEnt);
 
-    // Initialize game objects
-    printf("GameScene initialized\n");
+    logger->log(Logger::INFO,"GameScene Loaded in " + std::to_string(entities.size()) + " entities");
 
 }
 

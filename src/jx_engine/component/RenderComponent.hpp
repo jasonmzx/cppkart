@@ -7,7 +7,7 @@
 
 #include "EComponent.hpp"
 
-#include "engine/rendering/RenderRsrcManager.hpp"
+#include "jx_engine/render/RenderRsrcManager.hpp"
 #include "core/gl/Geometry.hpp"
 
 

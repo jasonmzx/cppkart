@@ -6,8 +6,8 @@ Logger* Logger::instance = nullptr;
 void Logger::log(LogLevel level, const std::string& message) {
     if (loggingEnabled) {
         switch (level) {
-            case INFO: std::cout << getLogLevelColor(INFO) << "[INFO] " << message << "\033[0m"<< std::endl; break;
-            case WARN: std::cout << getLogLevelColor(WARN) << "[WARN] " << message << "\033[0m"<< std::endl; break;
+            case INFO: std::cout << getLogLevelColor(INFO)   << "[INFO] " << message << "\033[0m"<< std::endl; break;
+            case WARN: std::cout << getLogLevelColor(WARN)   << "[WARN] " << message << "\033[0m"<< std::endl; break;
             case ERROR: std::cout << getLogLevelColor(ERROR) << "[ERROR] " << message << "\033[0m"<< std::endl; break;
             case FATAL: std::cout << getLogLevelColor(ERROR) << "[FATAL] " << message << "\033[0m"<< std::endl; break;
         }
@@ -16,7 +16,7 @@ void Logger::log(LogLevel level, const std::string& message) {
 
 std::string Logger::getLogLevelColor(LogLevel level) {
     switch (level) {
-        case INFO: return "\033[36m";  // Cyan
+        case INFO: return "\033[33m";  // Yellow
         case WARN: return "\033[33m";  // Yellow
         case ERROR: return "\033[31m"; // Red
         default: return "\033[0m";     // Reset
