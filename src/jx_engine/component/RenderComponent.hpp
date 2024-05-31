@@ -8,7 +8,7 @@
 #include "EComponent.hpp"
 
 #include "jx_engine/render/RenderRsrcManager.hpp"
-#include "core/gl/Geometry.hpp"
+#include "jx_engine/render/gl/Geometry.hpp"
 
 
 class RenderComponent : public EComponent {

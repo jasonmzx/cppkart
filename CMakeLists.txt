@@ -34,63 +34,12 @@ add_executable(cppkart
 
       src/main.cpp 
 
-     ##### Game:
-
-      src/game/GameWindow.cpp
-      src/game/GameWindow.hpp
-
-     #  src/game/JXGame.cpp
-     #  src/game/JXGame.hpp
-
-     src/game/state/GameInput.cpp
-     src/game/state/GameInput.hpp
+     # src/game/state/GameInput.cpp
+     # src/game/state/GameInput.hpp
 
      src/game/debug/GameDebugHelper.cpp
      src/game/debug/GameDebugHelper.hpp
-
-     ##### Core:
-
-          src/core/gl/BulletDebugDrawer.cpp
-
-          # Loaders:
-
-          src/core/loaders/ChunkedMapLoader.cpp
-          src/core/loaders/ChunkedMapLoader.hpp
-
-          src/core/ID.hpp
-          src/core/ID.cpp
-
      
-      ##### Engine:
-
-          # Objects:
-          src/engine/objects/SimulationObject.cpp
-          src/engine/objects/SimulationObject.hpp
-
-          src/engine/objects/VehicleObject.cpp
-          src/engine/objects/VehicleObject.hpp
-
-          # Physics:
-          src/engine/physics/PhysicsWorldSingleton.cpp
-          src/engine/physics/PhysicsWorldSingleton.h
-
-          src/engine/physics/VehiclePhysics.cpp
-          src/engine/physics/VehiclePhysics.hpp
-
-          src/engine/physics/StaticTriangleMeshPhysics.cpp
-          src/engine/physics/StaticTriangleMeshPhysics.hpp
-
-          # Physics Managers (Controllers):
-          src/engine/physics/managers/PhysicsChunkManager.cpp 
-          src/engine/physics/managers/PhysicsChunkManager.hpp
-
-
-
-          # State:
-          src/engine/state/GameInputState.hpp
-     
-
-
      #!  ------------------------------ NEW FILES ------------------------------
 
      #---! Engine Rewrite Files !---:
@@ -153,8 +102,17 @@ add_executable(cppkart
      src/jx_engine/render/gl/Camera.h
      src/jx_engine/render/gl/Camera.cpp
 
+     # Physics:
+     src/jx_engine/physics/PhysicsWorldSingleton.h
+     src/jx_engine/physics/PhysicsWorldSingleton.cpp
+
+     src/jx_engine/physics/BulletDebugDrawer.cpp
+
 
      #---! Rewrite Game Files !---:
+
+     src/game/GameWindow.cpp
+     src/game/GameWindow.hpp
 
      src/game/DemoGame.hpp
      src/game/DemoGame.cpp

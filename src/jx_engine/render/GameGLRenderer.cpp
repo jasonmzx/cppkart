@@ -1,12 +1,13 @@
 #include "GameGLRenderer.hpp"
 #include <chrono>
 
-#define BULLET_DEBUG_DRAW 0
+#define BULLET_DEBUG_DRAW 1
 
 const std::string SHADER_PATH = "../src/game/shader/";
 
 GameGLRenderer::GameGLRenderer(int winWidth, int winHeight, Camera *cam) : camera(cam)
 { 
+  physicsWorld = PhysicsWorldSingleton::getInstance();
   glViewport(0, 0, winWidth, winHeight); // Set viewport size
 
   // Initialize the camera's look-at vector
@@ -26,6 +27,8 @@ GameGLRenderer::GameGLRenderer(int winWidth, int winHeight, Camera *cam) : camer
 
   if (BULLET_DEBUG_DRAW == 1)
     debugDrawer = new BulletDebugDrawer(mainShader.get()->ID); //TODO: Fix mem leak (dealloc this somewhere)
+    printf("Debug draw enabled\n");
+    physicsWorld->dynamicsWorld->setDebugDrawer(debugDrawer);
 
   //TODO: Find out how physicsWorld is initialized  
   //world->physicsWorld->dynamicsWorld->setDebugDrawer(debugDrawer);
@@ -49,9 +52,17 @@ void GameGLRenderer::RenderPrep() {
     glm::mat4 identityMatrix = glm::mat4(1.0f);
     glUniformMatrix4fv(modelMatrixLOC, 1, GL_FALSE, glm::value_ptr(identityMatrix));
 
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
+    // glEnable(GL_DEPTH_TEST);
+    // glEnable(GL_CULL_FACE);
+    // glCullFace(GL_BACK);
 
 }
 
+void GameGLRenderer::DebugRender() {
+    if (BULLET_DEBUG_DRAW == 1) {
+        glUniform1i(useTextureLOC, GL_FALSE);
+        physicsWorld->dynamicsWorld->debugDrawWorld();
+        debugDrawer->flushLines();
+        glUniform1i(useTextureLOC, GL_TRUE);
+    }
+}

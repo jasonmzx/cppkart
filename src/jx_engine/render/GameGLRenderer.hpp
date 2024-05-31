@@ -6,7 +6,8 @@
 
 #include "gl/Camera.h"
 #include "gl/shaderClass.h"
-#include "core/gl/BulletDebugDrawer.cpp"
+#include "jx_engine/physics/BulletDebugDrawer.cpp"
+#include "jx_engine/physics/PhysicsWorldSingleton.h"
 
 class GameGLRenderer {
 
@@ -21,6 +22,10 @@ class GameGLRenderer {
 
         void RenderPrep();
         std::shared_ptr<Shader> mainShader;
+
+        PhysicsWorldSingleton *physicsWorld;
+
+        void DebugRender();
 
     private:
         Camera* camera;

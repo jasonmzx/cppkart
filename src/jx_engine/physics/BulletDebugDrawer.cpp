@@ -1,7 +1,7 @@
 #ifndef BULLET_DEBUG_DRAWER_H
 #define BULLET_DEBUG_DRAWER_H
 
-#include <btBulletDynamicsCommon.h>
+#include <bullet/btBulletCollisionCommon.h>
 #include <glad/glad.h>
 #include <vector>
 
