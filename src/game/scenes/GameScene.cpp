@@ -29,34 +29,38 @@ void GameScene::render() {
 void GameScene::init() {
     
     // Init reference to physics singleton
+
     physicsWorld = PhysicsWorldSingleton::getInstance();
 
-      btTransform protoPlaneTransform;
-  protoPlaneTransform.setIdentity();
-  protoPlaneTransform.setOrigin(btVector3(0, 0, 0));
-  btStaticPlaneShape *plane = new btStaticPlaneShape(btVector3(0, 1, 0), btScalar(0));
+    std::shared_ptr<Entity> terrainEntity = std::make_shared<Entity>();
 
-  // Create Motion shape:
-  btMotionState *motion = new btDefaultMotionState(protoPlaneTransform); //! He put btDefaultMotionShape
+    // auto terrainRenderComponent = std::make_shared<RenderComponent>("../src/ressources/DE_Map1/Landscape01.obj",
+    //                                                        "../src/ressources/DE_Map1/Map01_Albedo.png", 
+    //                                                        renderRsrcManager);
 
-  btRigidBody::btRigidBodyConstructionInfo info(0.0, motion, plane);
-  info.m_friction = 2.0f;
-
-  btRigidBody *planeBody = new btRigidBody(info);
-  physicsWorld->dynamicsWorld->addRigidBody(planeBody);
-
-    std::shared_ptr<Entity> testEnt = std::make_shared<Entity>();
-
-    auto testRenderComponent = std::make_shared<RenderComponent>("../src/ressources/DE_Map1/Landscape01.obj",
+    auto terrainRenderComponent = std::make_shared<RenderComponent>("../src/ressources/DE_Aztec/DE_AZTEC.obj",
                                                            "../src/ressources/DE_Map1/Map01_Albedo.png", 
                                                            renderRsrcManager);
 
-    testRenderComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation);
+    terrainRenderComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation);
 
-    testEnt->addComponent(testRenderComponent);
-    entities.push_back(testEnt);
+    terrainEntity->addComponent(terrainRenderComponent);
+
+    entities.push_back(terrainEntity);
+
+    std::vector<GLfloat> verts = terrainRenderComponent.get()->Geom.get()->_vertices;
+
+    physicsChunkManager = std::make_unique<PhysicsChunkManager>(verts, "../src/ressources/chunk_map.txt");
+    
+    physicsChunkManager.get()->ActiveAll();
 
     logger->log(Logger::INFO,"GameScene Loaded in " + std::to_string(entities.size()) + " entities");
+
+
+
+    // Init ECS
+
+
 
 }
 

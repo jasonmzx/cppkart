@@ -13,6 +13,8 @@
 #include "jx_engine/physics/PhysicsWorldSingleton.h"
 #include "jx_engine/physics/BulletDebugDrawer.cpp"
 
+#include "jx_engine/physics/manager/PhysicsChunkManager.hpp"
+
 class GameScene : public Scene {
     public:
         GameScene(int WIN_W, int WIN_H);
@@ -30,6 +32,8 @@ class GameScene : public Scene {
     private:
 
         std::unique_ptr<ECManager> ecManager;
+
+        std::unique_ptr<PhysicsChunkManager> physicsChunkManager;
 
         std::shared_ptr<GameGLRenderer> renderer;
         std::shared_ptr<RenderRsrcManager> renderRsrcManager;

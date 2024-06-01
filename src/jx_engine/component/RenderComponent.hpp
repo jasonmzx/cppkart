@@ -17,15 +17,16 @@ class RenderComponent : public EComponent {
 
         void SetGLContext(GLint useTextureLOC, GLint modelMatrixLOC, GLint colorUniformLocation);
         void Draw();
-    
+
+        std::shared_ptr<Geometry> Geom;
+
     private:
         std::string modelPath;
         std::string texPath;
 
         std::shared_ptr<RenderRsrcManager> ressources;
 
-        std::shared_ptr<Geometry> vehicleChassisGeom;
-        std::shared_ptr<Texture> texture;
+        std::shared_ptr<Texture> Tex;
 
         GLint colorUniformLocation; //Debug purposes, might move
         GLint modelMatrixLOC;

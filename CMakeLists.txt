@@ -67,8 +67,11 @@ add_executable(cppkart
 
      # Import / Loaders:
 
-     src/jx_engine/import/ObjModel.cpp
      src/jx_engine/import/ObjModel.hpp
+     src/jx_engine/import/ObjModel.cpp
+
+     src/jx_engine/import/PhysChunkedMapLoader.hpp
+     src/jx_engine/import/PhysChunkedMapLoader.cpp
 
      # Rendering:
 
@@ -106,8 +109,13 @@ add_executable(cppkart
      src/jx_engine/physics/PhysicsWorldSingleton.h
      src/jx_engine/physics/PhysicsWorldSingleton.cpp
 
+     src/jx_engine/physics/StaticTriangleMeshPhysics.hpp
+     src/jx_engine/physics/StaticTriangleMeshPhysics.cpp
+
      src/jx_engine/physics/BulletDebugDrawer.cpp
 
+     src/jx_engine/physics/manager/PhysicsChunkManager.hpp
+     src/jx_engine/physics/manager/PhysicsChunkManager.cpp
 
      #---! Rewrite Game Files !---:
 

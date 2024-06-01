@@ -5,11 +5,11 @@ RenderComponent::RenderComponent(std::string modelPath, std::string texPath, std
     ressources = rrm;
     
     // modelPath = modelPath;
-    vehicleChassisGeom = ressources->tryGetGeometry(modelPath);
+    Geom = ressources->tryGetGeometry(modelPath);
 
     // texPath = texPath;
-    texture = ressources->tryGetTex(texPath);
-    if (texture == nullptr) { texture = ressources->loadTex(texPath, texPath, false); }
+    Tex = ressources->tryGetTex(texPath);
+    if (Tex == nullptr) { Tex = ressources->loadTex(texPath, texPath, false); }
 }
 
 void RenderComponent::SetGLContext(GLint useTextureLOC, GLint modelMatrixLOC, GLint colorUniformLocation)
@@ -23,7 +23,7 @@ void RenderComponent::SetGLContext(GLint useTextureLOC, GLint modelMatrixLOC, GL
 
 void RenderComponent::Draw()
 {
-    texture.get()->Bind();
-    vehicleChassisGeom->Draw(modelMatrixLOC, modelMatrix, colorUniformLocation, false);
-    texture.get()->Unbind();
+    Tex.get()->Bind();
+    Geom->Draw(modelMatrixLOC, modelMatrix, colorUniformLocation, false);
+    Tex.get()->Unbind();
 }
