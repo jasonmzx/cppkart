@@ -48,9 +48,7 @@ void GameScene::init() {
 
     entities.push_back(terrainEntity);
 
-    std::vector<GLfloat> verts = terrainRenderComponent.get()->Geom.get()->_vertices;
-
-    physicsChunkManager = std::make_unique<PhysicsChunkManager>(verts, "../src/ressources/chunk_map.txt");
+    physicsChunkManager = std::make_unique<PhysicsChunkManager>("../src/ressources/full_chunk_map.txt");
     
     physicsChunkManager.get()->ActiveAll();
 

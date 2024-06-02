@@ -11,10 +11,12 @@
 #include <glm/glm.hpp>
 #include <glad/glad.h>
 
+#include "jx_engine/logs/Logger.hpp"
+
 struct LoadedChunk {
 
     glm::vec3 centre_point;
-    std::vector<GLuint> faces;
+    std::vector<glm::vec3> triangle_ordered_verts;
 
     float X_origin;
     float Z_origin;
@@ -26,6 +28,7 @@ class PhysChunkedMapLoader {
 
     private:
         static glm::vec3 parseVec3(const std::string& line);
+        static std::vector<glm::vec3> parseVec3List(const std::string& line);
 };
 
 #endif

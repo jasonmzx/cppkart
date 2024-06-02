@@ -18,10 +18,8 @@ public:
     std::unique_ptr<btRigidBody> meshRigidBody;
 
     StaticTriangleMeshPhysics(
-        const std::vector<GLfloat> &vertices,
-        const std::vector<GLuint> &indices,
-        const glm::mat4 &modelMatrix
-    );
+    const std::vector<glm::vec3> &ordered_verts,
+    const glm::mat4 &modelMatrix);
 };
 
 #endif

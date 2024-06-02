@@ -1,8 +1,7 @@
 #include "StaticTriangleMeshPhysics.hpp"
 
 StaticTriangleMeshPhysics::StaticTriangleMeshPhysics(
-    const std::vector<GLfloat> &vertices,
-    const std::vector<GLuint> &indices,
+    const std::vector<glm::vec3> &ordered_verts,
     const glm::mat4 &modelMatrix)
 {
 
@@ -11,15 +10,15 @@ StaticTriangleMeshPhysics::StaticTriangleMeshPhysics(
 
     std::unique_ptr<btTriangleMesh> mesh = std::make_unique<btTriangleMesh>();
 
-    for (size_t i = 0; i < indices.size(); i += 3)
+    for (size_t i = 0; i < ordered_verts.size(); i += 3)
     {
         // x y z r g b u v Nx Ny Nz     (11)
-        int VERT_LEN = 11;
-        GLuint idx0 = indices[i]; GLuint idx1 = indices[i+1]; GLuint idx2 = indices[i+2];
+        // int VERT_LEN = 11;
+        // GLuint idx0 = indices[i]; GLuint idx1 = indices[i+1]; GLuint idx2 = indices[i+2];
         
-        btVector3 vertex0(vertices[idx0 * VERT_LEN], vertices[idx0 * VERT_LEN + 1], vertices[idx0 * VERT_LEN + 2]);
-        btVector3 vertex1(vertices[idx1 * VERT_LEN], vertices[idx1 * VERT_LEN + 1], vertices[idx1 * VERT_LEN + 2]);
-        btVector3 vertex2(vertices[idx2 * VERT_LEN], vertices[idx2 * VERT_LEN + 1], vertices[idx2 * VERT_LEN + 2]);
+        btVector3 vertex0(ordered_verts[i].x, ordered_verts[i].y, ordered_verts[i].z);
+        btVector3 vertex1(ordered_verts[i + 1].x, ordered_verts[i + 1].y, ordered_verts[i + 1].z);
+        btVector3 vertex2(ordered_verts[i + 2].x, ordered_verts[i + 2].y, ordered_verts[i + 2].z);
 
         mesh.get()->addTriangle(vertex0, vertex1, vertex2);
     }

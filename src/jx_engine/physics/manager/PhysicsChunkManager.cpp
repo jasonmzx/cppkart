@@ -1,7 +1,7 @@
 #include "PhysicsChunkManager.hpp"
 
 //Constructor
-PhysicsChunkManager::PhysicsChunkManager(const std::vector<GLfloat>& verts, const std::string& filename) {
+PhysicsChunkManager::PhysicsChunkManager(const std::string& filename) {
     SCALE_FACTOR = 40.0f;
     std::vector<LoadedChunk> chunks = PhysChunkedMapLoader::loadChunks(filename);
 
@@ -9,7 +9,7 @@ PhysicsChunkManager::PhysicsChunkManager(const std::vector<GLfloat>& verts, cons
 
     for (auto& ldChunk : chunks) {
 
-        auto phyChunk = std::make_unique<StaticTriangleMeshPhysics>(verts, ldChunk.faces, chunkModelMatrix);
+        auto phyChunk = std::make_unique<StaticTriangleMeshPhysics>(ldChunk.triangle_ordered_verts, chunkModelMatrix);
         auto newChunk = std::make_unique<PhysicsChunk>(false, std::move(phyChunk));
 
         newChunk->X_origin = ldChunk.X_origin;

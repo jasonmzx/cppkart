@@ -2,7 +2,7 @@
 
 std::vector<LoadedChunk> PhysChunkedMapLoader::loadChunks(const std::string &filename)
 {
-
+    Logger* logger = Logger::getInstance();
     std::vector<LoadedChunk> chunks;
 
     // Open file with Input File (IF) stream
@@ -12,7 +12,7 @@ std::vector<LoadedChunk> PhysChunkedMapLoader::loadChunks(const std::string &fil
     // Assertion to check if file is open
     if (!chunkfile.is_open())
     {
-        std::cerr << "Error: Could not open file " << filename << std::endl;
+        logger->log(Logger::ERROR, "Failed to open chunk map file: " + filename);
         return chunks;
     }
 
@@ -30,8 +30,7 @@ std::vector<LoadedChunk> PhysChunkedMapLoader::loadChunks(const std::string &fil
             // Trim left & right white spaces
             line.erase(0, line.find_first_not_of(" \t\n\r\f\v"));
 
-            //  Parse here!
-
+            // Init chunk with centre point
             LoadedChunk chunk;
             chunk.centre_point = parseVec3(line);
 
@@ -41,29 +40,20 @@ std::vector<LoadedChunk> PhysChunkedMapLoader::loadChunks(const std::string &fil
             chunks.push_back(chunk);
         }
         else
-        { //* Face line (V0,V1,V2) : part of latest chunk
+        { //* Triangle Line (V0,V1,V2), where all verts are vec3 
 
-            // printf("Chunk Current Length: %d\n", chunks.size());
+            std::vector<glm::vec3> vec3List = PhysChunkedMapLoader::parseVec3List(line);
 
-            glm::vec3 triangle_idx = parseVec3(line);
+            // Push Triangle of verts to latest chunk
 
-            // Convert and push each face to vector faces (flat GLuint array)
-            chunks.back().faces.push_back(triangle_idx.x);
-            chunks.back().faces.push_back(triangle_idx.y);
-            chunks.back().faces.push_back(triangle_idx.z);
+            chunks.back().triangle_ordered_verts.push_back(vec3List[0]);
+            chunks.back().triangle_ordered_verts.push_back(vec3List[1]);
+            chunks.back().triangle_ordered_verts.push_back(vec3List[2]);
+
         }
     }
 
     chunkfile.close();
-
-    //! Debug print chunks with centre points
-    // for (int i = 0; i < chunks.size(); i++) {
-    //     std::cout << "Chunk " << i << " Centre Point: " << chunks[i].centre_point.x << ", " << chunks[i].centre_point.y << ", " << chunks[i].centre_point.z << std::endl;
-
-    //     for (int j = 0; j < chunks[i].faces.size(); j+=3) {
-    //         std::cout << "Face " << j/3 << ": " << chunks[i].faces[j] << ", " << chunks[i].faces[j+1] << ", " << chunks[i].faces[j+2] << std::endl;
-    //     }
-    // }
 
     return chunks;
 }
@@ -79,4 +69,20 @@ glm::vec3 PhysChunkedMapLoader::parseVec3(const std::string& line) {
 
         if (values.size() < 3) return glm::vec3(0.0f, 0.0f, 0.0f); // Return zero vector if not enough values
         return glm::vec3(values[0], values[1], values[2]);
+}
+
+std::vector<glm::vec3> PhysChunkedMapLoader::parseVec3List(const std::string& line) {
+    std::vector<glm::vec3> vec3List;
+    std::string token;
+    std::istringstream iss(line);
+
+    while (std::getline(iss, token, ')')) {
+        size_t start = token.find('(');
+        if (start != std::string::npos) {
+            token = token.substr(start + 1);
+            vec3List.push_back(parseVec3(token));
+        }
+    }
+
+    return vec3List;
 }
