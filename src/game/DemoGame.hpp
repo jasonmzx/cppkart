@@ -41,7 +41,7 @@ public:
 
   
 private:
-  void getUpdateInput();
+  void getWindowInput();
   void tick();
 
   // Game Runtime Booleans:
@@ -50,8 +50,8 @@ private:
   bool IMGUI_MODE = true;
   bool CameraInputs = true;
 
-  bool trackMouse = true;
-  bool firstClick = true;
+  // bool trackMouse = true;
+  // bool firstClick = true;
 
   
 };

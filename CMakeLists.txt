@@ -59,11 +59,25 @@ add_executable(cppkart
      src/jx_engine/entity/Entity.hpp
      src/jx_engine/entity/Entity.cpp
 
+     # Components:
+
      src/jx_engine/component/EComponent.hpp
      src/jx_engine/component/EComponent.cpp
 
      src/jx_engine/component/RenderComponent.hpp
      src/jx_engine/component/RenderComponent.cpp
+
+     src/jx_engine/component/VehicleRenderComponent.hpp
+     src/jx_engine/component/VehicleRenderComponent.cpp
+
+     src/jx_engine/component/PlayerVehicleComponent.hpp
+     src/jx_engine/component/PlayerVehicleComponent.cpp
+
+
+     # I/O: 
+
+     src/jx_engine/io/GameInput.hpp
+     src/jx_engine/io/GameInput.cpp
 
      # Import / Loaders:
 
@@ -116,6 +130,9 @@ add_executable(cppkart
 
      src/jx_engine/physics/manager/PhysicsChunkManager.hpp
      src/jx_engine/physics/manager/PhysicsChunkManager.cpp
+
+     src/jx_engine/physics/VehiclePhysics.hpp
+     src/jx_engine/physics/VehiclePhysics.cpp
 
      #---! Rewrite Game Files !---:
 

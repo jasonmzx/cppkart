@@ -18,9 +18,8 @@ class RenderComponent : public EComponent {
         void SetGLContext(GLint useTextureLOC, GLint modelMatrixLOC, GLint colorUniformLocation);
         void Draw();
 
+    protected:
         std::shared_ptr<Geometry> Geom;
-
-    private:
         std::string modelPath;
         std::string texPath;
 

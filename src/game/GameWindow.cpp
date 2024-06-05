@@ -27,9 +27,6 @@ void GameWindow::create(const std::string& title, size_t w, size_t h, bool fulls
 
   gladLoadGLLoader(SDL_GL_GetProcAddress);
   glEnable(GL_DEPTH_TEST);
-
-
-
 }
 
 void GameWindow::close() {

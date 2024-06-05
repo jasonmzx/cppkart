@@ -49,13 +49,13 @@ DemoGame::DemoGame()
   sceneManager = std::make_shared<SceneManager>();
   logger->log(Logger::INFO, "SceneManager created !");
 
-  std::shared_ptr<GameScene> gameScene = std::make_shared<GameScene>(WIN_WIDTH, WIN_HEIGHT);
+  //* ========== GameScene & ECManager Setup ==========
+
+  std::shared_ptr<GameScene> gameScene = std::make_shared<GameScene>(WIN_WIDTH, WIN_HEIGHT, window.getWindow());
   gameScene->init();
   gameScene->initECS(sceneManager);
   sceneManager->setActiveScene(gameScene);
   logger->log(Logger::INFO, "GameScene created & set as active !");
-
-  //* ========== ECManager Setup ==========
   
 }
 
@@ -71,7 +71,7 @@ DemoGame::~DemoGame()
   SDL_Quit();
 }
 
-void DemoGame::getUpdateInput()
+void DemoGame::getWindowInput() // Core Window Input Handling, Like Closing the Window for example
 {
 
   SDL_Event Event;
@@ -102,42 +102,6 @@ void DemoGame::getUpdateInput()
     }
   }
 
-  if (trackMouse)
-  { // Let the Mouse handle the camera or not
-
-    // Handles mouse inputs
-    int mouseX, mouseY;
-    Uint32 mouseButtons = SDL_GetMouseState(&mouseX, &mouseY);
-
-    if (firstClick)
-    {
-      // Center the mouse cursor
-      SDL_WarpMouseInWindow(window.getWindow(), WIN_WIDTH / 2, WIN_HEIGHT / 2);
-      firstClick = false;
-      SDL_ShowCursor(SDL_DISABLE); // Hide the mouse cursor
-    }
-    else
-    {
-      // SDL doesn't directly give us the previous position of the cursor,
-      // so we compute the motion based on the current position and centering the cursor.
-      int deltaX = mouseX - WIN_WIDTH / 2;
-      int deltaY = mouseY - WIN_HEIGHT / 2;
-
-      auto activeScene = sceneManager->getActiveScene();
-      if (auto gameScene = dynamic_cast<GameScene *>(activeScene.get()))
-      {
-        gameScene->camera->Inputs();
-        gameScene->camera->ProcessMouseLook(deltaX, deltaY);
-      }
-      else
-      {
-        // Handle the case where the cast fails, if necessary
-        std::cerr << "Active scene is not a GameScene" << std::endl;
-      }
-
-      SDL_WarpMouseInWindow(window.getWindow(), WIN_WIDTH / 2, WIN_HEIGHT / 2);
-    }
-  }
 }
 
 void DemoGame::tick()
@@ -176,7 +140,7 @@ void DemoGame::Run()
     auto frameTime = std::chrono::duration<float>(currentFrame - lastFrame).count();
     lastFrame = currentFrame;
 
-    getUpdateInput();
+    getWindowInput();
     tick();
   }
 }
