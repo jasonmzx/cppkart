@@ -52,8 +52,10 @@ DemoGame::DemoGame()
   //* ========== GameScene & ECManager Setup ==========
 
   std::shared_ptr<GameScene> gameScene = std::make_shared<GameScene>(WIN_WIDTH, WIN_HEIGHT, window.getWindow());
-  gameScene->init();
+
   gameScene->initECS(sceneManager);
+
+  gameScene->init();
   sceneManager->setActiveScene(gameScene);
   logger->log(Logger::INFO, "GameScene created & set as active !");
   

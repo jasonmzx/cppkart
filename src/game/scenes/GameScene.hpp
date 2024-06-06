@@ -22,6 +22,7 @@
 
 #include "jx_engine/component/RenderComponent.hpp"
 #include "jx_engine/component/PlayerVehicleComponent.hpp"
+#include "jx_engine/component/TerrainChunksComponent.hpp"
 
 
 class GameScene : public Scene {

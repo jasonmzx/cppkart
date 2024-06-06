@@ -2,10 +2,10 @@
 
 //Constructor
 PhysicsChunkManager::PhysicsChunkManager(const std::string& filename) {
-    SCALE_FACTOR = 40.0f;
+    SCALE_FACTOR = 5.0f;
     std::vector<LoadedChunk> chunks = PhysChunkedMapLoader::loadChunks(filename);
 
-    glm::mat4 chunkModelMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(10.0f, 10.0f, 10.0f)); // Placeholder Model Matrix
+    glm::mat4 chunkModelMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f, 0.1f, 0.1f)); // Placeholder Model Matrix
 
     for (auto& ldChunk : chunks) {
 
@@ -22,9 +22,11 @@ PhysicsChunkManager::PhysicsChunkManager(const std::string& filename) {
 void PhysicsChunkManager::update(btScalar playerX, btScalar playerZ) {
     
     PhysicsWorldSingleton *physicsWorld = PhysicsWorldSingleton::getInstance();
+    Logger* logger = Logger::getInstance();
+
 
     // Define a radius within which chunks should be active
-    constexpr btScalar activationRadius = 55.0; 
+    constexpr btScalar activationRadius = 200.0; 
 
     for (auto& chunkUniquePtr : chunkVector) {
 
@@ -40,12 +42,14 @@ void PhysicsChunkManager::update(btScalar playerX, btScalar playerZ) {
             // Activate chunk and add its rigid body to the physics world
             chunk.active = true;
             physicsWorld->dynamicsWorld->addRigidBody(chunk.rigidMeshChunk.get()->meshRigidBody.get());
+            logger->log(Logger::WARN, "Chunk activated at X: " + std::to_string(chunk.X_origin) + " Z: " + std::to_string(chunk.Z_origin) + " Distance: " + std::to_string(distance) + " Activation Radius: " + std::to_string(activationRadius));
 
         } else if (distance > activationRadius && chunk.active) {
 
             // Deactivate chunk and remove its rigid body from the physics world
             chunk.active = false;
             physicsWorld->dynamicsWorld->removeRigidBody(chunk.rigidMeshChunk.get()->meshRigidBody.get());
+            logger->log(Logger::WARN, "Chunk deactivated at X: " + std::to_string(chunk.X_origin) + " Z: " + std::to_string(chunk.Z_origin) + " Distance: " + std::to_string(distance) + " Activation Radius: " + std::to_string(activationRadius));
         }
     }
 }

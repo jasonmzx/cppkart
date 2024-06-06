@@ -73,6 +73,8 @@ add_executable(cppkart
      src/jx_engine/component/PlayerVehicleComponent.hpp
      src/jx_engine/component/PlayerVehicleComponent.cpp
 
+     src/jx_engine/component/TerrainChunksComponent.hpp
+     src/jx_engine/component/TerrainChunksComponent.cpp
 
      # I/O: 
 

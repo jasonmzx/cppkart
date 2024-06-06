@@ -31,9 +31,11 @@ void GameScene::render() {
 
     renderer.get()->RenderPrep();
     ecManager.get()->tick(entities, gameInput); // ECS System Tick
+    
+
     renderer.get()->DebugRender();
 
-    camera.get()->Matrix(45.0f, 0.1f, 1000.0f, renderer.get()->mainShader, "camMatrix"); //! IMPORTANT
+    camera.get()->Matrix(45.0f, 0.1f, 9000.0f, renderer.get()->mainShader, "camMatrix"); //! IMPORTANT
 
     //TODO: Accumulate deltaTime and pass it to physicsWorld->dynamicsWorld->stepSimulation
     //world.get()->physicsWorld->dynamicsWorld->stepSimulation(deltaTimeWithTimeScale, 2, deltaTime);
@@ -106,20 +108,24 @@ void GameScene::init() {
     //                                                        "../src/ressources/DE_Map1/Map01_Albedo.png", 
     //                                                        renderRsrcManager);
 
+    //* ----------------- Terrain Entity Definition ----------------- *//
+
     auto terrainRenderComponent = std::make_shared<RenderComponent>("../src/ressources/DE_Aztec/DE_AZTEC.obj",
                                                            "../src/ressources/DE_Map1/Map01_Albedo.png", 
                                                            renderRsrcManager);
 
     terrainRenderComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation);
 
+    auto terrainChunks_physics_Component = std::make_shared<TerrainChunksComponent>("../src/ressources/full_chunk_map.txt");
+    ecManager.get()->setTerrainChunks(terrainChunks_physics_Component);
+
     terrainEntity->addComponent(terrainRenderComponent);
+    terrainEntity->addComponent(terrainChunks_physics_Component);
 
     entities.push_back(terrainEntity);
 
-    physicsChunkManager = std::make_unique<PhysicsChunkManager>("../src/ressources/full_chunk_map.txt");
-    
-    //physicsChunkManager.get()->ActiveAll();
-    
+    //* ----------------- Vehicle Entity Definition ----------------- *//
+
     std::shared_ptr<Entity> playerVehicleEntity = std::make_shared<Entity>();
 
     auto playerVehicleComponent = std::make_shared<PlayerVehicleComponent>();

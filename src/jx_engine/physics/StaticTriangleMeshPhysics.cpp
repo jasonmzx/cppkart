@@ -34,7 +34,7 @@ StaticTriangleMeshPhysics::StaticTriangleMeshPhysics(
     staticMeshTransform.setOrigin(btVector3(0, 0, 0));
 
     //! Todo: Fix the hard coded SCALE
-    btVector3 scale(40.0f, 40.0f, 40.0f);
+    btVector3 scale(5.0f, 5.0f, 5.0f);
     triangleShape.get()->setLocalScaling(scale);
 
     std::unique_ptr<btDefaultMotionState> motion = std::make_unique<btDefaultMotionState>(staticMeshTransform);
