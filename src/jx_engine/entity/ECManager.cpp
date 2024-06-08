@@ -5,7 +5,9 @@
 //     this->activeScene = sceneManager.get()->getActiveScene();
 // }
 
-void ECManager::tick(std::vector<std::shared_ptr<Entity>> entities, std::shared_ptr<GameInput> gameInput) {
+void ECManager::tick(std::vector<std::shared_ptr<Entity>> entities, std::shared_ptr<GameInput> gameInput,
+    std::shared_ptr<Camera> camera, bool followPlayerVehicle
+) {
     for(auto entity : entities) {
 
         for (auto& component : entity.get()->components) {
@@ -20,8 +22,13 @@ void ECManager::tick(std::vector<std::shared_ptr<Entity>> entities, std::shared_
                 
                 float pX = playerVehicleComponent.get()->vehiclePhysics.getX();
                 float pY = playerVehicleComponent.get()->vehiclePhysics.getY();
-                terrainChunksComponents.get()->updateChunks(pX, pY);
+                float pZ = playerVehicleComponent.get()->vehiclePhysics.getZ();
 
+                terrainChunksComponents.get()->updateChunks(pX, pZ);
+                
+                if(followPlayerVehicle) {
+                    camera.get()->VehicleFollowCamera(pX,pY,pZ);
+                }
             }
         }
     }

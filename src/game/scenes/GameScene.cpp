@@ -1,5 +1,7 @@
 #include "GameScene.hpp"
 
+#include <chrono>
+
 Logger* GameScene::logger = Logger::getInstance();
 
 GameScene::GameScene(int WIN_W, int WIN_H, SDL_Window* window) {
@@ -23,6 +25,25 @@ void GameScene::update(float dt) {
     // Update game logic
 }
 
+void GameScene::updateImGui() {
+            // Example data for plotting
+        static float values[90] = { 0 };
+        static int values_offset = 0;
+        static double refresh_time = 0.0;
+
+        // Create a simple line plot
+        if (ImGui::GetTime() > refresh_time)
+        {
+            values[values_offset] = ecInferenceTimeMS;
+            values_offset = (values_offset + 1) % IM_ARRAYSIZE(values);
+            refresh_time = ImGui::GetTime() + 1.0f / 60.0f;
+        }
+        ImGui::Begin("FPS Counter");
+        ImGui::PlotLines("Frame Times", values, IM_ARRAYSIZE(values), values_offset, NULL, 0.0f, 100.0f, ImVec2(0, 80));
+        ImGui::End();
+}
+
+
 void GameScene::render() {
 
     procGameInputs();
@@ -30,8 +51,15 @@ void GameScene::render() {
     // Render game objects
 
     renderer.get()->RenderPrep();
-    ecManager.get()->tick(entities, gameInput); // ECS System Tick
-    
+
+    auto start = std::chrono::high_resolution_clock::now();
+
+    ecManager->tick(entities, gameInput, camera, followPlayerVehicle); // ECS System Tick
+
+    auto end = std::chrono::high_resolution_clock::now();
+    ecInferenceTimeMS = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+
+    printf("ECS Inference Time: %f\n", ecInferenceTimeMS);
 
     renderer.get()->DebugRender();
 
@@ -46,6 +74,15 @@ void GameScene::procGameInputs() {
 
   const Uint8 *KB_InputState = SDL_GetKeyboardState(NULL);
   gameInput.get()->keyboardUpdateInput(KB_InputState);
+
+  // Some Direct Key Actions
+  if(KB_InputState[SDL_SCANCODE_ESCAPE]) { // Free the mouse
+    trackMouse = !trackMouse;
+  }
+
+  if(KB_InputState[SDL_SCANCODE_F1]) { // Toggle Vehicle Camera
+    followPlayerVehicle = !followPlayerVehicle;
+  }
 
   if (trackMouse)
   { // Let the Mouse handle the camera or not

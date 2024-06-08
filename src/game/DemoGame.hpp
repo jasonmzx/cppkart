@@ -41,7 +41,6 @@ public:
 
   
 private:
-  void getWindowInput();
   void tick();
 
   // Game Runtime Booleans:

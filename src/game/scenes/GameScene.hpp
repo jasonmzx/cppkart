@@ -24,6 +24,11 @@
 #include "jx_engine/component/PlayerVehicleComponent.hpp"
 #include "jx_engine/component/TerrainChunksComponent.hpp"
 
+// ImGUI Imports:
+#include "imgui.h"
+#include "imgui_impl_sdl2.h"
+#include "imgui_impl_opengl3.h"
+
 
 class GameScene : public Scene {
     public:
@@ -35,6 +40,7 @@ class GameScene : public Scene {
         void render() override;
 
         void procGameInputs();
+        void updateImGui();
 
         std::unique_ptr<ECManager> ec;
         std::shared_ptr<Camera> camera;
@@ -42,6 +48,8 @@ class GameScene : public Scene {
         PhysicsWorldSingleton *physicsWorld;
 
     private:
+
+        float ecInferenceTimeMS;
 
         int WIN_WIDTH;
         int WIN_HEIGHT;
@@ -56,6 +64,7 @@ class GameScene : public Scene {
 
         static Logger* logger;
 
+        bool followPlayerVehicle = true;
         bool trackMouse = true;
         bool firstClick = true;
 

@@ -73,14 +73,16 @@ DemoGame::~DemoGame()
   SDL_Quit();
 }
 
-void DemoGame::getWindowInput() // Core Window Input Handling, Like Closing the Window for example
+
+void DemoGame::tick()
 {
 
   SDL_Event Event;
   SDL_PumpEvents();
-  const Uint8 *KB_InputState = SDL_GetKeyboardState(NULL);
 
-  while (SDL_PollEvent(&Event))
+  // SDL Window Event
+
+    while (SDL_PollEvent(&Event))
   {
     if (IMGUI_MODE == 1)
       ImGui_ImplSDL2_ProcessEvent(&Event);
@@ -92,8 +94,6 @@ void DemoGame::getWindowInput() // Core Window Input Handling, Like Closing the 
       case SDLK_F10:
         WindowRunning = 0;
         break;
-      case SDLK_ESCAPE:
-        CameraInputs = !CameraInputs;
       default:
         break;
       }
@@ -104,10 +104,6 @@ void DemoGame::getWindowInput() // Core Window Input Handling, Like Closing the 
     }
   }
 
-}
-
-void DemoGame::tick()
-{
 
   sceneManager->getActiveScene().get()->render();
 
@@ -124,6 +120,8 @@ void DemoGame::tick()
     ImGui::Begin("FPS Counter");
     ImGui::Text("%s", formatted_fps_STR);
     ImGui::End();
+
+    sceneManager->getActiveScene().get()->updateImGui();
 
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -142,7 +140,7 @@ void DemoGame::Run()
     auto frameTime = std::chrono::duration<float>(currentFrame - lastFrame).count();
     lastFrame = currentFrame;
 
-    getWindowInput();
     tick();
   }
 }
+

@@ -26,7 +26,7 @@ void PhysicsChunkManager::update(btScalar playerX, btScalar playerZ) {
 
 
     // Define a radius within which chunks should be active
-    constexpr btScalar activationRadius = 200.0; 
+    constexpr btScalar activationRadius = 100.0; 
 
     for (auto& chunkUniquePtr : chunkVector) {
 
