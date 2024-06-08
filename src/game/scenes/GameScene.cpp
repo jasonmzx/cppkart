@@ -55,11 +55,10 @@ void GameScene::render() {
     auto start = std::chrono::high_resolution_clock::now();
 
     ecManager->tick(entities, gameInput, camera, followPlayerVehicle); // ECS System Tick
+    ecManager->renderPass(entities); // ECS Render Pass
 
     auto end = std::chrono::high_resolution_clock::now();
     ecInferenceTimeMS = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-
-    printf("ECS Inference Time: %f\n", ecInferenceTimeMS);
 
     renderer.get()->DebugRender();
 
@@ -166,9 +165,19 @@ void GameScene::init() {
     std::shared_ptr<Entity> playerVehicleEntity = std::make_shared<Entity>();
 
     auto playerVehicleComponent = std::make_shared<PlayerVehicleComponent>();
+    ecManager.get()->setPlayerVehicle(playerVehicleComponent);
 
     playerVehicleEntity->addComponent(playerVehicleComponent);
     
+
+    auto playerVehicleRenderComponent = std::make_shared<VehicleRenderComponent>("../src/ressources/volga/volga.obj", "src/ressources/first_car_wheel.obj",
+                                                           "../src/ressources/volga/volga.png", 
+                                                           renderRsrcManager);
+
+    playerVehicleRenderComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation);
+
+    playerVehicleEntity->addComponent(playerVehicleRenderComponent);                                                           
+
     entities.push_back(playerVehicleEntity);
 
     logger->log(Logger::INFO,"GameScene Loaded in " + std::to_string(entities.size()) + " entities");

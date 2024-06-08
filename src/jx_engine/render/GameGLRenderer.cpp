@@ -48,19 +48,19 @@ void GameGLRenderer::RenderPrep() {
 
     glUniform1i(useTextureLOC, GL_TRUE);
 
-
-    glm::mat4 identityMatrix = glm::mat4(1.0f);
-    glUniformMatrix4fv(modelMatrixLOC, 1, GL_FALSE, glm::value_ptr(identityMatrix));
-
-    // glEnable(GL_DEPTH_TEST);
-    // glEnable(GL_CULL_FACE);
-    // glCullFace(GL_BACK);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
 
 }
 
 void GameGLRenderer::DebugRender() {
     if (BULLET_DEBUG_DRAW == 1) {
         glUniform1i(useTextureLOC, GL_FALSE);
+
+        glm::mat4 identityMatrix = glm::mat4(1.0f);
+        glUniformMatrix4fv(modelMatrixLOC, 1, GL_FALSE, glm::value_ptr(identityMatrix));
+
         physicsWorld->dynamicsWorld->debugDrawWorld();
         debugDrawer->flushLines();
         glUniform1i(useTextureLOC, GL_TRUE);

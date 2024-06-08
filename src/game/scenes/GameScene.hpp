@@ -23,6 +23,7 @@
 #include "jx_engine/component/RenderComponent.hpp"
 #include "jx_engine/component/PlayerVehicleComponent.hpp"
 #include "jx_engine/component/TerrainChunksComponent.hpp"
+#include "jx_engine/component/VehicleRenderComponent.hpp"
 
 // ImGUI Imports:
 #include "imgui.h"

@@ -10,12 +10,14 @@
 #include "jx_engine/render/RenderRsrcManager.hpp"
 #include "jx_engine/render/gl/Geometry.hpp"
 
+#include "jx_engine/logs/Logger.hpp"
+
 
 class RenderComponent : public EComponent {
     public:
         RenderComponent(std::string modelPath, std::string texPath, std::shared_ptr<RenderRsrcManager> rrm);
 
-        void SetGLContext(GLint useTextureLOC, GLint modelMatrixLOC, GLint colorUniformLocation);
+        void SetGLContext(GLint texLOCATION, GLint mmLOCATION, GLint colorUniformLOCATION);
         void Draw();
 
     protected:
@@ -27,11 +29,12 @@ class RenderComponent : public EComponent {
 
         std::shared_ptr<Texture> Tex;
 
-        GLint colorUniformLocation; //Debug purposes, might move
+        GLint colorUniformLOC; //Debug purposes, might move
         GLint modelMatrixLOC;
         GLint useTextureLOC;
         
-        glm::mat4 modelMatrix;
+        glm::mat4 ObjmodelMatrix;
+        
 };
 
 #endif // RENDERCOMPONENT_HPP

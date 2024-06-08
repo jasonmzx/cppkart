@@ -12,9 +12,9 @@ void ECManager::tick(std::vector<std::shared_ptr<Entity>> entities, std::shared_
 
         for (auto& component : entity.get()->components) {
             
-            if (auto renderComponent = std::dynamic_pointer_cast<RenderComponent>(component)) {
-                renderComponent.get()->Draw();
-            }
+            // if (auto renderComponent = std::dynamic_pointer_cast<RenderComponent>(component)) {
+            //     renderComponent.get()->Draw();
+            // }
 
             if (auto playerVehicleComponent = std::dynamic_pointer_cast<PlayerVehicleComponent>(component)) {
                 
@@ -24,12 +24,37 @@ void ECManager::tick(std::vector<std::shared_ptr<Entity>> entities, std::shared_
                 float pY = playerVehicleComponent.get()->vehiclePhysics.getY();
                 float pZ = playerVehicleComponent.get()->vehiclePhysics.getZ();
 
+                printf("Player Vehicle Position: %f, %f, %f\n", pX, pY, pZ);
+
                 terrainChunksComponents.get()->updateChunks(pX, pZ);
                 
                 if(followPlayerVehicle) {
                     camera.get()->VehicleFollowCamera(pX,pY,pZ);
                 }
             }
+        }
+    }
+}
+
+void ECManager::renderPass(std::vector<std::shared_ptr<Entity>> entities) {
+    for(auto entity : entities) {
+        for (auto& component : entity.get()->components) {
+
+            if (auto renderComponent = std::dynamic_pointer_cast<RenderComponent>(component)) {
+                renderComponent.get()->Draw();
+            }
+
+            if (auto vehicleRenderComponent = std::dynamic_pointer_cast<VehicleRenderComponent>(component)) {
+                btTransform vehicleTransform = playerVehicleComponent.get()->vehiclePhysics.GetTransform();
+                btVector3 vehiclePosition = vehicleTransform.getOrigin();
+                btQuaternion vehicleRotation = vehicleTransform.getRotation();
+
+                glm::vec3 glmVehiclePosition(vehiclePosition.x(), vehiclePosition.y(), vehiclePosition.z());
+                glm::quat glmVehicleRotation(vehicleRotation.w(), vehicleRotation.x(), vehicleRotation.y(), vehicleRotation.z());
+
+                vehicleRenderComponent.get()->getTransforms(glmVehiclePosition, glmVehicleRotation);
+            }
+
         }
     }
 }
@@ -42,5 +67,16 @@ void ECManager::setTerrainChunks(std::shared_ptr<TerrainChunksComponent> terrain
         // Handle the error appropriately (e.g., logging, throwing an exception)
         Logger* logger = Logger::getInstance();
         logger->log(Logger::ERROR, "Invalid TerrainChunksComponent input");
+    }
+}
+
+void ECManager::setPlayerVehicle(std::shared_ptr<PlayerVehicleComponent> playerVehicle) {
+    // Check if the input is valid
+    if (playerVehicle) {
+        playerVehicleComponent = playerVehicle;
+    } else {
+        // Handle the error appropriately (e.g., logging, throwing an exception)
+        Logger* logger = Logger::getInstance();
+        logger->log(Logger::ERROR, "Invalid PlayerVehicleComponent input");
     }
 }

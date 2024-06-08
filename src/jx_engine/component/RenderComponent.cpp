@@ -12,18 +12,34 @@ RenderComponent::RenderComponent(std::string modelPath, std::string texPath, std
     if (Tex == nullptr) { Tex = ressources->loadTex(texPath, texPath, false); }
 }
 
-void RenderComponent::SetGLContext(GLint useTextureLOC, GLint modelMatrixLOC, GLint colorUniformLocation)
+void RenderComponent::SetGLContext(GLint texLOCATION, GLint mmLOCATION, GLint colorUniformLOCATION)
 {
-    useTextureLOC = useTextureLOC;
-    modelMatrixLOC = modelMatrixLOC;
-    colorUniformLocation = colorUniformLocation;
+    useTextureLOC = texLOCATION;
+    modelMatrixLOC = mmLOCATION;
+    colorUniformLOC = colorUniformLOCATION;
 
-    modelMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(40.0f, 40.0f, 40.0f));
+    ObjmodelMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(5.0f, 5.0f, 5.0f));
+}
+
+void printMatrix(const glm::mat4& matrix) {
+    const float* ptr = glm::value_ptr(matrix);
+    for (int i = 0; i < 4; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            std::cout << ptr[j * 4 + i] << " ";
+        }
+        std::cout << std::endl;
+    }
 }
 
 void RenderComponent::Draw()
-{
+{   
+    Logger* logger = Logger::getInstance();
+
+
+    logger->log(Logger::INFO, "Model Matrix: ");
+    printMatrix(ObjmodelMatrix);
+
     Tex.get()->Bind();
-    Geom->Draw(modelMatrixLOC, modelMatrix, colorUniformLocation, false);
+    Geom->Draw(modelMatrixLOC, ObjmodelMatrix, colorUniformLOC, false);
     Tex.get()->Unbind();
 }
