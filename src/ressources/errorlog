@@ -1,0 +1,61 @@
+Trial #1
+
+[WARN] Chunk activating at X: -40.317982 Z: -65.154144 Distance: 49.445084 Activation Radius: 50.000000
+[WARN] Chunk deactivating at X: -55.888115 Z: -54.774059 Distance: 50.592499 Activation Radius: 50.000000
+[WARN] Chunk deactivating at X: -50.698071 Z: -49.584015 Distance: 50.340233 Activation Radius: 50.000000
+[WARN] Chunk deactivating at X: -55.888115 Z: -59.964104 Distance: 50.176487 Activation Radius: 50.000000
+[WARN] Chunk deactivating at X: -45.508026 Z: -49.584015 Distance: 50.284149 Activation Radius: 50.000000
+[WARN] Chunk activating at X: -35.127937 Z: -59.964104 Distance: 49.954960 Activation Radius: 50.000000
+[WARN] Chunk activating at X: -45.508026 Z: -70.344193 Distance: 49.788864 Activation Radius: 50.000000
+
+----
+
+Trial #2
+
+[WARN] Chunk deactivating at X: -40.317982 Z: -49.584015 Distance: 50.001110 Activation Radius: 50.000000
+[WARN] Chunk deactivating at X: -45.508026 Z: -49.584015 Distance: 50.031239 Activation Radius: 50.000000
+[WARN] Chunk activating at X: -35.127937 Z: -65.154144 Distance: 49.630959 Activation Radius: 50.000000
+[WARN] Chunk activating at X: -45.508026 Z: -70.344193 Distance: 49.727310 Activation Radius: 50.000000
+
+----
+
+Trial #3
+
+[WARN] Chunk deactivating at X: -55.888115 Z: -44.393970 Distance: 50.227219 Activation Radius: 50.000000
+[WARN] Chunk deactivating at X: -50.698071 Z: -44.393970 Distance: 50.284740 Activation Radius: 50.000000
+[WARN] Chunk activating at X: -50.698071 Z: -65.154144 Distance: 49.755157 Activation Radius: 50.000000
+[WARN] Chunk activating at X: -40.317982 Z: -54.774059 Distance: 49.994354 Activation Radius: 50.000000
+[WARN] Chunk activating at X: -45.508026 Z: -65.154144 Distance: 49.505604 Activation Radius: 50.000000
+[WARN] Chunk activating at X: -40.317982 Z: -59.964104 Distance: 49.991619 Activation Radius: 50.000000
+[WARN] Chunk deactivating at X: -55.888115 Z: -49.584015 Distance: 50.133877 Activation Radius: 50.000000
+[WARN] Chunk activating at X: -55.888115 Z: -65.154144 Distance: 49.998947 Activation Radius: 50.000000
+[WARN] Chunk activating at X: -40.317982 Z: -65.154144 Distance: 49.893677 Activation Radius: 50.000000
+[WARN] Chunk deactivating at X: -50.698071 Z: -49.584015 Distance: 50.207264 Activation Radius: 50.000000
+[WARN] Chunk deactivating at X: -45.508026 Z: -49.584015 Distance: 50.310425 Activation Radius: 50.000000
+[WARN] Chunk deactivating at X: -55.888115 Z: -54.774059 Distance: 50.358959 Activation Radius: 50.000000
+[WARN] Chunk activating at X: -45.508026 Z: -70.344193 Distance: 49.871368 Activation Radius: 50.000000
+
+---
+
+Trial #4
+
+[WARN] RM_B: 156Chunk deactivating at X: -55.888115 Z: -49.584015 Distance: 50.560616 Activation Radius: 50.000000
+[WARN] AD_B: 157Chunk activating at X: -55.888115 Z: -65.154144 Distance: 49.885544 Activation Radius: 50.000000
+[WARN] AD_B: 158Chunk activating at X: -40.317982 Z: -65.154144 Distance: 49.745342 Activation Radius: 50.000000
+[WARN] RM_B: 159Chunk deactivating at X: -45.508026 Z: -49.584015 Distance: 50.226868 Activation Radius: 50.000000
+[WARN] RM_B: 160Chunk deactivating at X: -50.698071 Z: -49.584015 Distance: 50.574081 Activation Radius: 50.000000
+[WARN] RM_B: 161Chunk deactivating at X: -55.888115 Z: -54.774059 Distance: 50.413090 Activation Radius: 50.000000
+[WARN] AD_B: 162Chunk activating at X: -45.508026 Z: -70.344193 Distance: 49.779575 Activation Radius: 50.000000
+
+Trial #5
+
+[WARN] RM_B: 221 | Chunk deactivating at X: -55.888115 Z: -39.203926 Distance: 77.208626 Activation Radius: 75.000000
+[INFO] Attempting to removeRigidBody
+[WARN] AD_B: 222 | Chunk activating at X: -35.127937 Z: -59.964104 Distance: 72.067055 Activation Radius: 75.000000
+[INFO] Attempting to addRigidBody
+[WARN] RM_B: 223 | Chunk deactivating at X: -50.698071 Z: -39.203926 Distance: 75.818298 Activation Radius: 75.000000
+[INFO] Attempting to removeRigidBody
+[WARN] RM_B: 224 | Chunk deactivating at X: -45.508026 Z: -39.203926 Distance: 78.105011 Activation Radius: 75.000000
+[INFO] Attempting to removeRigidBody
+[WARN] AD_B: 225 | Chunk activating at X: -45.508026 Z: -70.344193 Distance: 74.939964 Activation Radius: 75.000000
+[INFO] Attempting to addRigidBody

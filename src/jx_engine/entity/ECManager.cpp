@@ -24,7 +24,7 @@ void ECManager::tick(std::vector<std::shared_ptr<Entity>> entities, std::shared_
                 float pY = playerVehicleComponent.get()->vehiclePhysics.getY();
                 float pZ = playerVehicleComponent.get()->vehiclePhysics.getZ();
 
-                printf("Player Vehicle Position: %f, %f, %f\n", pX, pY, pZ);
+                // printf("Player Vehicle Position: %f, %f, %f\n", pX, pY, pZ);
 
                 terrainChunksComponents.get()->updateChunks(pX, pZ);
                 

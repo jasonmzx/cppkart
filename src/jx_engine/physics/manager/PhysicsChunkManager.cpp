@@ -9,7 +9,7 @@ PhysicsChunkManager::PhysicsChunkManager(const std::string& filename) {
 
     for (auto& ldChunk : chunks) {
 
-        auto phyChunk = std::make_unique<StaticTriangleMeshPhysics>(ldChunk.triangle_ordered_verts, chunkModelMatrix);
+        auto phyChunk = std::make_unique<StaticTriangleMeshPhysics>(ldChunk.triangle_ordered_verts, chunkModelMatrix, SCALE_FACTOR);
         auto newChunk = std::make_unique<PhysicsChunk>(false, std::move(phyChunk));
 
         newChunk->X_origin = ldChunk.X_origin;
@@ -24,42 +24,91 @@ void PhysicsChunkManager::update(btScalar playerX, btScalar playerZ) {
     PhysicsWorldSingleton *physicsWorld = PhysicsWorldSingleton::getInstance();
     Logger* logger = Logger::getInstance();
 
-
+    static int rigidbodychanges = 0;
     // Define a radius within which chunks should be active
-    constexpr btScalar activationRadius = 100.0; 
+    constexpr btScalar activationRadius = 75.0; 
+
+    if (physicsWorld == nullptr) {
+        logger->log(Logger::ERROR, "PhysicsWorldSingleton instance is null.");
+        return;
+    }
+
+    if (physicsWorld->dynamicsWorld == nullptr) {
+        logger->log(Logger::ERROR, "Physics dynamicsWorld is null.");
+        return;
+    }
 
     for (auto& chunkUniquePtr : chunkVector) {
+        
+        if (!chunkUniquePtr) {
+            logger->log(Logger::ERROR, "Chunk unique_ptr is null.");
+            continue;
+        }
 
         PhysicsChunk& chunk = *chunkUniquePtr; 
 
+        if (!chunk.rigidMeshChunk) {
+            logger->log(Logger::ERROR, "Chunk rigidMeshChunk is null.");
+            continue;
+        }
+
+        if (!chunk.rigidMeshChunk->meshRigidBody) {
+            logger->log(Logger::ERROR, "Chunk meshRigidBody is null.");
+            continue;
+        }
+
+        btRigidBody* body = chunk.rigidMeshChunk->meshRigidBody.get();
+        if (body == nullptr) {
+            logger->log(Logger::ERROR, "meshRigidBody is null.");
+            continue;
+        }
+
+        // Check for btCollisionShape
+        btCollisionShape* shape = body->getCollisionShape();
+        if (shape == nullptr) {
+            logger->log(Logger::ERROR, "RigidBody's CollisionShape is null.");
+            continue;
+        }
+
         // Calculate distance from player to chunk origin
-        btScalar distanceX = playerX - (chunk.X_origin)*SCALE_FACTOR;
-        btScalar distanceZ = playerZ - (chunk.Z_origin)*SCALE_FACTOR;
+        btScalar distanceX = playerX - (chunk.X_origin) * SCALE_FACTOR;
+        btScalar distanceZ = playerZ - (chunk.Z_origin) * SCALE_FACTOR;
         btScalar distance = sqrt(distanceX * distanceX + distanceZ * distanceZ);
 
         if (distance <= activationRadius && !chunk.active) {
 
+            rigidbodychanges++;
+            logger->log(Logger::WARN, "AD_B: " + std::to_string(rigidbodychanges) + " | Chunk activating at X: " + std::to_string(chunk.X_origin) + " Z: " + std::to_string(chunk.Z_origin) + " Distance: " + std::to_string(distance) + " Activation Radius: " + std::to_string(activationRadius));
+
             // Activate chunk and add its rigid body to the physics world
             chunk.active = true;
-            physicsWorld->dynamicsWorld->addRigidBody(chunk.rigidMeshChunk.get()->meshRigidBody.get());
-            logger->log(Logger::WARN, "Chunk activated at X: " + std::to_string(chunk.X_origin) + " Z: " + std::to_string(chunk.Z_origin) + " Distance: " + std::to_string(distance) + " Activation Radius: " + std::to_string(activationRadius));
+            logger->log(Logger::INFO, "Attempting to addRigidBody");
+            physicsWorld->dynamicsWorld->addRigidBody(body);
 
         } else if (distance > activationRadius && chunk.active) {
+            
+            rigidbodychanges++;
+            logger->log(Logger::WARN, "RM_B: " + std::to_string(rigidbodychanges) + " | Chunk deactivating at X: " + std::to_string(chunk.X_origin) + " Z: " + std::to_string(chunk.Z_origin) + " Distance: " + std::to_string(distance) + " Activation Radius: " + std::to_string(activationRadius));
 
             // Deactivate chunk and remove its rigid body from the physics world
             chunk.active = false;
-            physicsWorld->dynamicsWorld->removeRigidBody(chunk.rigidMeshChunk.get()->meshRigidBody.get());
-            logger->log(Logger::WARN, "Chunk deactivated at X: " + std::to_string(chunk.X_origin) + " Z: " + std::to_string(chunk.Z_origin) + " Distance: " + std::to_string(distance) + " Activation Radius: " + std::to_string(activationRadius));
+            logger->log(Logger::INFO, "Attempting to removeRigidBody");
+            physicsWorld->dynamicsWorld->removeRigidBody(body);
         }
     }
 }
 
+
 void PhysicsChunkManager::ActiveAll() {
     PhysicsWorldSingleton *physicsWorld = PhysicsWorldSingleton::getInstance();
+    Logger* logger = Logger::getInstance();
 
     for (auto& chunkUniquePtr : chunkVector) {
         PhysicsChunk& chunk = *chunkUniquePtr;
         if (!chunk.active) {
+
+            logger->log(Logger::WARN, "AA-DEBUG: Chunk activating at X: " + std::to_string(chunk.X_origin) + " Z: " + std::to_string(chunk.Z_origin));
+
             chunk.active = true;
             physicsWorld->dynamicsWorld->addRigidBody(chunk.rigidMeshChunk.get()->meshRigidBody.get());
         }

@@ -152,7 +152,7 @@ void GameScene::init() {
 
     terrainRenderComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation);
 
-    auto terrainChunks_physics_Component = std::make_shared<TerrainChunksComponent>("../src/ressources/full_chunk_map.txt");
+    auto terrainChunks_physics_Component = std::make_shared<TerrainChunksComponent>("../src/ressources/MHFCM.txt");
     ecManager.get()->setTerrainChunks(terrainChunks_physics_Component);
 
     terrainEntity->addComponent(terrainRenderComponent);
@@ -181,7 +181,6 @@ void GameScene::init() {
     entities.push_back(playerVehicleEntity);
 
     logger->log(Logger::INFO,"GameScene Loaded in " + std::to_string(entities.size()) + " entities");
-
 }
 
 void GameScene::initECS(std::shared_ptr<SceneManager> sceneManager) {

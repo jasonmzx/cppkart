@@ -21,7 +21,7 @@ VehiclePhysics::VehiclePhysics()
 
     localTransform.setIdentity();
     //localTransform.setOrigin(btVector3(0, 100, -20));
-    localTransform.setOrigin(btVector3(0, 200, 0));
+    localTransform.setOrigin(btVector3(0, 50, 0));
     
     vehicleMotionState->setWorldTransform(localTransform);
 
@@ -45,7 +45,7 @@ VehiclePhysics::VehiclePhysics()
 
     btVector3 wheelDirection = btVector3(0, -1, 0);
     btVector3 wheelAxle = btVector3(-1.0, 0, 0); //used to be -1
-    btScalar suspensionRestLength = 0.3;
+    btScalar suspensionRestLength = 0.6;
     btScalar wheelRadius = 1.5*VEHICLE_SCALE;
     btScalar wheelWidth = 0.4;
     btScalar suspensionStiffness = 40.0;

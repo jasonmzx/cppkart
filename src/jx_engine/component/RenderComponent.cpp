@@ -36,8 +36,8 @@ void RenderComponent::Draw()
     Logger* logger = Logger::getInstance();
 
 
-    logger->log(Logger::INFO, "Model Matrix: ");
-    printMatrix(ObjmodelMatrix);
+    // logger->log(Logger::INFO, "Model Matrix: ");
+    // printMatrix(ObjmodelMatrix);
 
     Tex.get()->Bind();
     Geom->Draw(modelMatrixLOC, ObjmodelMatrix, colorUniformLOC, false);

@@ -12,6 +12,7 @@ class TerrainChunksComponent : public EComponent {
         std::shared_ptr<PhysicsChunkManager> physicsChunkManager;
         TerrainChunksComponent(const std::string& filename);
         void updateChunks(btScalar playerX, btScalar playerZ);
+        int ticker_counter = 0;
 
 };
 

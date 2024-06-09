@@ -14,6 +14,8 @@ Geometry::Geometry(const std::vector<GLfloat>& vertices, const std::vector<GLuin
 
     vao->Bind();
 
+    // x y z r g b u v Nx Ny Nz     (11)
+    // int VERT_LEN = 11;
     // Assuming each vertex consists of 8 floats: position (x, y, z), color (r, g, b), texture (u, v), normal (x, y, z)
 
     vao->LinkAttrib(*vbo, 0, 3, GL_FLOAT, 11 * sizeof(float), (void *)0);
