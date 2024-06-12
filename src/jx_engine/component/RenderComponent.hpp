@@ -17,7 +17,7 @@ class RenderComponent : public EComponent {
     public:
         RenderComponent(std::string modelPath, std::string texPath, std::shared_ptr<RenderRsrcManager> rrm);
 
-        void SetGLContext(GLint texLOCATION, GLint mmLOCATION, GLint colorUniformLOCATION);
+        void SetGLContext(GLint texLOCATION, GLint mmLOCATION, GLint colorUniformLOCATION, float scale);
         void Draw();
 
     protected:

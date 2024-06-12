@@ -1,6 +1,7 @@
 #include "GameScene.hpp"
 
 #include <chrono>
+//#define BT_USE_DOUBLE_PRECISION 1
 
 Logger* GameScene::logger = Logger::getInstance();
 
@@ -135,8 +136,29 @@ void GameScene::init() {
   btRigidBody *planeBody = new btRigidBody(info);
   physicsWorld->dynamicsWorld->addRigidBody(planeBody);
   
+  //! ___
 
-    //!__
+// // Initialize triangle mesh shape
+// btTriangleMesh* triangleMesh = new btTriangleMesh();
+// triangleMesh->addTriangle(btVector3(0, 0, 0),
+//                           btVector3(-14.318789, 21.87693, -91.302094),
+//                           btVector3(-14.203687, 22.688904, -91.920738));
+
+// btBvhTriangleMeshShape* meshShape = new btBvhTriangleMeshShape(triangleMesh, true);
+// btTransform meshTransform;
+// meshTransform.setIdentity();
+// btDefaultMotionState* meshMotionState = new btDefaultMotionState(meshTransform);
+// btRigidBody::btRigidBodyConstructionInfo meshRigidBodyCI(0, meshMotionState, meshShape, btVector3(0, 0, 0));
+// btRigidBody* meshRigidBody = new btRigidBody(meshRigidBodyCI);
+
+// // Check if the meshRigidBody is valid
+// if (!meshRigidBody) {
+//     std::cerr << "Failed to initialize meshRigidBody!" << std::endl;
+//     return;
+// }
+
+// physicsWorld->dynamicsWorld->addRigidBody(meshRigidBody);
+//     //!__
 
     std::shared_ptr<Entity> terrainEntity = std::make_shared<Entity>();
 
@@ -146,13 +168,13 @@ void GameScene::init() {
 
     //* ----------------- Terrain Entity Definition ----------------- *//
 
-    auto terrainRenderComponent = std::make_shared<RenderComponent>("../src/ressources/DE_Aztec/DE_AZTEC.obj",
+    auto terrainRenderComponent = std::make_shared<RenderComponent>("../src/ressources/DE_MAP0/MAPOI.obj",
                                                            "../src/ressources/DE_Map1/Map01_Albedo.png", 
                                                            renderRsrcManager);
 
-    terrainRenderComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation);
+    terrainRenderComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation, 5.0f);
 
-    auto terrainChunks_physics_Component = std::make_shared<TerrainChunksComponent>("../src/ressources/MHFCM.txt");
+    auto terrainChunks_physics_Component = std::make_shared<TerrainChunksComponent>("../src/ressources/MHFCM_S.txt");
     ecManager.get()->setTerrainChunks(terrainChunks_physics_Component);
 
     terrainEntity->addComponent(terrainRenderComponent);
@@ -174,7 +196,7 @@ void GameScene::init() {
                                                            "../src/ressources/volga/volga.png", 
                                                            renderRsrcManager);
 
-    playerVehicleRenderComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation);
+    playerVehicleRenderComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation, 1.0f);
 
     playerVehicleEntity->addComponent(playerVehicleRenderComponent);                                                           
 

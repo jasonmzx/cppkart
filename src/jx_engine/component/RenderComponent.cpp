@@ -12,13 +12,13 @@ RenderComponent::RenderComponent(std::string modelPath, std::string texPath, std
     if (Tex == nullptr) { Tex = ressources->loadTex(texPath, texPath, false); }
 }
 
-void RenderComponent::SetGLContext(GLint texLOCATION, GLint mmLOCATION, GLint colorUniformLOCATION)
+void RenderComponent::SetGLContext(GLint texLOCATION, GLint mmLOCATION, GLint colorUniformLOCATION, float scale)
 {
     useTextureLOC = texLOCATION;
     modelMatrixLOC = mmLOCATION;
     colorUniformLOC = colorUniformLOCATION;
 
-    ObjmodelMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(5.0f, 5.0f, 5.0f));
+    ObjmodelMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(scale, scale, scale));
 }
 
 void printMatrix(const glm::mat4& matrix) {

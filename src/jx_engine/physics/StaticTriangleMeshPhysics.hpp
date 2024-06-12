@@ -15,7 +15,7 @@ class StaticTriangleMeshPhysics {
 private:
 
 public:
-    std::unique_ptr<btRigidBody> meshRigidBody;
+    btRigidBody* meshRigidBody;
 
     StaticTriangleMeshPhysics(const std::vector<glm::vec3> &ordered_verts, const glm::mat4 &modelMatrix, float scaleFactor);
 };

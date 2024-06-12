@@ -26,7 +26,7 @@ void PhysicsChunkManager::update(btScalar playerX, btScalar playerZ) {
 
     static int rigidbodychanges = 0;
     // Define a radius within which chunks should be active
-    constexpr btScalar activationRadius = 75.0; 
+    constexpr btScalar activationRadius = 45.0; 
 
     if (physicsWorld == nullptr) {
         logger->log(Logger::ERROR, "PhysicsWorldSingleton instance is null.");
@@ -57,18 +57,13 @@ void PhysicsChunkManager::update(btScalar playerX, btScalar playerZ) {
             continue;
         }
 
-        btRigidBody* body = chunk.rigidMeshChunk->meshRigidBody.get();
+        btRigidBody* body = chunk.rigidMeshChunk->meshRigidBody;
+
         if (body == nullptr) {
             logger->log(Logger::ERROR, "meshRigidBody is null.");
             continue;
         }
 
-        // Check for btCollisionShape
-        btCollisionShape* shape = body->getCollisionShape();
-        if (shape == nullptr) {
-            logger->log(Logger::ERROR, "RigidBody's CollisionShape is null.");
-            continue;
-        }
 
         // Calculate distance from player to chunk origin
         btScalar distanceX = playerX - (chunk.X_origin) * SCALE_FACTOR;
@@ -110,7 +105,7 @@ void PhysicsChunkManager::ActiveAll() {
             logger->log(Logger::WARN, "AA-DEBUG: Chunk activating at X: " + std::to_string(chunk.X_origin) + " Z: " + std::to_string(chunk.Z_origin));
 
             chunk.active = true;
-            physicsWorld->dynamicsWorld->addRigidBody(chunk.rigidMeshChunk.get()->meshRigidBody.get());
+            physicsWorld->dynamicsWorld->addRigidBody(chunk.rigidMeshChunk.get()->meshRigidBody);
         }
     }
 }

@@ -6,7 +6,7 @@ StaticTriangleMeshPhysics::StaticTriangleMeshPhysics(
 
     //* Construction of Mesh (btTriangleMesh is OK for static objects)
 
-    std::unique_ptr<btTriangleMesh> mesh = std::make_unique<btTriangleMesh>();
+    btTriangleMesh* mesh = new btTriangleMesh();
 
     for (size_t i = 0; i < ordered_verts.size(); i += 3)
     {
@@ -14,10 +14,10 @@ StaticTriangleMeshPhysics::StaticTriangleMeshPhysics(
         btVector3 vertex1(ordered_verts[i + 1].x, ordered_verts[i + 1].y, ordered_verts[i + 1].z);
         btVector3 vertex2(ordered_verts[i + 2].x, ordered_verts[i + 2].y, ordered_verts[i + 2].z);
 
-        mesh.get()->addTriangle(vertex0, vertex1, vertex2);
+        mesh->addTriangle(vertex0, vertex1, vertex2);
     }
     
-    std::unique_ptr<btBvhTriangleMeshShape> triangleShape = std::make_unique<btBvhTriangleMeshShape>(mesh.get(), true);
+    btBvhTriangleMeshShape* triangleShape = new btBvhTriangleMeshShape(mesh, true);
 
     // Convert glm::mat4 to btTransform, and apply parameters
     
@@ -25,18 +25,19 @@ StaticTriangleMeshPhysics::StaticTriangleMeshPhysics(
     staticMeshTransform.setFromOpenGLMatrix(glm::value_ptr(modelMatrix));
 
     staticMeshTransform.setIdentity();
-    staticMeshTransform.setOrigin(btVector3(0, 0, 0));
+    //staticMeshTransform.setOrigin(btVector3(0, 0, 0));
 
     // Scale of Mesh (XYZ Scale)
     btVector3 scale(scaleFactor, scaleFactor, scaleFactor);
-    triangleShape.get()->setLocalScaling(scale);
+    triangleShape->setLocalScaling(scale);
 
-    std::unique_ptr<btDefaultMotionState> motion = std::make_unique<btDefaultMotionState>(staticMeshTransform);
+    //std::unique_ptr<btDefaultMotionState> motion = std::make_unique<btDefaultMotionState>(staticMeshTransform);
+    btDefaultMotionState* motion = new btDefaultMotionState(staticMeshTransform);
 
     // Create the rigid body as before
-    btRigidBody::btRigidBodyConstructionInfo info(0.0, motion.get(), triangleShape.get());
+    btRigidBody::btRigidBodyConstructionInfo info(0.0, motion, triangleShape, btVector3(0, 0, 0));
     info.m_friction = 1.0f; //TODO: Add friction parameter
 
-    meshRigidBody = std::make_unique<btRigidBody>(info);
+    meshRigidBody = new btRigidBody(info);
 
 }
