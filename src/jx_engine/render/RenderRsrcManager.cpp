@@ -15,8 +15,11 @@ const std::vector<GLfloat>& verts, const std::vector<GLuint>& indices) {
     }
 }
 
-std::shared_ptr<Geometry> RenderRsrcManager::tryGetGeometry(const std::string& modelIdentifier) {
-    auto iter = geometryCache.find(modelIdentifier);
+std::shared_ptr<Geometry> RenderRsrcManager::tryGetGeometry(const std::string& modelIdentifier, int meshIndex) {
+    
+    std::string geomId = modelIdentifier + std::to_string(meshIndex);
+    
+    auto iter = geometryCache.find(geomId);
     
     if (iter != geometryCache.end()) {
         // Found existing geometry, return it
@@ -25,14 +28,15 @@ std::shared_ptr<Geometry> RenderRsrcManager::tryGetGeometry(const std::string& m
         // Geometry not found, So Load Model and Create Geometry
         
         auto model = tryGetModel(modelIdentifier);
+        
         if(model == nullptr) {
             model = loadModel(modelIdentifier, modelIdentifier);
-          }
+        }
 
         //printf("New Model Loaded!");
-          std::vector<GLfloat> verts = model->GetVertices();
-          std::vector<GLuint> indices = model->GetIndices();
-          return getOrCreateGeometry(modelIdentifier, model->GetVertices(), model->GetIndices());  
+          std::vector<GLfloat> verts = model->GetVertices(meshIndex);
+          std::vector<GLuint> indices = model->GetIndices(meshIndex);
+          return getOrCreateGeometry(geomId, verts, indices);  
     }
 }
 

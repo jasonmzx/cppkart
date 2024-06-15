@@ -1,11 +1,12 @@
 #include "RenderComponent.hpp"
 
-RenderComponent::RenderComponent(std::string modelPath, std::string texPath, std::shared_ptr<RenderRsrcManager> rrm)
+RenderComponent::RenderComponent(std::string modelPath, std::string texPath, std::shared_ptr<RenderRsrcManager> rrm, int meshIndex, bool cD)
 {
+    cullDisable = !cD;
     ressources = rrm;
     
     // modelPath = modelPath;
-    Geom = ressources->tryGetGeometry(modelPath);
+    Geom = ressources->tryGetGeometry(modelPath, meshIndex);
 
     // texPath = texPath;
     Tex = ressources->tryGetTex(texPath);
@@ -32,14 +33,34 @@ void printMatrix(const glm::mat4& matrix) {
 }
 
 void RenderComponent::Draw()
-{   
+{
     Logger* logger = Logger::getInstance();
 
-
+    // Log the model matrix for debugging
     // logger->log(Logger::INFO, "Model Matrix: ");
     // printMatrix(ObjmodelMatrix);
+
+    // Save the current culling state
+    GLboolean cullingEnabled = glIsEnabled(GL_CULL_FACE);
+    
+    glGetIntegerv(GL_CULL_FACE_MODE, &currentCullFace);
+    glGetIntegerv(GL_FRONT_FACE, &currentFrontFace);
+
+    // Temporarily disable face culling if cullDirection is false
+    if (cullDisable) {
+        logger->log(Logger::INFO, "Disabling Face Culling for Draw");
+        glDisable(GL_CULL_FACE);
+    }
 
     Tex.get()->Bind();
     Geom->Draw(modelMatrixLOC, ObjmodelMatrix, colorUniformLOC, false);
     Tex.get()->Unbind();
+
+    // Restore the original culling state
+        glEnable(GL_CULL_FACE);
+        glCullFace(currentCullFace);
+        glFrontFace(currentFrontFace);
+        logger->log(Logger::INFO, "Restoring original culling state");
+
 }
+

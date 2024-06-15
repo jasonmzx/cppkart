@@ -6,9 +6,9 @@
 class VehicleRenderComponent : public RenderComponent
 {   
     public:
-        VehicleRenderComponent(std::string modelPath, std::string wheelModelPath,
-            std::string texPath, std::shared_ptr<RenderRsrcManager> rrm);
-        
+        VehicleRenderComponent(std::string modelPath, std::string wheelModelPath, 
+        std::string texPath, std::shared_ptr<RenderRsrcManager> rrm, int meshIndex);
+
         void getTransforms(glm::vec3 glmVehiclePos, glm::quat glmVehicleRot);
 
     private:

@@ -2,7 +2,7 @@
 
 //Constructor
 PhysicsChunkManager::PhysicsChunkManager(const std::string& filename) {
-    SCALE_FACTOR = 5.0f;
+    SCALE_FACTOR = 10.0f;
     std::vector<LoadedChunk> chunks = PhysChunkedMapLoader::loadChunks(filename);
 
     glm::mat4 chunkModelMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f, 0.1f, 0.1f)); // Placeholder Model Matrix

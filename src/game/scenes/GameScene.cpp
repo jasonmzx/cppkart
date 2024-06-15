@@ -168,16 +168,35 @@ void GameScene::init() {
 
     //* ----------------- Terrain Entity Definition ----------------- *//
 
+    float terrainEntityScale = 10.0f;
+
+
     auto terrainRenderComponent = std::make_shared<RenderComponent>("../src/ressources/DE_MAP0/MAPOI.obj",
                                                            "../src/ressources/DE_Map1/Map01_Albedo.png", 
-                                                           renderRsrcManager);
+                                                           renderRsrcManager, 0, true);
 
-    terrainRenderComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation, 5.0f);
+    terrainRenderComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation, terrainEntityScale);
+
+    auto terrainRoadRenderComponent = std::make_shared<RenderComponent>("../src/ressources/DE_MAP0/MAPOI.obj",
+                                                           "../src/ressources/DE_MAP0/ROAD_TEX.jpg", 
+                                                           renderRsrcManager, 2, true);
+
+    terrainRoadRenderComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation, terrainEntityScale);
+
+    auto terrainBottomRoadRenderComponent = std::make_shared<RenderComponent>("../src/ressources/DE_MAP0/MAPOI.obj",
+                                                           "../src/ressources/DE_MAP0/STONE_WALL_04.jpg", 
+                                                           renderRsrcManager, 3, false);
+
+    terrainBottomRoadRenderComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation, terrainEntityScale);                                                          
+
 
     auto terrainChunks_physics_Component = std::make_shared<TerrainChunksComponent>("../src/ressources/MHFCM_S.txt");
     ecManager.get()->setTerrainChunks(terrainChunks_physics_Component);
 
     terrainEntity->addComponent(terrainRenderComponent);
+    terrainEntity->addComponent(terrainRoadRenderComponent);
+    terrainEntity->addComponent(terrainBottomRoadRenderComponent);
+
     terrainEntity->addComponent(terrainChunks_physics_Component);
 
     entities.push_back(terrainEntity);
@@ -192,9 +211,9 @@ void GameScene::init() {
     playerVehicleEntity->addComponent(playerVehicleComponent);
     
 
-    auto playerVehicleRenderComponent = std::make_shared<VehicleRenderComponent>("../src/ressources/volga/volga.obj", "src/ressources/first_car_wheel.obj",
+    auto playerVehicleRenderComponent = std::make_shared<VehicleRenderComponent>("../src/ressources/volga/volga.obj", "../src/ressources/first_car_wheel.obj",
                                                            "../src/ressources/volga/volga.png", 
-                                                           renderRsrcManager);
+                                                           renderRsrcManager, 0);
 
     playerVehicleRenderComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation, 1.0f);
 

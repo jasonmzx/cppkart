@@ -1,11 +1,11 @@
 #include "VehicleRenderComponent.hpp"
 
 VehicleRenderComponent::VehicleRenderComponent
-(std::string modelPath, std::string wheelModelPath, std::string texPath, std::shared_ptr<RenderRsrcManager> rrm)
-: RenderComponent(modelPath, texPath, rrm)
+(std::string modelPath, std::string wheelModelPath, std::string texPath, std::shared_ptr<RenderRsrcManager> rrm, int meshIndex)
+: RenderComponent(modelPath, texPath, rrm, meshIndex, true)
 {
     // wheelModelPath = wheelModelPath;
-    WheelGeom = ressources->tryGetGeometry(wheelModelPath);
+    WheelGeom = ressources->tryGetGeometry(wheelModelPath, 0);
 
     wheelModelMatrices.resize(wheelCount);
 }

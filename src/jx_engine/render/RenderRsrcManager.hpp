@@ -6,7 +6,7 @@
 
 #include "gl/Geometry.hpp"
 #include "gl/Texture.h"
-#include "core/loaders/ObjModel.hpp"
+#include "jx_engine/import/ObjModel.hpp"
 
 typedef std::unordered_map<std::string, std::shared_ptr<Geometry>> GeometryCache;
 typedef std::unordered_map<std::string, std::shared_ptr<Texture>> TextureCache;
@@ -28,7 +28,7 @@ class RenderRsrcManager {
         std::shared_ptr<Geometry> getOrCreateGeometry(const std::string& modelIdentifier, 
                         const std::vector<GLfloat>& verts, const std::vector<GLuint>& indices);
 
-        std::shared_ptr<Geometry> tryGetGeometry(const std::string& modelIdentifier);
+        std::shared_ptr<Geometry> tryGetGeometry(const std::string& modelIdentifier, int meshIndex);
 
         std::shared_ptr<Texture> loadTex(const std::string& texId, const std::string& filePath, bool rgbAlpha);
 

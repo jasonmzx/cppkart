@@ -20,8 +20,8 @@ VehiclePhysics::VehiclePhysics()
     btTransform localTransform;
 
     localTransform.setIdentity();
-    //localTransform.setOrigin(btVector3(0, 100, -20));
-    localTransform.setOrigin(btVector3(0, 50, 0));
+    localTransform.setOrigin(btVector3(0, 100, 0));
+    //localTransform.setOrigin(btVector3(0, 50, 0));
     
     vehicleMotionState->setWorldTransform(localTransform);
 

@@ -15,7 +15,7 @@
 
 class RenderComponent : public EComponent {
     public:
-        RenderComponent(std::string modelPath, std::string texPath, std::shared_ptr<RenderRsrcManager> rrm);
+        RenderComponent(std::string modelPath, std::string texPath, std::shared_ptr<RenderRsrcManager> rrm, int meshIndex, bool cD);
 
         void SetGLContext(GLint texLOCATION, GLint mmLOCATION, GLint colorUniformLOCATION, float scale);
         void Draw();
@@ -25,6 +25,8 @@ class RenderComponent : public EComponent {
         std::string modelPath;
         std::string texPath;
 
+        bool cullDisable;
+
         std::shared_ptr<RenderRsrcManager> ressources;
 
         std::shared_ptr<Texture> Tex;
@@ -32,6 +34,11 @@ class RenderComponent : public EComponent {
         GLint colorUniformLOC; //Debug purposes, might move
         GLint modelMatrixLOC;
         GLint useTextureLOC;
+        
+        
+        // Volatile GL Drawing Variables
+        GLint currentCullFace;
+        GLint currentFrontFace;
         
         glm::mat4 ObjmodelMatrix;
         
