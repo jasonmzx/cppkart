@@ -1,8 +1,8 @@
 #include "PhysicsChunkManager.hpp"
 
 //Constructor
-PhysicsChunkManager::PhysicsChunkManager(const std::string& filename) {
-    SCALE_FACTOR = 10.0f;
+PhysicsChunkManager::PhysicsChunkManager(const std::string& filename, float scaleFac) {
+    SCALE_FACTOR = scaleFac;
     std::vector<LoadedChunk> chunks = PhysChunkedMapLoader::loadChunks(filename);
 
     glm::mat4 chunkModelMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f, 0.1f, 0.1f)); // Placeholder Model Matrix
@@ -26,7 +26,7 @@ void PhysicsChunkManager::update(btScalar playerX, btScalar playerZ) {
 
     static int rigidbodychanges = 0;
     // Define a radius within which chunks should be active
-    constexpr btScalar activationRadius = 45.0; 
+    constexpr btScalar activationRadius = 65.0; 
 
     if (physicsWorld == nullptr) {
         logger->log(Logger::ERROR, "PhysicsWorldSingleton instance is null.");

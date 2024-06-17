@@ -36,7 +36,7 @@ StaticTriangleMeshPhysics::StaticTriangleMeshPhysics(
 
     // Create the rigid body as before
     btRigidBody::btRigidBodyConstructionInfo info(0.0, motion, triangleShape, btVector3(0, 0, 0));
-    info.m_friction = 1.0f; //TODO: Add friction parameter
+    info.m_friction = 3.0f; //TODO: Add friction parameter
 
     meshRigidBody = new btRigidBody(info);
 

@@ -41,6 +41,18 @@ void GameScene::updateImGui() {
         }
         ImGui::Begin("FPS Counter");
         ImGui::PlotLines("Frame Times", values, IM_ARRAYSIZE(values), values_offset, NULL, 0.0f, 100.0f, ImVec2(0, 80));
+        
+        
+        if(ImGui::Button("Reset Vehicle")) {
+            ecManager.get()->resetPlayerVehicle();
+        }
+
+        if(ImGui::Button("Toggle Bullet Debug Draw")) {
+            isBulletDebugDraw = !isBulletDebugDraw;
+        }
+
+        ImGui::Text( ecManager.get()->debugStateSTR().c_str() );
+        
         ImGui::End();
 }
 
@@ -61,7 +73,9 @@ void GameScene::render() {
     auto end = std::chrono::high_resolution_clock::now();
     ecInferenceTimeMS = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 
-    renderer.get()->DebugRender();
+    if(isBulletDebugDraw) {
+      renderer.get()->DebugRender();
+    }
 
     camera.get()->Matrix(45.0f, 0.1f, 9000.0f, renderer.get()->mainShader, "camMatrix"); //! IMPORTANT
 
@@ -120,24 +134,6 @@ void GameScene::init() {
 
     physicsWorld = PhysicsWorldSingleton::getInstance();
 
-    //!__
-
-  btTransform protoPlaneTransform;
-  protoPlaneTransform.setIdentity();
-  protoPlaneTransform.setOrigin(btVector3(0, 0, 0));
-  btStaticPlaneShape *plane = new btStaticPlaneShape(btVector3(0, 1, 0), btScalar(0));
-
-  // Create Motion shape:
-  btMotionState *motion = new btDefaultMotionState(protoPlaneTransform); //! He put btDefaultMotionShape
-
-  btRigidBody::btRigidBodyConstructionInfo info(0.0, motion, plane);
-  info.m_friction = 2.0f;
-
-  btRigidBody *planeBody = new btRigidBody(info);
-  physicsWorld->dynamicsWorld->addRigidBody(planeBody);
-  
-  //! ___
-
 // // Initialize triangle mesh shape
 // btTriangleMesh* triangleMesh = new btTriangleMesh();
 // triangleMesh->addTriangle(btVector3(0, 0, 0),
@@ -168,7 +164,7 @@ void GameScene::init() {
 
     //* ----------------- Terrain Entity Definition ----------------- *//
 
-    float terrainEntityScale = 10.0f;
+    float terrainEntityScale = 15.0f;
 
 
     auto terrainRenderComponent = std::make_shared<RenderComponent>("../src/ressources/DE_MAP0/MAPOI.obj",
@@ -190,7 +186,7 @@ void GameScene::init() {
     terrainBottomRoadRenderComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation, terrainEntityScale);                                                          
 
 
-    auto terrainChunks_physics_Component = std::make_shared<TerrainChunksComponent>("../src/ressources/MHFCM_S.txt");
+    auto terrainChunks_physics_Component = std::make_shared<TerrainChunksComponent>("../src/ressources/DE_MAP0/Small_Chunks_MAPOI.txt", terrainEntityScale);
     ecManager.get()->setTerrainChunks(terrainChunks_physics_Component);
 
     terrainEntity->addComponent(terrainRenderComponent);

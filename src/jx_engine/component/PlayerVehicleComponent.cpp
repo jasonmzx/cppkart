@@ -18,10 +18,10 @@ void PlayerVehicleComponent::updateVehicleControl(GameInput::Control acceleratio
 
     switch(steer) {
         case GameInput::VehicleTurnLeft:
-            vehiclePhysics.ApplySteer(0.13);
+            vehiclePhysics.ApplySteer(0.03);
             break;
         case GameInput::VehicleTurnRight:
-            vehiclePhysics.ApplySteer(-0.13);
+            vehiclePhysics.ApplySteer(-0.03);
             break;
         default: // Covers IDLE and any other unspecified cases
             vehiclePhysics.ApplySteer(0);
@@ -29,3 +29,4 @@ void PlayerVehicleComponent::updateVehicleControl(GameInput::Control acceleratio
     }
 
 }
+

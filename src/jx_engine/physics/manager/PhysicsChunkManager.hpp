@@ -26,7 +26,7 @@ class PhysicsChunkManager
 {
 
 public:
-    PhysicsChunkManager(const std::string& filename);
+    PhysicsChunkManager(const std::string& filename, float scaleFac);
     ~PhysicsChunkManager();
 
     void update(btScalar playerX, btScalar playerZ);

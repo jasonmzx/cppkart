@@ -1,7 +1,7 @@
 #include "TerrainChunksComponent.hpp"
 
-TerrainChunksComponent::TerrainChunksComponent(const std::string& filename) {
-    physicsChunkManager = std::make_shared<PhysicsChunkManager>(filename);
+TerrainChunksComponent::TerrainChunksComponent(const std::string& filename, float scaleFactor) {
+    physicsChunkManager = std::make_shared<PhysicsChunkManager>(filename, scaleFactor);
     //physicsChunkManager->ActiveAll(); //DEBUG
 }
 

@@ -56,6 +56,8 @@ class GameScene : public Scene {
         int WIN_HEIGHT;
         SDL_Window* SDL_window;
 
+        bool isBulletDebugDraw = false;
+
         std::unique_ptr<ECManager> ecManager;
 
         std::unique_ptr<PhysicsChunkManager> physicsChunkManager;

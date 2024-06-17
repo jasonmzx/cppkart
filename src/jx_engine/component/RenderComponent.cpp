@@ -34,8 +34,6 @@ void printMatrix(const glm::mat4& matrix) {
 
 void RenderComponent::Draw()
 {
-    Logger* logger = Logger::getInstance();
-
     // Log the model matrix for debugging
     // logger->log(Logger::INFO, "Model Matrix: ");
     // printMatrix(ObjmodelMatrix);
@@ -48,7 +46,6 @@ void RenderComponent::Draw()
 
     // Temporarily disable face culling if cullDirection is false
     if (cullDisable) {
-        logger->log(Logger::INFO, "Disabling Face Culling for Draw");
         glDisable(GL_CULL_FACE);
     }
 
@@ -60,7 +57,6 @@ void RenderComponent::Draw()
         glEnable(GL_CULL_FACE);
         glCullFace(currentCullFace);
         glFrontFace(currentFrontFace);
-        logger->log(Logger::INFO, "Restoring original culling state");
 
 }
 

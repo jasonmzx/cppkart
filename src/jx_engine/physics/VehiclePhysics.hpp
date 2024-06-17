@@ -34,8 +34,9 @@ public:
     void ApplySteer(float value);
     void Brake(float force);
     std::string debugStateSTR();
-    void Update();  // For updating any vehicle logic, physics simulation steps, etc.
     btTransform GetTransform() const;  // Useful for rendering
+
+    void ResetTransform();
 
     float getX() const;
     float getY() const;

@@ -25,6 +25,9 @@ class ECManager { // Entity Component Manager
         void setTerrainChunks(std::shared_ptr<TerrainChunksComponent> terrainChunks);
         void setPlayerVehicle(std::shared_ptr<PlayerVehicleComponent> playerVehicle);
 
+        void resetPlayerVehicle();
+        std::string debugStateSTR();
+
 
     private:
         std::shared_ptr<SceneManager> sceneManager;
@@ -32,6 +35,12 @@ class ECManager { // Entity Component Manager
 
         std::shared_ptr<TerrainChunksComponent> terrainChunksComponents;
         std::shared_ptr<PlayerVehicleComponent> playerVehicleComponent;
+
+        // Debug State:
+
+        float dpX; // Debug Player X
+        float dpY; // Debug Player Y
+        float dpZ; // Debug Player Z
 
 };
 

@@ -20,9 +20,15 @@ VehiclePhysics::VehiclePhysics()
     btTransform localTransform;
 
     localTransform.setIdentity();
-    localTransform.setOrigin(btVector3(0, 100, 0));
+    //localTransform.setOrigin(btVector3(0, 100, 0));
     //localTransform.setOrigin(btVector3(0, 50, 0));
-    
+
+    localTransform.setOrigin(btVector3(135, 150, -165));
+
+
+    btQuaternion initialRotation( btVector3(0,1,0), 90.0f * SIMD_PI / 180.0f ); // Rotate 90 degrees arround Y axis
+    localTransform.setRotation(initialRotation);    
+
     vehicleMotionState->setWorldTransform(localTransform);
 
     //* VEHICLE MASS !
@@ -45,9 +51,9 @@ VehiclePhysics::VehiclePhysics()
 
     btVector3 wheelDirection = btVector3(0, -1, 0);
     btVector3 wheelAxle = btVector3(-1.0, 0, 0); //used to be -1
-    btScalar suspensionRestLength = 0.6;
+    btScalar suspensionRestLength = 0.75;
     btScalar wheelRadius = 1.5*VEHICLE_SCALE;
-    btScalar wheelWidth = 0.4;
+    btScalar wheelWidth = 0.5;
     btScalar suspensionStiffness = 40.0;
     btScalar dampingRelaxation = 4.3;
     btScalar dampingCompression = 2.4;
@@ -161,20 +167,41 @@ void VehiclePhysics::Brake(float force)
 
 }
 
-void VehiclePhysics::Update()
+
+void VehiclePhysics::ResetTransform()
 {
-    // TODO: Code to update vehicle's state
+    // Create a new transform and set it to identity
+    btTransform newTransform;
+    newTransform.setIdentity();
+
+    // Get the current position and adjust the Y position
+    btVector3 currentVehiclePos = vehicleRigidBody->getWorldTransform().getOrigin();
+    currentVehiclePos.setY(currentVehiclePos.getY() + 10.0f);
+
+    // Set the new position
+    newTransform.setOrigin(currentVehiclePos);
+
+    // Set the world transform for both the motion state and the rigid body
+    vehicleMotionState->setWorldTransform(newTransform);
+    vehicleRigidBody->setWorldTransform(newTransform);
+
+    // Clear the vehicle's velocities
+    vehicleRigidBody->setLinearVelocity(btVector3(0, 0, 0));
+    vehicleRigidBody->setAngularVelocity(btVector3(0, 0, 0));
+
+    // Re-activate the vehicle
+    vehicleRigidBody->activate(true);
 }
+
+
 
 btTransform VehiclePhysics::GetTransform() const
 {
-
     btTransform trans;
 
-    //! This is super choppy
-    //trans = vehicleRigidBody->getWorldTransform();
-    
+    // Ensure the motion state and rigid body are synchronized
     vehicleMotionState->getWorldTransform(trans);
+    vehicleRigidBody->getMotionState()->getWorldTransform(trans);
 
     return trans;
 }

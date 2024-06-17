@@ -24,6 +24,10 @@ void ECManager::tick(std::vector<std::shared_ptr<Entity>> entities, std::shared_
                 float pY = playerVehicleComponent.get()->vehiclePhysics.getY();
                 float pZ = playerVehicleComponent.get()->vehiclePhysics.getZ();
 
+                dpX = pX;
+                dpY = pY;
+                dpZ = pZ;
+
                 // printf("Player Vehicle Position: %f, %f, %f\n", pX, pY, pZ);
 
                 terrainChunksComponents.get()->updateChunks(pX, pZ);
@@ -79,4 +83,13 @@ void ECManager::setPlayerVehicle(std::shared_ptr<PlayerVehicleComponent> playerV
         Logger* logger = Logger::getInstance();
         logger->log(Logger::ERROR, "Invalid PlayerVehicleComponent input");
     }
+}
+
+void ECManager::resetPlayerVehicle() {
+    playerVehicleComponent.get()->vehiclePhysics.ResetTransform();
+}
+
+std::string ECManager::debugStateSTR() {
+    std::string debugState = "Player VPOS: " + std::to_string(dpX) + ", " + std::to_string(dpY) + ", " + std::to_string(dpZ);
+    return debugState;
 }
