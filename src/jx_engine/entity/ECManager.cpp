@@ -44,10 +44,6 @@ void ECManager::renderPass(std::vector<std::shared_ptr<Entity>> entities) {
     for(auto entity : entities) {
         for (auto& component : entity.get()->components) {
 
-            if (auto renderComponent = std::dynamic_pointer_cast<RenderComponent>(component)) {
-                renderComponent.get()->Draw();
-            }
-
             if (auto vehicleRenderComponent = std::dynamic_pointer_cast<VehicleRenderComponent>(component)) {
                 btTransform vehicleTransform = playerVehicleComponent.get()->vehiclePhysics.GetTransform();
                 btVector3 vehiclePosition = vehicleTransform.getOrigin();
@@ -57,6 +53,14 @@ void ECManager::renderPass(std::vector<std::shared_ptr<Entity>> entities) {
                 glm::quat glmVehicleRotation(vehicleRotation.w(), vehicleRotation.x(), vehicleRotation.y(), vehicleRotation.z());
 
                 vehicleRenderComponent.get()->getTransforms(glmVehiclePosition, glmVehicleRotation);
+                vehicleRenderComponent.get()->UpdateWheelTransforms(&playerVehicleComponent.get()->vehiclePhysics);
+                vehicleRenderComponent.get()->DrawWheels();
+            }
+
+            // After getting the transforms, perform the rendering
+
+            if (auto renderComponent = std::dynamic_pointer_cast<RenderComponent>(component)) {
+                renderComponent.get()->Draw();
             }
 
         }

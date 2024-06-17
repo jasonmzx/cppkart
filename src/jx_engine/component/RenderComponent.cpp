@@ -54,9 +54,9 @@ void RenderComponent::Draw()
     Tex.get()->Unbind();
 
     // Restore the original culling state
-        glEnable(GL_CULL_FACE);
-        glCullFace(currentCullFace);
-        glFrontFace(currentFrontFace);
+    glEnable(GL_CULL_FACE);
+    glCullFace(currentCullFace);
+    glFrontFace(currentFrontFace);
 
 }
 
