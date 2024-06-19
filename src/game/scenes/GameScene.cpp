@@ -174,7 +174,7 @@ void GameScene::init() {
     terrainRenderComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation, terrainEntityScale);
 
     auto terrainRoadRenderComponent = std::make_shared<RenderComponent>("../src/ressources/DE_MAP0/MAPOI.obj",
-                                                           "../src/ressources/DE_MAP0/ROAD_TEX.jpg", 
+                                                           "../src/ressources/DE_MAP0/BIG_ROAD_TEX.jpg", 
                                                            renderRsrcManager, 2, true);
 
     terrainRoadRenderComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation, terrainEntityScale);

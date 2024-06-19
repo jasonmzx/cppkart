@@ -27,9 +27,13 @@ Texture::Texture(std::string image, GLenum texType, GLenum slot, GLenum pixelTyp
 	glActiveTexture(slot);
 	glBindTexture(texType, ID);
 
-	// Configures the type of algorithm that is used to make the image smaller or bigger
-	glTexParameteri(texType, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
-	glTexParameteri(texType, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	//* Configures the type of algorithm that is used to make the image smaller or bigger for mipmapping
+	// glTexParameteri(texType, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+	// glTexParameteri(texType, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	glTexParameteri(texType, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(texType, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
 
 	// Configures the way the texture repeats (if it does at all)
 	glTexParameteri(texType, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -43,6 +47,21 @@ Texture::Texture(std::string image, GLenum texType, GLenum slot, GLenum pixelTyp
 	glTexImage2D(texType, 0, GL_RGBA, widthImg, heightImg, 0, format, pixelType, bytes);
 	// Generates MipMaps
 	glGenerateMipmap(texType);
+
+
+	float anisotropyLevel = 15.0f;
+	    // Check for anisotropic filtering support and set it
+    // Check for anisotropic filtering support and set it
+    if (GLAD_GL_EXT_texture_filter_anisotropic) {
+        if (anisotropyLevel > 1.0f) {
+            GLfloat maxAniso = 0.0f;
+            glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxAniso);
+            anisotropyLevel = std::min(anisotropyLevel, maxAniso);
+            glTexParameterf(texType, GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropyLevel);
+        }
+    } else {
+        printf("Anisotropic filtering not supported.\n");
+    }
 
 	// Deletes the image data as it is already in the OpenGL Texture object
 	stbi_image_free(bytes);
