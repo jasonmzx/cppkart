@@ -140,6 +140,9 @@ add_executable(cppkart
      src/jx_engine/physics/VehiclePhysics.hpp
      src/jx_engine/physics/VehiclePhysics.cpp
 
+     src/jx_engine/physics/bullet/btFilterableVehicleRaycaster.h
+     src/jx_engine/physics/bullet/btFilterableVehicleRaycaster.cpp
+
      #---! Rewrite Game Files !---:
 
      src/game/GameWindow.cpp

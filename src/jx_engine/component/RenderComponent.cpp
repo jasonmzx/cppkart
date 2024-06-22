@@ -1,6 +1,6 @@
 #include "RenderComponent.hpp"
 
-RenderComponent::RenderComponent(std::string modelPath, std::string texPath, std::shared_ptr<RenderRsrcManager> rrm, int meshIndex, bool cD)
+RenderComponent::RenderComponent(std::string modelPath, std::string texPath, std::shared_ptr<RenderRsrcManager> rrm, int meshIndex, bool cD, bool isTexAlpha)
 {
     cullDisable = !cD;
     ressources = rrm;
@@ -10,7 +10,7 @@ RenderComponent::RenderComponent(std::string modelPath, std::string texPath, std
 
     // texPath = texPath;
     Tex = ressources->tryGetTex(texPath);
-    if (Tex == nullptr) { Tex = ressources->loadTex(texPath, texPath, false); }
+    if (Tex == nullptr) { Tex = ressources->loadTex(texPath, texPath, isTexAlpha); }
 }
 
 void RenderComponent::SetGLContext(GLint texLOCATION, GLint mmLOCATION, GLint colorUniformLOCATION, float scale)

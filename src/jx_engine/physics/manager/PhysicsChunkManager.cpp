@@ -1,5 +1,8 @@
 #include "PhysicsChunkManager.hpp"
 
+#define COLLISION_GROUP_CHUNKS 0x1
+#define COLLISION_GROUP_ALL 0x2
+
 //Constructor
 PhysicsChunkManager::PhysicsChunkManager(const std::string& filename, float scaleFac) {
     SCALE_FACTOR = scaleFac;
@@ -78,7 +81,7 @@ void PhysicsChunkManager::update(btScalar playerX, btScalar playerZ) {
             // Activate chunk and add its rigid body to the physics world
             chunk.active = true;
             logger->log(Logger::INFO, "Attempting to addRigidBody");
-            physicsWorld->dynamicsWorld->addRigidBody(body);
+            physicsWorld->dynamicsWorld->addRigidBody(body, COLLISION_GROUP_CHUNKS, COLLISION_GROUP_ALL);
 
         } else if (distance > activationRadius && chunk.active) {
             
@@ -93,6 +96,8 @@ void PhysicsChunkManager::update(btScalar playerX, btScalar playerZ) {
     }
 }
 
+
+//! DEPRECATED FUNCTION : (Maybe use for testing)
 
 void PhysicsChunkManager::ActiveAll() {
     PhysicsWorldSingleton *physicsWorld = PhysicsWorldSingleton::getInstance();

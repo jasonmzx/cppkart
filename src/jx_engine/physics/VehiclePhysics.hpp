@@ -2,12 +2,13 @@
 #define VEHICLEPHYSICS_CLASS_HPP
 
 #include <bullet/btBulletDynamicsCommon.h>  // Assuming you have this included for Bullet physics types
+#include "bullet/btFilterableVehicleRaycaster.h"
 #include "PhysicsWorldSingleton.h"
 
 class VehiclePhysics {
 private:
     btRigidBody* vehicleRigidBody;
-    btVehicleRaycaster* vehicleRayCaster;
+    btFilterableVehicleRaycaster* vehicleRayCaster;
 
     btDefaultMotionState *vehicleMotionState;
 

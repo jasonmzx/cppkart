@@ -113,13 +113,7 @@ void DemoGame::tick()
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
 
-    float framerate = ImGui::GetIO().Framerate;
-    char formatted_fps_STR[50];
-    sprintf(formatted_fps_STR, "FPS: %.1f", framerate);
 
-    ImGui::Begin("FPS Counter");
-    ImGui::Text("%s", formatted_fps_STR);
-    ImGui::End();
 
     sceneManager->getActiveScene().get()->updateImGui();
 

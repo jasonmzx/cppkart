@@ -1,8 +1,8 @@
 #include "VehicleRenderComponent.hpp"
 
 VehicleRenderComponent::VehicleRenderComponent
-(std::string modelPath, std::string wheelModelPath, std::string texPath, std::shared_ptr<RenderRsrcManager> rrm, int meshIndex)
-: RenderComponent(modelPath, texPath, rrm, meshIndex, true)
+(std::string modelPath, std::string wheelModelPath, std::string texPath, std::shared_ptr<RenderRsrcManager> rrm, int meshIndex, bool isTexAlpha)
+: RenderComponent(modelPath, texPath, rrm, meshIndex, true, isTexAlpha)
 {
     // wheelModelPath = wheelModelPath;
     WheelGeom = ressources->tryGetGeometry(wheelModelPath, 0);
@@ -29,6 +29,7 @@ void VehicleRenderComponent::getTransforms(glm::vec3 glmVehiclePos, glm::quat gl
 
 void VehicleRenderComponent::UpdateWheelTransforms(VehiclePhysics* vehiclePhysics) {
     
+    float wheelRadius = 0.5f;
     wheelModelMatrices.clear();
 
     for(int i = 0; i < vehiclePhysics->vehicle->getNumWheels(); i++) {
@@ -38,15 +39,19 @@ void VehicleRenderComponent::UpdateWheelTransforms(VehiclePhysics* vehiclePhysic
         
         wheelinfo.m_worldTransform.getOpenGLMatrix(glm::value_ptr(wheelM));
 
-        glm::vec3 wheelCenterOffset(0.0f, -0.5f, 0.0f); // Adjust Y offset based on your model specifics
+        glm::vec3 wheelCenterOffset(0.0f, (wheelRadius*-1), 0.0f); // Adjust Y offset based on your model specifics
         glm::mat4 centeringTranslation = glm::translate(glm::mat4(1.0f), wheelCenterOffset);
 
-
-        // Optionally apply rotation adjustments if necessary
+        // Rotate 90 degrees around the Y axis to align the wheel with the world, also translate down the Y axis
         glm::mat4 rotateAdjustment = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
+        glm::mat4 wheelModelMat = wheelM * centeringTranslation * rotateAdjustment * glm::scale(glm::vec3(wheelRadius));
+
+        // Apply additional translation down on the y-axis
+        wheelModelMat[3][1] = wheelModelMat[3][1] - 0.8f;
+
         wheelModelMatrices.push_back(
-            wheelM * centeringTranslation * rotateAdjustment * glm::scale(glm::vec3(0.5f)) // Apply scaling last to maintain proportions
+            wheelModelMat 
         );
     }
 

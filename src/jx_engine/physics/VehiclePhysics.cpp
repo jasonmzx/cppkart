@@ -1,5 +1,10 @@
 #include "VehiclePhysics.hpp"
 
+#include "bullet/btFilterableVehicleRaycaster.h"
+
+#define COLLISION_GROUP_CHUNKS 0x1
+#define COLLISION_GROUP_ALL 0x2
+
 VehiclePhysics::VehiclePhysics()
 {
     PhysicsWorldSingleton *physicsWorld = PhysicsWorldSingleton::getInstance();
@@ -39,14 +44,18 @@ VehiclePhysics::VehiclePhysics()
     btRigidBody::btRigidBodyConstructionInfo vehicleRigidBodyCI(vehicleMass, vehicleMotionState, vehicleChassisShape, vehicleInertia);
 
     vehicleRigidBody = new btRigidBody(vehicleRigidBodyCI);
-    physicsWorld->dynamicsWorld->addRigidBody(vehicleRigidBody);
+    physicsWorld->dynamicsWorld->addRigidBody(vehicleRigidBody, COLLISION_GROUP_ALL, COLLISION_GROUP_CHUNKS);
 
     // vehicleRigidBody->getWorldTransform
     // ^ use for rotation camera thingy
 
 
     // Raycaster and the actual vehicle
-    vehicleRayCaster = new btDefaultVehicleRaycaster(physicsWorld->dynamicsWorld);
+    vehicleRayCaster = new btFilterableVehicleRaycaster(physicsWorld->dynamicsWorld);
+    
+    vehicleRayCaster->setCollisionFilterGroup(COLLISION_GROUP_ALL);
+    vehicleRayCaster->setCollisionFilterMask(COLLISION_GROUP_CHUNKS);
+
     vehicle = new btRaycastVehicle(tuning, vehicleRigidBody, vehicleRayCaster);
 
     btVector3 wheelDirection = btVector3(0, -1, 0);
