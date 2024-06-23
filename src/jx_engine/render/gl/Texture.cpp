@@ -45,11 +45,16 @@ Texture::Texture(std::string image, GLenum texType, GLenum slot, GLenum pixelTyp
 
 	// Assigns the image to the OpenGL Texture object
 	glTexImage2D(texType, 0, GL_RGBA, widthImg, heightImg, 0, format, pixelType, bytes);
-	// Generates MipMaps
+	
+	// GL Mipmapping
 	glGenerateMipmap(texType);
+	
+	float lodBias = -1.5f; // Adjust this value as needed
+    glTexParameterf(texType, GL_TEXTURE_LOD_BIAS, lodBias);
 
 
-	float anisotropyLevel = 15.0f;
+
+	float anisotropyLevel = 16.0f;
 	    // Check for anisotropic filtering support and set it
     // Check for anisotropic filtering support and set it
     if (GLAD_GL_EXT_texture_filter_anisotropic) {

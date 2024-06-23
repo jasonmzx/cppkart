@@ -107,15 +107,13 @@ void DemoGame::tick()
 
   sceneManager->getActiveScene().get()->render();
 
-  if (IMGUI_MODE)
+  if (IMGUI_MODE) // Setup, call Scene's ImGui Update & Render
   {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
 
-
-
-    sceneManager->getActiveScene().get()->updateImGui();
+    sceneManager->getActiveScene().get()->updateImGui(); 
 
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
