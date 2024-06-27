@@ -43,6 +43,11 @@ class GameScene : public Scene {
         void procGameInputs();
         void updateImGui();
 
+
+        // Might put this somewhere else
+        static bool bulletCollisionCallback(btManifoldPoint& cp, 
+        const btCollisionObjectWrapper* colObj0, int partId0, int index0, const btCollisionObjectWrapper* colObj1, int partId1, int index1);
+
         std::unique_ptr<ECManager> ec;
         std::shared_ptr<Camera> camera;
         

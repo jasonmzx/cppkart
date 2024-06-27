@@ -44,6 +44,9 @@ VehiclePhysics::VehiclePhysics()
     btRigidBody::btRigidBodyConstructionInfo vehicleRigidBodyCI(vehicleMass, vehicleMotionState, vehicleChassisShape, vehicleInertia);
 
     vehicleRigidBody = new btRigidBody(vehicleRigidBodyCI);
+    vehicleRigidBody->setUserPointer((void *)1);
+    vehicleRigidBody->setCollisionFlags(vehicleRigidBody->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
+
     physicsWorld->dynamicsWorld->addRigidBody(vehicleRigidBody, COLLISION_GROUP_ALL, COLLISION_GROUP_CHUNKS);
 
     // vehicleRigidBody->getWorldTransform
