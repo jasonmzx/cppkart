@@ -61,6 +61,8 @@ void PhysicsChunkManager::update(btScalar playerX, btScalar playerZ) {
         }
 
         btRigidBody* body = chunk.rigidMeshChunk->meshRigidBody;
+        body->setUserPointer((void *)2);
+        body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
 
         if (body == nullptr) {
             logger->log(Logger::ERROR, "meshRigidBody is null.");

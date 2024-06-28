@@ -12,7 +12,9 @@ GameScene::GameScene(int WIN_W, int WIN_H, SDL_Window* window) {
 
     this->SDL_window = window;
 
-    // Rendering
+    gContactAddedCallback = bulletCollisionCallback;
+
+    // Rendering  
     camera = std::make_shared<Camera>(WIN_WIDTH, WIN_HEIGHT, glm::vec3(0.0f, 10.0f, 2.0f));
     renderer = std::make_shared<GameGLRenderer>(WIN_WIDTH, WIN_HEIGHT, camera.get());
     renderRsrcManager = std::make_shared<RenderRsrcManager>();
@@ -21,6 +23,30 @@ GameScene::GameScene(int WIN_W, int WIN_H, SDL_Window* window) {
     gameInput = std::make_shared<GameInput>();
 
 }
+
+bool GameScene::bulletCollisionCallback(btManifoldPoint& cp, 
+  const btCollisionObjectWrapper* colObj0, int partId0, int index0, const btCollisionObjectWrapper* colObj1, int partId1, int index1) {
+    
+    //std::cout << "Collision Detected!" << std::endl;
+
+    // Get the two colliding objects
+    btCollisionObject* obj0 = (btCollisionObject*)colObj0->getCollisionObject();
+    btCollisionObject* obj1 = (btCollisionObject*)colObj1->getCollisionObject();
+    
+      // Retrieve user pointers and cast them back to int
+    int userPtr0 = reinterpret_cast<intptr_t>(obj0->getUserPointer());
+    int userPtr1 = reinterpret_cast<intptr_t>(obj1->getUserPointer());
+
+    // Retreive applied impulse
+    float impulse = cp.getAppliedImpulse();
+
+    std::cout << "Collision Detected between objects with user pointers: "
+              << userPtr0 << " and " << userPtr1 << " | IMPULSE: " << impulse << std::endl;
+    
+    
+    return false;
+}
+
 
 void GameScene::update(float dt) {
     // Update game logic
