@@ -5,7 +5,7 @@
 //     this->activeScene = sceneManager.get()->getActiveScene();
 // }
 
-void ECManager::tick(std::vector<std::shared_ptr<Entity>> entities, std::shared_ptr<GameInput> gameInput,
+void ECManager::tick(std::vector<std::shared_ptr<Entity>>& entities, std::shared_ptr<GameInput> gameInput,
     std::shared_ptr<Camera> camera, bool followPlayerVehicle
 ) {
     for(auto entity : entities) {
@@ -40,7 +40,7 @@ void ECManager::tick(std::vector<std::shared_ptr<Entity>> entities, std::shared_
     }
 }
 
-void ECManager::renderPass(std::vector<std::shared_ptr<Entity>> entities) {
+void ECManager::renderPass(std::vector<std::shared_ptr<Entity>>& entities) {
     for(auto entity : entities) {
         for (auto& component : entity.get()->components) {
 

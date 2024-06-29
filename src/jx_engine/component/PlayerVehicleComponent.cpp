@@ -1,6 +1,7 @@
 #include "PlayerVehicleComponent.hpp"
 
-PlayerVehicleComponent::PlayerVehicleComponent() : vehiclePhysics() {} 
+PlayerVehicleComponent::PlayerVehicleComponent(float xPos, float yPos, float zPos) 
+: vehiclePhysics(xPos, yPos, zPos) {} 
 
 void PlayerVehicleComponent::updateVehicleControl(GameInput::Control acceleration, GameInput::Control steer) {
 

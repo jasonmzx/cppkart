@@ -2,6 +2,7 @@
 #define GAMESCENE_HPP
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
 
 #include "jx_engine/core/SceneManager.hpp"
 #include "jx_engine/core/Scene.hpp"
@@ -44,6 +45,10 @@ class GameScene : public Scene {
         void updateImGui();
 
 
+        // Static instance of self, for bullet collision callback:
+
+        static GameScene* instance;
+
         // Might put this somewhere else
         static bool bulletCollisionCallback(btManifoldPoint& cp, 
         const btCollisionObjectWrapper* colObj0, int partId0, int index0, const btCollisionObjectWrapper* colObj1, int partId1, int index1);
@@ -77,6 +82,10 @@ class GameScene : public Scene {
         bool firstClick = true;
 
         std::shared_ptr<GameInput> gameInput;
+
+        // Sounds:
+
+        Mix_Chunk* crashSound; 
 };
 
 #endif // SCENE_HPP

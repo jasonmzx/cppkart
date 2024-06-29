@@ -1,14 +1,29 @@
 #include "PhysicsChunkManager.hpp"
 
+#include <chrono>
+
 #define COLLISION_GROUP_CHUNKS 0x1
 #define COLLISION_GROUP_ALL 0x2
+
+Logger* logger = Logger::getInstance();
+
 
 //Constructor
 PhysicsChunkManager::PhysicsChunkManager(const std::string& filename, float scaleFac) {
     SCALE_FACTOR = scaleFac;
+
+    // Get tiem now
+
+    auto chunk_loading_start = std::chrono::high_resolution_clock::now();
+
     std::vector<LoadedChunk> chunks = PhysChunkedMapLoader::loadChunks(filename);
 
+    auto chunk_loading_end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> chunk_loading_time = chunk_loading_end - chunk_loading_start;
+    logger->log(Logger::INFO, "[PHYSICS CHUNKED MAP LOADER] : Chunk Parsing Time: " + std::to_string(chunk_loading_time.count()) + "s");
+
     glm::mat4 chunkModelMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f, 0.1f, 0.1f)); // Placeholder Model Matrix
+
 
     for (auto& ldChunk : chunks) {
 
@@ -20,12 +35,17 @@ PhysicsChunkManager::PhysicsChunkManager(const std::string& filename, float scal
 
         chunkVector.push_back(std::move(newChunk)); // Move the unique_ptr to the vector
     }
+
+    auto chunk_loading_end2 = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> chunk_loading_time2 = chunk_loading_end2 - chunk_loading_start;
+
+    logger->log(Logger::INFO, "[PHYSICS CHUNKED MAP LOADER] : Total Chunk Loading Time: " + std::to_string(chunk_loading_time2.count()) + "s");
+
 }
 
 void PhysicsChunkManager::update(btScalar playerX, btScalar playerZ) {
     
     PhysicsWorldSingleton *physicsWorld = PhysicsWorldSingleton::getInstance();
-    Logger* logger = Logger::getInstance();
 
     static int rigidbodychanges = 0;
     // Define a radius within which chunks should be active

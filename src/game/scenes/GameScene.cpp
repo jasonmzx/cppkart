@@ -5,12 +5,16 @@
 
 Logger* GameScene::logger = Logger::getInstance();
 
+GameScene* GameScene::instance = nullptr;
+
 GameScene::GameScene(int WIN_W, int WIN_H, SDL_Window* window) {
     
     WIN_WIDTH = WIN_W;
     WIN_HEIGHT = WIN_H;
 
     this->SDL_window = window;
+
+    instance = this;
 
     gContactAddedCallback = bulletCollisionCallback;
 
@@ -22,11 +26,23 @@ GameScene::GameScene(int WIN_W, int WIN_H, SDL_Window* window) {
     // IO
     gameInput = std::make_shared<GameInput>();
 
+    //* =================== Load Sound Effects =================== *//
+
+    // Init SDL_mixer
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+      logger->log(Logger::ERROR, "SDL_mixer could not initialize! SDL_mixer Error: " + std::string(Mix_GetError()));
+    }
+
+    crashSound = Mix_LoadWAV("../src/ressources/sounds/zapsplat_car_crash_01.mp3");
+    if (crashSound == nullptr) {
+      logger->log(Logger::ERROR, "Failed to load sound effect! SDL_mixer Error: " + std::string(Mix_GetError()));
+    }
+
 }
 
 bool GameScene::bulletCollisionCallback(btManifoldPoint& cp, 
-  const btCollisionObjectWrapper* colObj0, int partId0, int index0, const btCollisionObjectWrapper* colObj1, int partId1, int index1) {
-    
+  const btCollisionObjectWrapper* colObj0, int partId0, int index0, const btCollisionObjectWrapper* colObj1, int partId1, int index1) 
+{
     //std::cout << "Collision Detected!" << std::endl;
 
     // Get the two colliding objects
@@ -40,13 +56,17 @@ bool GameScene::bulletCollisionCallback(btManifoldPoint& cp,
     // Retreive applied impulse
     float impulse = cp.getAppliedImpulse();
 
+    if( impulse > 0.1f) {
     std::cout << "Collision Detected between objects with user pointers: "
               << userPtr0 << " and " << userPtr1 << " | IMPULSE: " << impulse << std::endl;
-    
-    
+    }
+
+    if( impulse > 5000.0f && GameScene::instance) {
+        Mix_PlayChannel(-1, GameScene::instance->crashSound, 0); 
+    }
+
     return false;
 }
-
 
 void GameScene::update(float dt) {
     // Update game logic
@@ -77,7 +97,7 @@ void GameScene::updateImGui() {
                     isBulletDebugDraw = !isBulletDebugDraw;
                 }
 
-                ImGui::Text(ecManager.get()->debugStateSTR().c_str());
+                ImGui::Text("%s", ecManager.get()->debugStateSTR().c_str());
 
                 ImGui::EndTabItem();
             }
@@ -211,31 +231,7 @@ void GameScene::init() {
   btRigidBody *planeBody = new btRigidBody(info);
   physicsWorld->dynamicsWorld->addRigidBody(planeBody);
   
-  //! ___
-
-// // Initialize triangle mesh shape
-// btTriangleMesh* triangleMesh = new btTriangleMesh();
-// triangleMesh->addTriangle(btVector3(0, 0, 0),
-//                           btVector3(-14.318789, 21.87693, -91.302094),
-//                           btVector3(-14.203687, 22.688904, -91.920738));
-
-// btBvhTriangleMeshShape* meshShape = new btBvhTriangleMeshShape(triangleMesh, true);
-// btTransform meshTransform;
-// meshTransform.setIdentity();
-// btDefaultMotionState* meshMotionState = new btDefaultMotionState(meshTransform);
-// btRigidBody::btRigidBodyConstructionInfo meshRigidBodyCI(0, meshMotionState, meshShape, btVector3(0, 0, 0));
-// btRigidBody* meshRigidBody = new btRigidBody(meshRigidBodyCI);
-
-// // Check if the meshRigidBody is valid
-// if (!meshRigidBody) {
-//     std::cerr << "Failed to initialize meshRigidBody!" << std::endl;
-//     return;
-// }
-
-// physicsWorld->dynamicsWorld->addRigidBody(meshRigidBody);
-//     //!__
-
-    std::shared_ptr<Entity> terrainEntity = std::make_shared<Entity>();
+  std::shared_ptr<Entity> terrainEntity = std::make_shared<Entity>();
 
     // auto terrainRenderComponent = std::make_shared<RenderComponent>("../src/ressources/DE_Map1/Landscape01.obj",
     //                                                        "../src/ressources/DE_Map1/Map01_Albedo.png", 
@@ -244,7 +240,6 @@ void GameScene::init() {
     //* ----------------- Terrain Entity Definition ----------------- *//
 
     float terrainEntityScale = 15.0f;
-
 
     auto terrainRenderComponent = std::make_shared<RenderComponent>("../src/ressources/DE_MAP0/MAPOI.obj",
                                                            "../src/ressources/DE_Map1/Map01_Albedo.png", 
@@ -280,7 +275,7 @@ void GameScene::init() {
 
     std::shared_ptr<Entity> playerVehicleEntity = std::make_shared<Entity>();
 
-    auto playerVehicleComponent = std::make_shared<PlayerVehicleComponent>();
+    auto playerVehicleComponent = std::make_shared<PlayerVehicleComponent>(135.0f, 135.0f, -165.0f);
     ecManager.get()->setPlayerVehicle(playerVehicleComponent);
 
     playerVehicleEntity->addComponent(playerVehicleComponent);

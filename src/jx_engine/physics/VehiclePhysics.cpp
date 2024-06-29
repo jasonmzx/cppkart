@@ -5,7 +5,7 @@
 #define COLLISION_GROUP_CHUNKS 0x1
 #define COLLISION_GROUP_ALL 0x2
 
-VehiclePhysics::VehiclePhysics()
+VehiclePhysics::VehiclePhysics(float xPos, float yPos, float zPos)
 {
     PhysicsWorldSingleton *physicsWorld = PhysicsWorldSingleton::getInstance();
 
@@ -27,8 +27,8 @@ VehiclePhysics::VehiclePhysics()
     localTransform.setIdentity();
     //localTransform.setOrigin(btVector3(0, 100, 0));
     //localTransform.setOrigin(btVector3(0, 50, 0));
-
-    localTransform.setOrigin(btVector3(135, 150, -165));
+    //localTransform.setOrigin(btVector3(135, 150, -165));
+    localTransform.setOrigin(btVector3(xPos, yPos, zPos));
 
 
     btQuaternion initialRotation( btVector3(0,1,0), 90.0f * SIMD_PI / 180.0f ); // Rotate 90 degrees arround Y axis
@@ -182,7 +182,6 @@ void VehiclePhysics::Brake(float force)
 
 void VehiclePhysics::ResetTransform()
 {
-    // Create a new transform and set it to identity
     btTransform newTransform;
     newTransform.setIdentity();
 

@@ -27,7 +27,7 @@ private:
 
 
 public:
-    VehiclePhysics();
+    VehiclePhysics(float xPos, float yPos, float zPos);
     btRaycastVehicle* vehicle;
 
     // Probably you'll need methods like:

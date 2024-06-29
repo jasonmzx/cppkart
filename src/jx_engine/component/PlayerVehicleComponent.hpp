@@ -8,7 +8,8 @@
 class PlayerVehicleComponent : public EComponent {
 
     public:
-        PlayerVehicleComponent();
+        
+        PlayerVehicleComponent(float xPos, float yPos, float zPos);
 
         VehiclePhysics vehiclePhysics;
 
