@@ -18,7 +18,8 @@
 class ECManager { // Entity Component Manager
     public:
         //void update(float dt);
-        void tick(std::vector<std::shared_ptr<Entity>>& entities, std::shared_ptr<GameInput> gameInput, std::shared_ptr<Camera> camera, bool followPlayerVehicle);
+        void tick(std::vector<std::shared_ptr<Entity>>& entities, std::shared_ptr<GameInput> gameInput,
+        std::shared_ptr<Camera> camera, bool followPlayerVehicle, float& vehicleSpeed);
         
         void renderPass(std::vector<std::shared_ptr<Entity>>& entities);
 

@@ -66,6 +66,7 @@ class GameScene : public Scene {
         void load_HighRoadHills_Map(std::shared_ptr<Entity> terrainEntity);
 
         float ecInferenceTimeMS;
+        float vSpeed;
 
         int WIN_WIDTH;
         int WIN_HEIGHT;

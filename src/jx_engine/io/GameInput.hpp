@@ -34,7 +34,7 @@ class GameInput {
         typedef std::vector<Control> ActiveInput;
         
         void keyboardUpdateInput(const Uint8 *state);
-        void xboxControllerUpdateInput(const int leftX, const int leftY);
+        void xboxControllerUpdateInput(const int leftX, const int leftY, const int lt, const int rt);
 
         void getActiveControls();
 

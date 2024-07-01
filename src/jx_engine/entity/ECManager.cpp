@@ -6,7 +6,7 @@
 // }
 
 void ECManager::tick(std::vector<std::shared_ptr<Entity>>& entities, std::shared_ptr<GameInput> gameInput,
-    std::shared_ptr<Camera> camera, bool followPlayerVehicle
+    std::shared_ptr<Camera> camera, bool followPlayerVehicle, float& vehicleSpeed
 ) {
     for(auto entity : entities) {
 
@@ -28,10 +28,14 @@ void ECManager::tick(std::vector<std::shared_ptr<Entity>>& entities, std::shared
                 dpY = pY;
                 dpZ = pZ;
 
+                vehicleSpeed = playerVehicleComponent.get()->vehiclePhysics.getSpeed();
+
                 // printf("Player Vehicle Position: %f, %f, %f\n", pX, pY, pZ);
 
-                terrainChunksComponents.get()->updateChunks(pX, pZ);
-                
+                if(terrainChunksComponents.get()) {
+                    terrainChunksComponents.get()->updateChunks(pX, pZ);
+                }
+
                 if(followPlayerVehicle) {
                     camera.get()->VehicleFollowCamera(pX,pY,pZ);
                 }

@@ -39,6 +39,8 @@ public:
 
     void ResetTransform();
 
+    float getSpeed() const;
+
     float getX() const;
     float getY() const;
     float getZ() const;

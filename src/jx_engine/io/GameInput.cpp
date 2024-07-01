@@ -20,29 +20,34 @@ void GameInput::keyboardUpdateInput(const Uint8 *state) {
     }
 }
 
-void GameInput::xboxControllerUpdateInput(const int leftX, const int leftY) {
+void GameInput::xboxControllerUpdateInput(const int leftX, const int leftY, const int lt, const int rt) {
     
     // Reset control states
     currentAcceleration = Idle;
     currentTurn = Idle;
 
     // Check for acceleration/brake
-    if (leftY > -1) {
-        currentAcceleration = GameInput::VehicleBrake;
-    } else if (leftY < -2) {
-        currentAcceleration = GameInput::VehicleAccelerate;
-    }
 
+    if (rt > 1) {
+        currentAcceleration = GameInput::VehicleAccelerate;
+    } else if (lt > 1) {
+        currentAcceleration = GameInput::VehicleBrake;
+    }    
+
+    // if (leftY > -1) {
+    //     currentAcceleration = GameInput::VehicleBrake;
+    // } else if (leftY < -2) {
+    //     currentAcceleration = GameInput::VehicleAccelerate;
+    // }
     // leftY = -1 means idle, so we don't need to check for it
 
     // Check for turning
+
     if (leftX < 0) { // Left Turn
         
         if(leftX < -32000)
-            currentTurn = GameInput::FullVehicleTurnLeft;
-        else if(leftX < -16000)
             currentTurn = GameInput::HalfVehicleTurnLeft;
-        else if(leftX < -8000)
+        else if(leftX < -16000)
             currentTurn = GameInput::QuarterVehicleTurnLeft;
         else
             currentTurn = GameInput::Idle;
@@ -50,10 +55,8 @@ void GameInput::xboxControllerUpdateInput(const int leftX, const int leftY) {
     } else if (leftX > 0) {
         
         if(leftX > 32000)
-            currentTurn = GameInput::FullVehicleTurnRight;
-        else if(leftX > 16000)
             currentTurn = GameInput::HalfVehicleTurnRight;
-        else if(leftX > 8000)
+        else if(leftX > 16000)
             currentTurn = GameInput::QuarterVehicleTurnRight;
         else
             currentTurn = GameInput::Idle;

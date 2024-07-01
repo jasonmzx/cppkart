@@ -3,6 +3,9 @@
 #include <chrono>
 //#define BT_USE_DOUBLE_PRECISION 1
 
+#define COLLISION_GROUP_CHUNKS 0x1
+#define COLLISION_GROUP_ALL 0x2
+
 Logger* GameScene::logger = Logger::getInstance();
 
 GameScene* GameScene::instance = nullptr;
@@ -89,6 +92,12 @@ void GameScene::updateImGui() {
             
             if (ImGui::BeginTabItem("DEBUG TOOLS")) { // Debug Tools Tab
                 
+
+                ImGui::Text("Vehicle Speed: %.2f", vSpeed);
+
+                //Spacer
+                ImGui::Spacing();
+
                 if (ImGui::Button("Reset Vehicle")) {
                     ecManager.get()->resetPlayerVehicle();
                 }
@@ -147,7 +156,10 @@ void GameScene::render() {
 
     auto start = std::chrono::high_resolution_clock::now();
 
-    ecManager->tick(entities, gameInput, camera, followPlayerVehicle); // ECS System Tick
+    vSpeed = 0.0f;
+
+
+    ecManager->tick(entities, gameInput, camera, followPlayerVehicle, vSpeed); // ECS System Tick
     ecManager->renderPass(entities); // ECS Render Pass
 
     auto end = std::chrono::high_resolution_clock::now();
@@ -216,7 +228,11 @@ void GameScene::procGameInputs() {
         int leftX = SDL_JoystickGetAxis(gGameController, 0); // X axis
         int leftY = SDL_JoystickGetAxis(gGameController, 1); // Y axis
 
-        gameInputPtr->xboxControllerUpdateInput(leftX, leftY);
+        // LT and RT triggers
+        int lt = SDL_JoystickGetAxis(gGameController, 2); // LT axis (Left Trigger)
+        int rt = SDL_JoystickGetAxis(gGameController, 5); // RT axis (Right Trigger)
+
+        gameInputPtr->xboxControllerUpdateInput(leftX, leftY, lt, rt);
 
         // Right joystick
         int rightX = SDL_JoystickGetAxis(gGameController, 3); // X axis
@@ -224,6 +240,11 @@ void GameScene::procGameInputs() {
 
         printf("Left Joystick - X: %d, Y: %d\n", leftX, leftY);
         printf("Right Joystick - X: %d, Y: %d\n", rightX, rightY);
+
+
+
+        printf("Left Trigger (LT): %d\n", lt);
+        printf("Right Trigger (RT): %d\n", rt);
 
         // Print button states
         for (int i = 0; i < SDL_JoystickNumButtons(gGameController); i++) {
@@ -317,7 +338,11 @@ void GameScene::init() {
   info.m_friction = 2.0f;
 
   btRigidBody *planeBody = new btRigidBody(info);
-  physicsWorld->dynamicsWorld->addRigidBody(planeBody);
+
+  //body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
+  planeBody->setCollisionFlags(planeBody->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
+
+  physicsWorld->dynamicsWorld->addRigidBody(planeBody, COLLISION_GROUP_CHUNKS, COLLISION_GROUP_ALL);
   
   //!__ ENDOF Prototype Plane 
 
@@ -335,6 +360,7 @@ void GameScene::init() {
 
     std::shared_ptr<Entity> playerVehicleEntity = std::make_shared<Entity>();
 
+    //auto playerVehicleComponent = std::make_shared<PlayerVehicleComponent>(10.0f, 10.0f, 10.0f);
     auto playerVehicleComponent = std::make_shared<PlayerVehicleComponent>(135.0f, 135.0f, -165.0f);
     
     ecManager.get()->setPlayerVehicle(playerVehicleComponent);

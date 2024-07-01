@@ -25,11 +25,7 @@ VehiclePhysics::VehiclePhysics(float xPos, float yPos, float zPos)
     btTransform localTransform;
 
     localTransform.setIdentity();
-    //localTransform.setOrigin(btVector3(0, 100, 0));
-    //localTransform.setOrigin(btVector3(0, 50, 0));
-    //localTransform.setOrigin(btVector3(135, 150, -165));
     localTransform.setOrigin(btVector3(xPos, yPos, zPos));
-
 
     btQuaternion initialRotation( btVector3(0,1,0), 90.0f * SIMD_PI / 180.0f ); // Rotate 90 degrees arround Y axis
     localTransform.setRotation(initialRotation);    
@@ -80,7 +76,7 @@ VehiclePhysics::VehiclePhysics(float xPos, float yPos, float zPos)
     auto halfExtents = vehicleChassisShape->getHalfExtentsWithoutMargin();
     btScalar connectionHeight(3.2);
 
-    btVector3 wheelConnectionPoint(halfExtents.x() - 0.4, connectionHeight, halfExtents.z() - 0.5);
+    btVector3 wheelConnectionPoint(halfExtents.x() - 0.6, connectionHeight, halfExtents.z() - 0.5);
 
     // Adds the front wheels
     vehicle->addWheel(wheelConnectionPoint * btVector3(2, 0, 1), wheelDirection, wheelAxle, suspensionRestLength, wheelRadius, tuning, true);
@@ -170,6 +166,13 @@ void VehiclePhysics::ApplySteer(float steerIncr)
     vehicle->setSteeringValue(vehicleSteering, 1);
 }
 
+float VehiclePhysics::getSpeed() const
+{
+    // Get the linear velocity of the vehicle's rigid body
+    btVector3 velocity = vehicleRigidBody->getLinearVelocity();
+    // Calculate the magnitude (length) of the velocity vector
+    return velocity.length();
+}
 
 void VehiclePhysics::Brake(float force)
 {
