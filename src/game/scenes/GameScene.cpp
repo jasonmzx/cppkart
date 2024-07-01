@@ -137,7 +137,6 @@ void GameScene::updateImGui() {
 }
 
 
-
 void GameScene::render() {
 
     procGameInputs();
@@ -168,7 +167,9 @@ void GameScene::render() {
 void GameScene::procGameInputs() {
 
   const Uint8 *KB_InputState = SDL_GetKeyboardState(NULL);
-  gameInput.get()->keyboardUpdateInput(KB_InputState);
+  
+  GameInput* gameInputPtr = gameInput.get();
+  gameInputPtr->keyboardUpdateInput(KB_InputState);
 
   // Some Direct Key Actions
   if(KB_InputState[SDL_SCANCODE_ESCAPE]) { // Free the mouse
@@ -207,15 +208,102 @@ void GameScene::procGameInputs() {
     }
   }
 
+    // Joystick input handling
+  if (gGameController != nullptr) {
+        SDL_JoystickUpdate(); // Update joystick state
+
+        // Left joystick
+        int leftX = SDL_JoystickGetAxis(gGameController, 0); // X axis
+        int leftY = SDL_JoystickGetAxis(gGameController, 1); // Y axis
+
+        gameInputPtr->xboxControllerUpdateInput(leftX, leftY);
+
+        // Right joystick
+        int rightX = SDL_JoystickGetAxis(gGameController, 3); // X axis
+        int rightY = SDL_JoystickGetAxis(gGameController, 4); // Y axis
+
+        printf("Left Joystick - X: %d, Y: %d\n", leftX, leftY);
+        printf("Right Joystick - X: %d, Y: %d\n", rightX, rightY);
+
+        // Print button states
+        for (int i = 0; i < SDL_JoystickNumButtons(gGameController); i++) {
+            if (SDL_JoystickGetButton(gGameController, i) == SDL_PRESSED) {
+                printf("Button %d pressed\n", i);
+            }
+        }
+  }
+
 }
 
-void GameScene::init() {
+
+void GameScene::load_HighRoadHills_Map(std::shared_ptr<Entity> terrainEntity) {
+    float terrainEntityScale = 15.0f;
+
+    auto terrainRenderComponent = std::make_shared<RenderComponent>("../src/ressources/DE_MAP0/MAPOI.obj",
+                                                           "../src/ressources/DE_Map1/Map01_Albedo.png", 
+                                                           renderRsrcManager, 0, true, false);
+    terrainRenderComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation, terrainEntityScale);
+
+    auto terrainRoadRenderComponent = std::make_shared<RenderComponent>("../src/ressources/DE_MAP0/MAPOI.obj",
+                                                           "../src/ressources/DE_MAP0/BIG_ROAD_TEX.jpg", 
+                                                           renderRsrcManager, 2, true, false);
+    terrainRoadRenderComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation, terrainEntityScale);
+
+    auto terrainBottomRoadRenderComponent = std::make_shared<RenderComponent>("../src/ressources/DE_MAP0/MAPOI.obj",
+                                                           "../src/ressources/DE_MAP0/STONE_WALL_04.jpg", 
+                                                           renderRsrcManager, 3, false, false);
+    terrainBottomRoadRenderComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation, terrainEntityScale);                                                          
+
+    auto terrainChunks_physics_Component = std::make_shared<TerrainChunksComponent>("../src/ressources/DE_MAP0/Small_Chunks_MAPOI.txt", terrainEntityScale);
+    ecManager.get()->setTerrainChunks(terrainChunks_physics_Component);
+
+    // Add Render Components:
+    terrainEntity->addComponent(terrainRenderComponent);
+    terrainEntity->addComponent(terrainRoadRenderComponent);
+    terrainEntity->addComponent(terrainBottomRoadRenderComponent);
     
+    // Add Physics Component:
+    terrainEntity->addComponent(terrainChunks_physics_Component);
+}
+
+
+void GameScene::init() {
+
+    // * =================== Joystick Input =================== * //
+
+  const int JOYSTICK_DEAD_ZONE = 4000;
+
+  const uint8_t* state = SDL_GetKeyboardState(nullptr);
+  gGameController = nullptr;
+
+
+        //Check for joysticks
+  if( SDL_NumJoysticks() < 1 )
+  {
+    printf( "Warning: No joysticks connected!\n" );
+  }
+  else
+  {
+            //Load joystick
+            gGameController = SDL_JoystickOpen( 0 );
+            if( gGameController == nullptr )
+            {
+                printf( "Warning: Unable to open game controller! SDL Error: %s\n", SDL_GetError() );
+            }
+
+            //Load second joystick on xbox 360 controller
+
+            printf(
+              "JOYSTICK CONNECTION :-)\n"
+            );
+  }    
+
     // Init reference to physics singleton
+
 
     physicsWorld = PhysicsWorldSingleton::getInstance();
 
-    //!__
+  //!__ Prototype Plane
 
   btTransform protoPlaneTransform;
   protoPlaneTransform.setIdentity();
@@ -231,7 +319,7 @@ void GameScene::init() {
   btRigidBody *planeBody = new btRigidBody(info);
   physicsWorld->dynamicsWorld->addRigidBody(planeBody);
   
-  std::shared_ptr<Entity> terrainEntity = std::make_shared<Entity>();
+  //!__ ENDOF Prototype Plane 
 
     // auto terrainRenderComponent = std::make_shared<RenderComponent>("../src/ressources/DE_Map1/Landscape01.obj",
     //                                                        "../src/ressources/DE_Map1/Map01_Albedo.png", 
@@ -239,36 +327,8 @@ void GameScene::init() {
 
     //* ----------------- Terrain Entity Definition ----------------- *//
 
-    float terrainEntityScale = 15.0f;
-
-    auto terrainRenderComponent = std::make_shared<RenderComponent>("../src/ressources/DE_MAP0/MAPOI.obj",
-                                                           "../src/ressources/DE_Map1/Map01_Albedo.png", 
-                                                           renderRsrcManager, 0, true, false);
-
-    terrainRenderComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation, terrainEntityScale);
-
-    auto terrainRoadRenderComponent = std::make_shared<RenderComponent>("../src/ressources/DE_MAP0/MAPOI.obj",
-                                                           "../src/ressources/DE_MAP0/BIG_ROAD_TEX.jpg", 
-                                                           renderRsrcManager, 2, true, false);
-
-    terrainRoadRenderComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation, terrainEntityScale);
-
-    auto terrainBottomRoadRenderComponent = std::make_shared<RenderComponent>("../src/ressources/DE_MAP0/MAPOI.obj",
-                                                           "../src/ressources/DE_MAP0/STONE_WALL_04.jpg", 
-                                                           renderRsrcManager, 3, false, false);
-
-    terrainBottomRoadRenderComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation, terrainEntityScale);                                                          
-
-
-    auto terrainChunks_physics_Component = std::make_shared<TerrainChunksComponent>("../src/ressources/DE_MAP0/Small_Chunks_MAPOI.txt", terrainEntityScale);
-    ecManager.get()->setTerrainChunks(terrainChunks_physics_Component);
-
-    terrainEntity->addComponent(terrainRenderComponent);
-    terrainEntity->addComponent(terrainRoadRenderComponent);
-    terrainEntity->addComponent(terrainBottomRoadRenderComponent);
-
-    terrainEntity->addComponent(terrainChunks_physics_Component);
-
+    std::shared_ptr<Entity> terrainEntity = std::make_shared<Entity>();
+    load_HighRoadHills_Map(terrainEntity); 
     entities.push_back(terrainEntity);
 
     //* ----------------- Vehicle Entity Definition ----------------- *//
@@ -276,6 +336,7 @@ void GameScene::init() {
     std::shared_ptr<Entity> playerVehicleEntity = std::make_shared<Entity>();
 
     auto playerVehicleComponent = std::make_shared<PlayerVehicleComponent>(135.0f, 135.0f, -165.0f);
+    
     ecManager.get()->setPlayerVehicle(playerVehicleComponent);
 
     playerVehicleEntity->addComponent(playerVehicleComponent);

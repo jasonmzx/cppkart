@@ -16,8 +16,14 @@ class GameInput {
         VehicleBrake,
         VehicleDown,
         VehicleUp,
-        VehicleTurnLeft,
-        VehicleTurnRight,
+
+        // Steer Levels
+        FullVehicleTurnLeft,
+        FullVehicleTurnRight,
+        HalfVehicleTurnLeft,
+        HalfVehicleTurnRight,
+        QuarterVehicleTurnLeft,
+        QuarterVehicleTurnRight,
 
         Idle, //No Input
 
@@ -28,7 +34,8 @@ class GameInput {
         typedef std::vector<Control> ActiveInput;
         
         void keyboardUpdateInput(const Uint8 *state);
-        void controllerUpdateInput();
+        void xboxControllerUpdateInput(const int leftX, const int leftY);
+
         void getActiveControls();
 
         Control currentAcceleration = Idle;

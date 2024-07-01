@@ -58,7 +58,12 @@ class GameScene : public Scene {
         
         PhysicsWorldSingleton *physicsWorld;
 
+        SDL_Joystick* gGameController;
+        SDL_Joystick* gGameController2;
+
     private:
+
+        void load_HighRoadHills_Map(std::shared_ptr<Entity> terrainEntity);
 
         float ecInferenceTimeMS;
 

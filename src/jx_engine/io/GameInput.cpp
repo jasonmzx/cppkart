@@ -1,16 +1,5 @@
 #include "GameInput.hpp"
 
-// Updated Controls mapping to use your GameInputState::Control
-const std::unordered_multimap<int, GameInput::Control> kDefaultControls = {
-    // Mapping SDL key codes to your game's control states
-    {SDLK_w, GameInput::VehicleAccelerate},
-    {SDLK_s, GameInput::VehicleBrake},
-    {SDLK_a, GameInput::VehicleTurnLeft},
-    {SDLK_d, GameInput::VehicleTurnRight},
-    // Add more mappings as needed
-};
-
-
 void GameInput::keyboardUpdateInput(const Uint8 *state) {
     // Reset control states
     currentAcceleration = Idle;
@@ -25,10 +14,52 @@ void GameInput::keyboardUpdateInput(const Uint8 *state) {
 
     // Check for turning
     if (state[SDL_SCANCODE_A]) {
-        currentTurn = GameInput::VehicleTurnLeft;
+        currentTurn = GameInput::FullVehicleTurnLeft;
     } else if (state[SDL_SCANCODE_D]) {
-        currentTurn = GameInput::VehicleTurnRight;
+        currentTurn = GameInput::FullVehicleTurnRight;
     }
+}
+
+void GameInput::xboxControllerUpdateInput(const int leftX, const int leftY) {
+    
+    // Reset control states
+    currentAcceleration = Idle;
+    currentTurn = Idle;
+
+    // Check for acceleration/brake
+    if (leftY > -1) {
+        currentAcceleration = GameInput::VehicleBrake;
+    } else if (leftY < -2) {
+        currentAcceleration = GameInput::VehicleAccelerate;
+    }
+
+    // leftY = -1 means idle, so we don't need to check for it
+
+    // Check for turning
+    if (leftX < 0) { // Left Turn
+        
+        if(leftX < -32000)
+            currentTurn = GameInput::FullVehicleTurnLeft;
+        else if(leftX < -16000)
+            currentTurn = GameInput::HalfVehicleTurnLeft;
+        else if(leftX < -8000)
+            currentTurn = GameInput::QuarterVehicleTurnLeft;
+        else
+            currentTurn = GameInput::Idle;
+    
+    } else if (leftX > 0) {
+        
+        if(leftX > 32000)
+            currentTurn = GameInput::FullVehicleTurnRight;
+        else if(leftX > 16000)
+            currentTurn = GameInput::HalfVehicleTurnRight;
+        else if(leftX > 8000)
+            currentTurn = GameInput::QuarterVehicleTurnRight;
+        else
+            currentTurn = GameInput::Idle;
+
+    }
+
 }
 
 bool printDebug = true;
@@ -44,10 +75,10 @@ void GameInput::getActiveControls() {
                 case GameInput::VehicleBrake:
                     std::cout << "VEH_BRAKE ";
                     break;
-                case GameInput::VehicleTurnLeft:
+                case GameInput::FullVehicleTurnLeft:
                     std::cout << "LEFT ";
                     break;
-                case GameInput::VehicleTurnRight:
+                case GameInput::FullVehicleTurnRight:
                     std::cout << "RIGHT ";
                     break;
                 // Add cases for other controls

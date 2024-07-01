@@ -18,12 +18,24 @@ void PlayerVehicleComponent::updateVehicleControl(GameInput::Control acceleratio
     }
 
     switch(steer) {
-        case GameInput::VehicleTurnLeft:
+        case GameInput::FullVehicleTurnLeft:
             vehiclePhysics.ApplySteer(0.03);
             break;
-        case GameInput::VehicleTurnRight:
+        case GameInput::FullVehicleTurnRight:
             vehiclePhysics.ApplySteer(-0.03);
             break;
+        case GameInput::HalfVehicleTurnLeft:
+            vehiclePhysics.ApplySteer(0.015);
+            break;
+        case GameInput::HalfVehicleTurnRight:
+            vehiclePhysics.ApplySteer(-0.015);
+            break;
+        case GameInput::QuarterVehicleTurnLeft:
+            vehiclePhysics.ApplySteer(0.0075);
+            break;
+        case GameInput::QuarterVehicleTurnRight:
+            vehiclePhysics.ApplySteer(-0.0075);
+            break;    
         default: // Covers IDLE and any other unspecified cases
             vehiclePhysics.ApplySteer(0);
             break;
