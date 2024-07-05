@@ -22,6 +22,9 @@ public:
     void showCursor();
     void hideCursor();
 
+    void handleResizeEvent(int width, int height);
+    void handleEvents();
+
 
     void swapWindow() const {
         SDL_GL_SwapWindow(window);

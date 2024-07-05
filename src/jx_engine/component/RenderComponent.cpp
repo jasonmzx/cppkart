@@ -1,7 +1,17 @@
 #include "RenderComponent.hpp"
+#include "jx_engine/logs/Logger.hpp"
+
+#include <chrono>
+
+//Logger* logger = Logger::getInstance();
 
 RenderComponent::RenderComponent(std::string modelPath, std::string texPath, std::shared_ptr<RenderRsrcManager> rrm, int meshIndex, bool cD, bool isTexAlpha)
 {
+
+    Logger* logger = Logger::getInstance();
+
+    auto chunk_loading_start = std::chrono::high_resolution_clock::now();
+
     cullDisable = !cD;
     ressources = rrm;
     
@@ -11,6 +21,12 @@ RenderComponent::RenderComponent(std::string modelPath, std::string texPath, std
     // texPath = texPath;
     Tex = ressources->tryGetTex(texPath);
     if (Tex == nullptr) { Tex = ressources->loadTex(texPath, texPath, isTexAlpha); }
+
+    auto chunk_loading_end = std::chrono::high_resolution_clock::now();
+
+    std::chrono::duration<double> chunk_loading_time = chunk_loading_end - chunk_loading_start;
+
+    logger->log(Logger::TIMER, "[RENDER COMPONENT] : Total Chunk Loading Time: " + std::to_string(chunk_loading_time.count()) + "sec(s) | \n >>> Mesh: " + modelPath + " \n Tex " + texPath);
 }
 
 void RenderComponent::SetGLContext(GLint texLOCATION, GLint mmLOCATION, GLint colorUniformLOCATION, float scale)

@@ -4,6 +4,7 @@
 #include <vector>
 #include <memory>
 #include <bullet/btBulletDynamicsCommon.h>
+#include <mutex>
 
 // Local Imports:
 #include "jx_engine/physics/PhysicsWorldSingleton.h"
@@ -26,7 +27,7 @@ class PhysicsChunkManager
 {
 
 public:
-    PhysicsChunkManager(const std::string& filename, float scaleFac);
+    PhysicsChunkManager(const std::string& filename, float scaleFac, size_t num_threads);
     ~PhysicsChunkManager();
 
     void update(btScalar playerX, btScalar playerZ);
@@ -37,6 +38,8 @@ public:
 
     // btScalar globalChunkMin;
     // btScalar globalChunkMax;
+
+    std::mutex chunkMutex;
 
 private:
     std::vector<std::unique_ptr<PhysicsChunk>> chunkVector;

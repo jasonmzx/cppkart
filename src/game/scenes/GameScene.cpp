@@ -77,13 +77,17 @@ void GameScene::update(float dt) {
 
 void GameScene::updateImGui() {
     
-    // Inferencing Time Plot
+    // --- Speed Plot ----
+    static float speed_values[90] = { 0 };
+    static int speed_offset = 0; // Index of the current value
+
+    // --- Inferencing Time Plot ----
     static float ECS_INFR_values[90] = { 0 };
-    static int ECS_INFR_offset = 0; // Index of the current value
+    static int ECS_INFR_offset = 0; 
 
     //FPS Time Plot
     static float FPS_values[90] = { 0 };
-    static int FPS_offset = 0; // Index of the current value
+    static int FPS_offset = 0; 
 
     static double refresh_time = 0.0;
 
@@ -94,8 +98,15 @@ void GameScene::updateImGui() {
                 
 
                 ImGui::Text("Vehicle Speed: %.2f", vSpeed);
+                ImGui::Spacing();
 
-                //Spacer
+                if(ImGui::GetTime() > refresh_time) {
+                    speed_values[speed_offset] = vSpeed;
+                    speed_offset = (speed_offset + 1) % IM_ARRAYSIZE(speed_values); // offset modulo array size, to wrap around
+                }
+
+                ImGui::PlotLines("", speed_values, IM_ARRAYSIZE(speed_values), speed_offset, NULL, 0.0f, 100.0f, ImVec2(0, 80));
+
                 ImGui::Spacing();
 
                 if (ImGui::Button("Reset Vehicle")) {
@@ -122,8 +133,6 @@ void GameScene::updateImGui() {
                     FPS_offset = (FPS_offset + 1) % IM_ARRAYSIZE(FPS_values); // offset modulo array size, to wrap around
                     refresh_time = ImGui::GetTime() + 1.0f / 60.0f;
                 }
-
-
 
                 float framerate = ImGui::GetIO().Framerate;
 
@@ -275,7 +284,7 @@ void GameScene::load_HighRoadHills_Map(std::shared_ptr<Entity> terrainEntity) {
                                                            renderRsrcManager, 3, false, false);
     terrainBottomRoadRenderComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation, terrainEntityScale);                                                          
 
-    auto terrainChunks_physics_Component = std::make_shared<TerrainChunksComponent>("../src/ressources/DE_MAP0/Small_Chunks_MAPOI.txt", terrainEntityScale);
+    auto terrainChunks_physics_Component = std::make_shared<TerrainChunksComponent>("../src/ressources/DE_MAP0/chunks", terrainEntityScale);
     ecManager.get()->setTerrainChunks(terrainChunks_physics_Component);
 
     // Add Render Components:

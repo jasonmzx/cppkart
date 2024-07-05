@@ -13,6 +13,7 @@ class Logger {
             INFO,
             WARN,
             ERROR,
+            TIMER,
             FATAL
         };
 

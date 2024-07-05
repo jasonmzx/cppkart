@@ -51,6 +51,9 @@ add_executable(cppkart
      src/jx_engine/logs/Logger.hpp
      src/jx_engine/logs/Logger.cpp
 
+     src/jx_engine/core/ThreadPool.hpp
+     src/jx_engine/core/ThreadPool.cpp
+
      src/jx_engine/core/Scene.hpp
      src/jx_engine/core/Scene.cpp
 
