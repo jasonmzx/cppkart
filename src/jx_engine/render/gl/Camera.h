@@ -47,5 +47,7 @@ public:
 	void ProcessMouseLook(int mouseXRel, int mouseYRel);
 
 	void VehicleFollowCamera(float pX, float pY, float pZ);
+
+	void GenerateRay(glm::vec3& rayStart, glm::vec3& rayEnd, float rayLength);
 };
 #endif

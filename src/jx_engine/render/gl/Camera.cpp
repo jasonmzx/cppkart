@@ -14,16 +14,9 @@ void Camera::Matrix(float FOVdeg, float nearPlane, float farPlane, std::shared_p
     glm::mat4 projection = glm::mat4(1.0f);
 
     // Makes camera look in the right direction from the right position
+    view = glm::lookAt(Position, LookAt, Up);
 
-    if (!DEBUG)
-    {
-        view = glm::lookAt(Position, LookAt, Up);
-    }
-    else
-    {
-        view = glm::lookAt(Position, Position + Orientation, Up);
-    }
-    //  Adds perspective to the scene
+    // Adds perspective to the scene
     projection = glm::perspective(glm::radians(FOVdeg), (float)width / height, nearPlane, farPlane);
 
     viewProjection = projection * view;
@@ -70,6 +63,7 @@ void Camera::Inputs()
     {
         speed = 0.4f;
     }
+
 }
 
 void Camera::VehicleFollowCamera(float pX, float pY, float pZ)
@@ -108,4 +102,11 @@ void Camera::ProcessMouseLook(int mouseXRel, int mouseYRel)
 
     // Update LookAt based on the new orientation
     LookAt = Position + Orientation;
+}
+
+void Camera::GenerateRay(glm::vec3& rayStart, glm::vec3& rayEnd, float rayLength)
+{
+    rayStart = Position;
+    glm::vec3 direction = glm::normalize(LookAt - Position);
+    rayEnd = rayStart + direction * rayLength;
 }

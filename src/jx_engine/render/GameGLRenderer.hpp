@@ -26,6 +26,7 @@ class GameGLRenderer {
         PhysicsWorldSingleton *physicsWorld;
 
         void DebugRender();
+        void DebugDrawLine(glm::vec3 start, glm::vec3 end, glm::vec3 color);
 
     private:
         Camera* camera;

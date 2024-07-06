@@ -163,10 +163,13 @@ void GameScene::render() {
 
     renderer.get()->RenderPrep();
 
+    // btCollisionWorld::ClosestRayResultCallback rayCallback(btVector3(camPos.x, camPos.y, camPos.z), btVector3(camLookAt.x, camLookAt.y, camLookAt.z));
+    // physicsWorld->dynamicsWorld->rayTest(btVector3(camPos.x, camPos.y, camPos.z), btVector3(camLookAt.x, camLookAt.y, camLookAt.z), rayCallback);
+
+
     auto start = std::chrono::high_resolution_clock::now();
 
     vSpeed = 0.0f;
-
 
     ecManager->tick(entities, gameInput, camera, followPlayerVehicle, vSpeed); // ECS System Tick
     ecManager->renderPass(entities); // ECS Render Pass
@@ -174,9 +177,29 @@ void GameScene::render() {
     auto end = std::chrono::high_resolution_clock::now();
     ecInferenceTimeMS = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 
+    
+    //Get and Draw Camera Ray Cast (todo make this optional)
+
+    glm::vec3 rayStart, rayEnd;
+    camera.get()->GenerateRay(rayStart, rayEnd, 1000.0f);
+
     if(isBulletDebugDraw) {
+      renderer.get()->DebugDrawLine(rayStart, rayEnd, glm::vec3(1.0f, 0.0f, 0.0f));
       renderer.get()->DebugRender();
     }
+
+    // Bullet Raycasting: 
+    btCollisionWorld::ClosestRayResultCallback rayCallback(btVector3(rayStart.x, rayStart.y, rayStart.z), btVector3(rayEnd.x, rayEnd.y, rayEnd.z));
+    
+    rayCallback.m_collisionFilterGroup = COLLISION_GROUP_ALL | COLLISION_GROUP_CHUNKS;
+    
+    physicsWorld->dynamicsWorld->rayTest(btVector3(rayStart.x, rayStart.y, rayStart.z), btVector3(rayEnd.x, rayEnd.y, rayEnd.z), rayCallback);
+
+    if(rayCallback.hasHit()) {
+        std::cout << "Ray hit at: " << rayCallback.m_hitPointWorld.getX() << " " << rayCallback.m_hitPointWorld.getY() << " " << rayCallback.m_hitPointWorld.getZ() << std::endl;
+    }
+
+
 
     camera.get()->Matrix(45.0f, 0.1f, 9000.0f, renderer.get()->mainShader, "camMatrix"); //! IMPORTANT
 
@@ -247,13 +270,10 @@ void GameScene::procGameInputs() {
         int rightX = SDL_JoystickGetAxis(gGameController, 3); // X axis
         int rightY = SDL_JoystickGetAxis(gGameController, 4); // Y axis
 
-        printf("Left Joystick - X: %d, Y: %d\n", leftX, leftY);
-        printf("Right Joystick - X: %d, Y: %d\n", rightX, rightY);
-
-
-
-        printf("Left Trigger (LT): %d\n", lt);
-        printf("Right Trigger (RT): %d\n", rt);
+        // printf("Left Joystick - X: %d, Y: %d\n", leftX, leftY);
+        // printf("Right Joystick - X: %d, Y: %d\n", rightX, rightY);
+        // printf("Left Trigger (LT): %d\n", lt);
+        // printf("Right Trigger (RT): %d\n", rt);
 
         // Print button states
         for (int i = 0; i < SDL_JoystickNumButtons(gGameController); i++) {
