@@ -9,7 +9,6 @@ class SceneManager {
     
     public:
         SceneManager();
-        void render();
 
         std::shared_ptr<Scene> getActiveScene();
         void setActiveScene(std::shared_ptr<Scene> scene);

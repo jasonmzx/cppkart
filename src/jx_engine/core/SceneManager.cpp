@@ -2,10 +2,6 @@
 
 SceneManager::SceneManager() : activeScene(nullptr) {}
 
-void SceneManager::render() {
-    activeScene.get()->render();
-}
-
 std::shared_ptr<Scene> SceneManager::getActiveScene() {
     return activeScene;
 }

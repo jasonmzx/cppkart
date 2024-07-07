@@ -71,10 +71,6 @@ bool GameScene::bulletCollisionCallback(btManifoldPoint& cp,
     return false;
 }
 
-void GameScene::update(float dt) {
-    // Update game logic
-}
-
 void GameScene::updateImGui() {
     
     // --- Speed Plot ----
@@ -154,18 +150,25 @@ void GameScene::updateImGui() {
     }
 }
 
+void GameScene::tickScene() { //* Main Game Loop Function (Scene Tick)
+    update(1.0f / 60.0f);
+    render();
+}
+
+void GameScene::update(float dt) {
+    
+    //TODO: Accumulate deltaTime and pass it to physicsWorld->dynamicsWorld->stepSimulation
+    //world.get()->physicsWorld->dynamicsWorld->stepSimulation(deltaTimeWithTimeScale, 2, deltaTime);
+    
+    physicsWorld->dynamicsWorld->stepSimulation(1.0f / 60.0f);
+}
 
 void GameScene::render() {
 
     procGameInputs();
 
     // Render game objects
-
     renderer.get()->RenderPrep();
-
-    // btCollisionWorld::ClosestRayResultCallback rayCallback(btVector3(camPos.x, camPos.y, camPos.z), btVector3(camLookAt.x, camLookAt.y, camLookAt.z));
-    // physicsWorld->dynamicsWorld->rayTest(btVector3(camPos.x, camPos.y, camPos.z), btVector3(camLookAt.x, camLookAt.y, camLookAt.z), rayCallback);
-
 
     auto start = std::chrono::high_resolution_clock::now();
 
@@ -177,9 +180,7 @@ void GameScene::render() {
     auto end = std::chrono::high_resolution_clock::now();
     ecInferenceTimeMS = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 
-    
     //Get and Draw Camera Ray Cast (todo make this optional)
-
     glm::vec3 rayStart, rayEnd;
     camera.get()->GenerateRay(rayStart, rayEnd, 1000.0f);
 
@@ -190,7 +191,6 @@ void GameScene::render() {
 
     // Bullet Raycasting: 
     btCollisionWorld::ClosestRayResultCallback rayCallback(btVector3(rayStart.x, rayStart.y, rayStart.z), btVector3(rayEnd.x, rayEnd.y, rayEnd.z));
-    
     rayCallback.m_collisionFilterGroup = COLLISION_GROUP_ALL | COLLISION_GROUP_CHUNKS;
     
     physicsWorld->dynamicsWorld->rayTest(btVector3(rayStart.x, rayStart.y, rayStart.z), btVector3(rayEnd.x, rayEnd.y, rayEnd.z), rayCallback);
@@ -199,13 +199,7 @@ void GameScene::render() {
         std::cout << "Ray hit at: " << rayCallback.m_hitPointWorld.getX() << " " << rayCallback.m_hitPointWorld.getY() << " " << rayCallback.m_hitPointWorld.getZ() << std::endl;
     }
 
-
-
     camera.get()->Matrix(45.0f, 0.1f, 9000.0f, renderer.get()->mainShader, "camMatrix"); //! IMPORTANT
-
-    //TODO: Accumulate deltaTime and pass it to physicsWorld->dynamicsWorld->stepSimulation
-    //world.get()->physicsWorld->dynamicsWorld->stepSimulation(deltaTimeWithTimeScale, 2, deltaTime);
-    physicsWorld->dynamicsWorld->stepSimulation(1.0f / 60.0f);
 }
 
 void GameScene::procGameInputs() {
@@ -230,6 +224,12 @@ void GameScene::procGameInputs() {
     // Handles mouse inputs
     int mouseX, mouseY;
     Uint32 mouseButtons = SDL_GetMouseState(&mouseX, &mouseY);
+
+    // If mouse left button is pressed
+    if (mouseButtons & SDL_BUTTON(SDL_BUTTON_LEFT))
+    {
+      printf("Mouse Left Button Pressed\n");
+    }
 
     if (firstClick)
     {
@@ -355,29 +355,40 @@ void GameScene::init() {
 
   //!__ Prototype Plane
 
-  btTransform protoPlaneTransform;
-  protoPlaneTransform.setIdentity();
-  protoPlaneTransform.setOrigin(btVector3(0, 0, 0));
-  btStaticPlaneShape *plane = new btStaticPlaneShape(btVector3(0, 1, 0), btScalar(0));
+  // btTransform protoPlaneTransform;
+  // protoPlaneTransform.setIdentity();
+  // protoPlaneTransform.setOrigin(btVector3(0, 0, 0));
+  // btStaticPlaneShape *plane = new btStaticPlaneShape(btVector3(0, 1, 0), btScalar(0));
 
-  // Create Motion shape:
-  btMotionState *motion = new btDefaultMotionState(protoPlaneTransform); //! He put btDefaultMotionShape
+  // // Create Motion shape:
+  // btMotionState *motion = new btDefaultMotionState(protoPlaneTransform); //! He put btDefaultMotionShape
 
-  btRigidBody::btRigidBodyConstructionInfo info(0.0, motion, plane);
-  info.m_friction = 2.0f;
+  // btRigidBody::btRigidBodyConstructionInfo info(0.0, motion, plane);
+  // info.m_friction = 2.0f;
 
-  btRigidBody *planeBody = new btRigidBody(info);
+  // btRigidBody *planeBody = new btRigidBody(info);
 
-  //body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
-  planeBody->setCollisionFlags(planeBody->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
+  // //body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
+  // planeBody->setCollisionFlags(planeBody->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
 
-  physicsWorld->dynamicsWorld->addRigidBody(planeBody, COLLISION_GROUP_CHUNKS, COLLISION_GROUP_ALL);
+  // physicsWorld->dynamicsWorld->addRigidBody(planeBody, COLLISION_GROUP_CHUNKS, COLLISION_GROUP_ALL);
   
   //!__ ENDOF Prototype Plane 
 
     // auto terrainRenderComponent = std::make_shared<RenderComponent>("../src/ressources/DE_Map1/Landscape01.obj",
     //                                                        "../src/ressources/DE_Map1/Map01_Albedo.png", 
     //                                                        renderRsrcManager);
+
+    std::shared_ptr<Entity> roadBarrierEntity = std::make_shared<Entity>();
+
+    auto roadBarrierRenderComponent = std::make_shared<RenderComponent>("../assets/road_barrier_01/road_barrier_01.obj",
+                                                           "../assets/road_barrier_01/road_barrier_01_tex2.jpg", 
+                                                           renderRsrcManager, 0, false, false);
+
+    roadBarrierRenderComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation, 10.0f);                                                        
+    roadBarrierEntity->addComponent(roadBarrierRenderComponent);
+
+    entities.push_back(roadBarrierEntity);
 
     //* ----------------- Terrain Entity Definition ----------------- *//
 
@@ -412,4 +423,11 @@ void GameScene::init() {
 
 void GameScene::initECS(std::shared_ptr<SceneManager> sceneManager) {
     ecManager = std::make_unique<ECManager>();
+}
+
+void GameScene::updateScreenSize(int w, int h) {
+    WIN_WIDTH = w;
+    WIN_HEIGHT = h;
+    camera.get()->UpdateScreenSize(w, h);
+    renderer.get()->UpdateScreenSize(w, h);
 }

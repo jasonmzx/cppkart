@@ -34,19 +34,26 @@
 
 class GameScene : public Scene {
     public:
-        GameScene(int WIN_W, int WIN_H, SDL_Window* window);
-        void init() override;
-        void initECS(std::shared_ptr<SceneManager> sceneManager);
-        
-        void update(float dt) override;
-        void render() override;
 
-        void procGameInputs();
+        GameScene(int WIN_W, int WIN_H, SDL_Window* window);
+        void initECS(std::shared_ptr<SceneManager> sceneManager);
+
+        // Scene Functions:
+        void init() override;
+        void tickScene() override;
+        void updateScreenSize(int w, int h) override;
+
+        //Game Specific Functions:
+        void update(float dt);
+        void render();
+
         void updateImGui();
 
+        // I/O Functions:
+        void procGameInputs();
+        SDL_Joystick* gGameController;
 
-        // Static instance of self, for bullet collision callback:
-
+        // Static instance of self, for bullet collision callback as it's static:
         static GameScene* instance;
 
         // Might put this somewhere else
@@ -57,9 +64,6 @@ class GameScene : public Scene {
         std::shared_ptr<Camera> camera;
         
         PhysicsWorldSingleton *physicsWorld;
-
-        SDL_Joystick* gGameController;
-        SDL_Joystick* gGameController2;
 
     private:
 

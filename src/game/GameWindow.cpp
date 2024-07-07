@@ -47,23 +47,3 @@ void GameWindow::showCursor() {
 void GameWindow::hideCursor() {
     SDL_SetRelativeMouseMode(SDL_TRUE);
 }
-
-//* ======== Window Resizing =========
-
-void GameWindow::handleResizeEvent(int width, int height) {
-    glViewport(0, 0, width, height);
-}
-
-// Event handling function to be called in the main loop
-void GameWindow::handleEvents() {
-    SDL_Event event;
-    while (SDL_PollEvent(&event)) {
-        if (event.type == SDL_QUIT) {
-            // Handle quit event
-        } else if (event.type == SDL_WINDOWEVENT) {
-            if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
-                handleResizeEvent(event.window.data1, event.window.data2);
-            }
-        }
-    }
-}

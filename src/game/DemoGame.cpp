@@ -82,7 +82,7 @@ void DemoGame::tick()
 
   // SDL Window Event
 
-    while (SDL_PollEvent(&Event))
+  while (SDL_PollEvent(&Event))
   {
     if (IMGUI_MODE == 1)
       ImGui_ImplSDL2_ProcessEvent(&Event);
@@ -98,14 +98,24 @@ void DemoGame::tick()
         break;
       }
     }
-    else if (Event.type == SDL_QUIT)
+
+    if(Event.type == SDL_WINDOWEVENT)
+    {
+      if(Event.window.event == SDL_WINDOWEVENT_RESIZED)
+      {
+        int newWidth = Event.window.data1;
+        int newHeight = Event.window.data2;
+        sceneManager->getActiveScene().get()->updateScreenSize(newWidth, newHeight);
+      }
+    }
+
+    if (Event.type == SDL_QUIT)
     {
       WindowRunning = 0;
     }
   }
 
-
-  sceneManager->getActiveScene().get()->render();
+  sceneManager->getActiveScene().get()->tickScene();
 
   if (IMGUI_MODE) // Setup, call Scene's ImGui Update & Render
   {

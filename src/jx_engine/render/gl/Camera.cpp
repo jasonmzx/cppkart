@@ -110,3 +110,9 @@ void Camera::GenerateRay(glm::vec3& rayStart, glm::vec3& rayEnd, float rayLength
     glm::vec3 direction = glm::normalize(LookAt - Position);
     rayEnd = rayStart + direction * rayLength;
 }
+
+void Camera::UpdateScreenSize(int w, int h)
+{
+    width = w;
+    height = h;
+}

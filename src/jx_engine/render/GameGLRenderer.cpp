@@ -76,3 +76,7 @@ void GameGLRenderer::DebugDrawLine(glm::vec3 start, glm::vec3 end, glm::vec3 col
     debugDrawer->drawLine(btVector3(start.x, start.y, start.z), btVector3(end.x, end.y, end.z), btVector3(color.x, color.y, color.z));
     glUniform1i(useTextureLOC, GL_TRUE);
 }
+
+void GameGLRenderer::UpdateScreenSize(int winWidth, int winHeight) {
+    glViewport(0, 0, winWidth, winHeight);
+}

@@ -45,6 +45,7 @@ public:
 	
 	void Inputs();
 	void ProcessMouseLook(int mouseXRel, int mouseYRel);
+	void UpdateScreenSize(int w, int h);
 
 	void VehicleFollowCamera(float pX, float pY, float pZ);
 
