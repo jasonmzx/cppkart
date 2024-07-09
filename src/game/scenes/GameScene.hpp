@@ -15,7 +15,10 @@
 #include "jx_engine/physics/PhysicsWorldSingleton.h"
 #include "jx_engine/physics/BulletDebugDrawer.cpp"
 
+
+//! DEBUG IMPORTS:
 #include "jx_engine/physics/manager/PhysicsChunkManager.hpp"
+#include "jx_engine/physics/DynamicConvexHullMeshPhysics.hpp"
 
 #include "jx_engine/io/GameInput.hpp"
 
@@ -25,6 +28,7 @@
 #include "jx_engine/component/PlayerVehicleComponent.hpp"
 #include "jx_engine/component/TerrainChunksComponent.hpp"
 #include "jx_engine/component/VehicleRenderComponent.hpp"
+#include "jx_engine/component/MovableObjectComponent.hpp"
 
 // ImGUI Imports:
 #include "imgui.h"

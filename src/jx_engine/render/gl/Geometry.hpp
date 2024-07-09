@@ -19,11 +19,14 @@ public:
     Geometry(const std::vector<GLfloat>& vertices, const std::vector<GLuint>& indices);
     ~Geometry() = default; 
 
+    int VERT_LEN = 11; // x y z r g b u v Nx Ny Nz     (11)
+
     void Draw(GLuint modelMatrixLocation, glm::mat4& modelMatrix, GLuint colorUniformLocation, bool debugTriangles);
 
     std::vector<GLfloat> _vertices;
     std::vector<GLuint> _indices; // Storing indices for use in the Draw function
-
+    
+    std::vector<glm::vec3> GetXYZvertices();
 
 private:
 

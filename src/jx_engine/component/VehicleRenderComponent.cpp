@@ -10,7 +10,7 @@ VehicleRenderComponent::VehicleRenderComponent
     wheelModelMatrices.resize(wheelCount);
 }
 
-void VehicleRenderComponent::getTransforms(glm::vec3 glmVehiclePos, glm::quat glmVehicleRot) {
+void VehicleRenderComponent::UpdateChassisTransform(glm::vec3 glmVehiclePos, glm::quat glmVehicleRot) {
     
     glm::mat4 translation = glm::translate(glm::mat4(1.0f), glmVehiclePos);
     

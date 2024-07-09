@@ -285,7 +285,6 @@ void GameScene::procGameInputs() {
 
 }
 
-
 void GameScene::load_HighRoadHills_Map(std::shared_ptr<Entity> terrainEntity) {
     float terrainEntityScale = 15.0f;
 
@@ -359,18 +358,13 @@ void GameScene::init() {
   // protoPlaneTransform.setIdentity();
   // protoPlaneTransform.setOrigin(btVector3(0, 0, 0));
   // btStaticPlaneShape *plane = new btStaticPlaneShape(btVector3(0, 1, 0), btScalar(0));
-
   // // Create Motion shape:
   // btMotionState *motion = new btDefaultMotionState(protoPlaneTransform); //! He put btDefaultMotionShape
-
   // btRigidBody::btRigidBodyConstructionInfo info(0.0, motion, plane);
   // info.m_friction = 2.0f;
-
   // btRigidBody *planeBody = new btRigidBody(info);
-
   // //body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
   // planeBody->setCollisionFlags(planeBody->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
-
   // physicsWorld->dynamicsWorld->addRigidBody(planeBody, COLLISION_GROUP_CHUNKS, COLLISION_GROUP_ALL);
   
   //!__ ENDOF Prototype Plane 
@@ -381,12 +375,20 @@ void GameScene::init() {
 
     std::shared_ptr<Entity> roadBarrierEntity = std::make_shared<Entity>();
 
-    auto roadBarrierRenderComponent = std::make_shared<RenderComponent>("../assets/road_barrier_01/road_barrier_01.obj",
-                                                           "../assets/road_barrier_01/road_barrier_01_tex2.jpg", 
-                                                           renderRsrcManager, 0, false, false);
 
-    roadBarrierRenderComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation, 10.0f);                                                        
-    roadBarrierEntity->addComponent(roadBarrierRenderComponent);
+    //! Clean up
+   // physicsWorld->dynamicsWorld->addRigidBody(roadBarrierPhysicsComponent->meshRigidBody, COLLISION_GROUP_ALL, COLLISION_GROUP_CHUNKS);
+    
+
+    auto roadBarrierComponent = std::make_shared<MovableObjectComponent>("../assets/road_barrier_01/road_barrier_01.obj",
+                                                           "../assets/road_barrier_01/road_barrier_01_tex2.jpg", 
+                                                           renderRsrcManager, 0, false, false, 10.0f, 0.1f);
+
+    physicsWorld->dynamicsWorld->addRigidBody(roadBarrierComponent.get()->phyMesh->meshRigidBody, COLLISION_GROUP_ALL, COLLISION_GROUP_CHUNKS);
+
+    roadBarrierComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation, 10.0f);                                                                                                                      
+
+    roadBarrierEntity->addComponent(roadBarrierComponent);
 
     entities.push_back(roadBarrierEntity);
 

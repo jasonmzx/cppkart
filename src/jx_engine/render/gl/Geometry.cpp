@@ -15,13 +15,12 @@ Geometry::Geometry(const std::vector<GLfloat>& vertices, const std::vector<GLuin
     vao->Bind();
 
     // x y z r g b u v Nx Ny Nz     (11)
-    // int VERT_LEN = 11;
     // Assuming each vertex consists of 8 floats: position (x, y, z), color (r, g, b), texture (u, v), normal (x, y, z)
 
-    vao->LinkAttrib(*vbo, 0, 3, GL_FLOAT, 11 * sizeof(float), (void *)0);
-    vao->LinkAttrib(*vbo, 1, 3, GL_FLOAT, 11 * sizeof(float), (void *)(3 * sizeof(float)));
-    vao->LinkAttrib(*vbo, 2, 2, GL_FLOAT, 11 * sizeof(float), (void *)(6 * sizeof(float)));
-    vao->LinkAttrib(*vbo, 3, 3, GL_FLOAT, 11 * sizeof(float), (void *)(8 * sizeof(float)));
+    vao->LinkAttrib(*vbo, 0, 3, GL_FLOAT, VERT_LEN * sizeof(float), (void *)0);
+    vao->LinkAttrib(*vbo, 1, 3, GL_FLOAT, VERT_LEN * sizeof(float), (void *)(3 * sizeof(float)));
+    vao->LinkAttrib(*vbo, 2, 2, GL_FLOAT, VERT_LEN * sizeof(float), (void *)(6 * sizeof(float)));
+    vao->LinkAttrib(*vbo, 3, 3, GL_FLOAT, VERT_LEN * sizeof(float), (void *)(8 * sizeof(float)));
     
     ebo->Bind(); // Bind EBO to VAO
 
@@ -64,4 +63,24 @@ void Geometry::Draw(GLuint modelMatrixLocation, glm::mat4& modelMatrix, GLuint c
 
         // Reset the color to the original one (if needed)
         }
+}
+
+std::vector<glm::vec3> Geometry::GetXYZvertices() // Return the vertices as a vector of glm::vec3 (For use in physics)
+{
+    
+    std::vector<glm::vec3> ordered_vertices;
+
+    for (int i = 0; i < _indices.size(); i++) {
+        ordered_vertices.push_back(
+            glm::vec3(_vertices[_indices[i] * VERT_LEN], _vertices[_indices[i] * VERT_LEN + 1], _vertices[_indices[i] * VERT_LEN + 2])
+        );
+    }
+    
+    return ordered_vertices;
+    
+    // std::vector<glm::vec3> vertices;
+    // for (int i = 0; i < _vertices.size(); i += VERT_LEN) {
+    //     vertices.push_back(glm::vec3(_vertices[i], _vertices[i + 1], _vertices[i + 2]));
+    // }
+    // return vertices;
 }

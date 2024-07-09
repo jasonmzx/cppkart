@@ -83,6 +83,9 @@ add_executable(cppkart
      src/jx_engine/component/TerrainChunksComponent.hpp
      src/jx_engine/component/TerrainChunksComponent.cpp
 
+     src/jx_engine/component/MovableObjectComponent.hpp
+     src/jx_engine/component/MovableObjectComponent.cpp
+
      # I/O: 
 
      src/jx_engine/io/GameInput.hpp
@@ -134,6 +137,9 @@ add_executable(cppkart
 
      src/jx_engine/physics/StaticTriangleMeshPhysics.hpp
      src/jx_engine/physics/StaticTriangleMeshPhysics.cpp
+
+     src/jx_engine/physics/DynamicConvexHullMeshPhysics.hpp
+     src/jx_engine/physics/DynamicConvexHullMeshPhysics.cpp
 
      src/jx_engine/physics/BulletDebugDrawer.cpp
 

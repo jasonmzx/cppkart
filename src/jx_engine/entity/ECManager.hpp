@@ -10,6 +10,7 @@
 #include "jx_engine/component/PlayerVehicleComponent.hpp"
 #include "jx_engine/component/TerrainChunksComponent.hpp"
 #include "jx_engine/component/VehicleRenderComponent.hpp"
+#include "jx_engine/component/MovableObjectComponent.hpp"
 
 #include "jx_engine/render/gl/Camera.h"
 

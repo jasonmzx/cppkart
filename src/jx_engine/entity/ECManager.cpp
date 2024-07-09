@@ -56,9 +56,13 @@ void ECManager::renderPass(std::vector<std::shared_ptr<Entity>>& entities) {
                 glm::vec3 glmVehiclePosition(vehiclePosition.x(), vehiclePosition.y(), vehiclePosition.z());
                 glm::quat glmVehicleRotation(vehicleRotation.w(), vehicleRotation.x(), vehicleRotation.y(), vehicleRotation.z());
 
-                vehicleRenderComponent.get()->getTransforms(glmVehiclePosition, glmVehicleRotation);
+                vehicleRenderComponent.get()->UpdateChassisTransform(glmVehiclePosition, glmVehicleRotation);
                 vehicleRenderComponent.get()->UpdateWheelTransforms(&playerVehicleComponent.get()->vehiclePhysics);
                 vehicleRenderComponent.get()->DrawWheels();
+            }
+
+            if( auto movableObjectComponent = std::dynamic_pointer_cast<MovableObjectComponent>(component)) {
+                movableObjectComponent.get()->UpdateTransforms();
             }
 
             // After getting the transforms, perform the rendering

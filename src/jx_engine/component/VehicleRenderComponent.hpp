@@ -1,8 +1,8 @@
 #ifndef VEHICLERENDERCOMPONENT_HPP
 #define VEHICLERENDERCOMPONENT_HPP
 
-#include "jx_engine/physics/VehiclePhysics.hpp"
 #include "RenderComponent.hpp"
+#include "jx_engine/physics/VehiclePhysics.hpp"
 
 class VehicleRenderComponent : public RenderComponent
 {   
@@ -10,7 +10,7 @@ class VehicleRenderComponent : public RenderComponent
         VehicleRenderComponent
         (std::string modelPath, std::string wheelModelPath, std::string texPath, std::shared_ptr<RenderRsrcManager> rrm, int meshIndex, bool isTexAlpha);
 
-        void getTransforms(glm::vec3 glmVehiclePos, glm::quat glmVehicleRot);
+        void UpdateChassisTransform(glm::vec3 glmVehiclePos, glm::quat glmVehicleRot);
         void UpdateWheelTransforms(VehiclePhysics* vehiclePhysics);
         void DrawWheels();
 
