@@ -9,6 +9,8 @@ PhysicsWorldSingleton::PhysicsWorldSingleton() {
     collisionConfiguration = new btDefaultCollisionConfiguration();
     dispatcher = new btCollisionDispatcher(collisionConfiguration);
 
+    btGImpactCollisionAlgorithm::registerAlgorithm(dispatcher); // For Triangle on Triangle Collision (GImpact Mesh Shape)
+
     solver = new btSequentialImpulseConstraintSolver();
     
     dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);

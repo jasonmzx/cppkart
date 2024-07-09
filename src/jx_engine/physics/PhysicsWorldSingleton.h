@@ -3,6 +3,7 @@
 
 #include <bullet/btBulletCollisionCommon.h>
 #include <bullet/btBulletDynamicsCommon.h>
+#include <bullet/BulletCollision/Gimpact/btGImpactCollisionAlgorithm.h>
 
 enum CollisionGroups {
     COLLISION_GROUP_NONE = 0,         // 0000  
