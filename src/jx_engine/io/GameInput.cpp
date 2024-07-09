@@ -65,6 +65,8 @@ void GameInput::xboxControllerUpdateInput(const int leftX, const int leftY, cons
 
 }
 
+//* =========================== Debugging & Debug Inputs =========================== *//
+
 bool printDebug = true;
 
 void GameInput::getActiveControls() {
@@ -89,4 +91,10 @@ void GameInput::getActiveControls() {
         }
         std::cout << "]" << std::endl;
     }
+}
+
+void GameInput::setDebugRaycastXYZ(float x, float y, float z) {
+    debugRaycastX = x;
+    debugRaycastY = y;
+    debugRaycastZ = z;
 }

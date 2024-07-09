@@ -24,10 +24,15 @@ void MovableObjectComponent::UpdateTransforms()
     // Update the model matrix
     btTransform tr = phyMesh->GetTransform();
     tr.getOpenGLMatrix(glm::value_ptr(ObjmodelMatrix));
-
 }
 
 btRigidBody* MovableObjectComponent::GetRigidBody()
 {
     return phyMesh->meshRigidBody;
+}
+
+void MovableObjectComponent::SetPosition(float x, float y, float z)
+{
+    phyMesh->SetPosition(x, y, z);
+    this->UpdateTransforms();
 }

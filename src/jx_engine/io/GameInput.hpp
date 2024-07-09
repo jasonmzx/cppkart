@@ -41,6 +41,13 @@ class GameInput {
         Control currentAcceleration = Idle;
         Control currentTurn = Idle;
 
+        // Debug
+        void setDebugRaycastXYZ(float x, float y, float z);
+        
+        float debugRaycastX;
+        float debugRaycastY;
+        float debugRaycastZ;
+
     private:
         ActiveInput activeControlsBuffer;
 

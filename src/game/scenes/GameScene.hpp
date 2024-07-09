@@ -53,6 +53,8 @@ class GameScene : public Scene {
 
         void updateImGui();
 
+        glm::vec3 BulletRaycast();
+
         // I/O Functions:
         void procGameInputs();
         SDL_Joystick* gGameController;

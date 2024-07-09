@@ -40,6 +40,20 @@ void ECManager::tick(std::vector<std::shared_ptr<Entity>>& entities, std::shared
                     camera.get()->VehicleFollowCamera(pX,pY,pZ);
                 }
             }
+
+            if(auto movableObjectComponent = std::dynamic_pointer_cast<MovableObjectComponent>(component)) {
+                
+                float yOffset = 10.0f;
+
+                float rcX = gameInput.get()->debugRaycastX;
+                float rcY = gameInput.get()->debugRaycastY + yOffset;
+                float rcZ = gameInput.get()->debugRaycastZ;
+
+                if( rcX != 0.0f && rcY != yOffset && rcZ != 0.0f) {
+                    movableObjectComponent.get()->SetPosition(rcX, rcY, rcZ);
+                }
+                
+            }
         }
     }
 }

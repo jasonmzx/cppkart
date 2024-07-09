@@ -8,6 +8,8 @@
 #include <vector>
 #include <memory>
 
+#include "PhysicsWorldSingleton.h"
+
 class DynamicConvexHullMeshPhysics {
 private:
 
@@ -17,6 +19,8 @@ public:
     btDefaultMotionState* motionState;
 
     btTransform GetTransform() const;
+
+    void SetPosition(float x, float y, float z);
 
     DynamicConvexHullMeshPhysics(const std::vector<glm::vec3> &ordered_verts, const glm::mat4 &modelMatrix, float scaleFactor, float mass);
     ~DynamicConvexHullMeshPhysics();

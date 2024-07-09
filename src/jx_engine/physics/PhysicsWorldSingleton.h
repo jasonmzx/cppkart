@@ -4,6 +4,14 @@
 #include <bullet/btBulletCollisionCommon.h>
 #include <bullet/btBulletDynamicsCommon.h>
 
+enum CollisionGroups {
+    COLLISION_GROUP_NONE = 0,         // 0000  
+    COLLISION_GROUP_VEHICLE = 1 << 0, // 0001
+    COLLISION_GROUP_BARRIER = 1 << 1, // 0010
+    COLLISION_GROUP_CHUNKS = 1 << 2,  // 0100
+    COLLISION_GROUP_ALL = COLLISION_GROUP_VEHICLE | COLLISION_GROUP_BARRIER | COLLISION_GROUP_CHUNKS // 0111
+};
+
 class PhysicsWorldSingleton {
 private:
     PhysicsWorldSingleton();

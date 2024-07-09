@@ -3,15 +3,12 @@
 #include <chrono>
 //#define BT_USE_DOUBLE_PRECISION 1
 
-#define COLLISION_GROUP_CHUNKS 0x1
-#define COLLISION_GROUP_ALL 0x2
-
 Logger* GameScene::logger = Logger::getInstance();
 
 GameScene* GameScene::instance = nullptr;
 
 GameScene::GameScene(int WIN_W, int WIN_H, SDL_Window* window) {
-    
+
     WIN_WIDTH = WIN_W;
     WIN_HEIGHT = WIN_H;
 
@@ -21,7 +18,7 @@ GameScene::GameScene(int WIN_W, int WIN_H, SDL_Window* window) {
 
     gContactAddedCallback = bulletCollisionCallback;
 
-    // Rendering  
+    // Rendering
     camera = std::make_shared<Camera>(WIN_WIDTH, WIN_HEIGHT, glm::vec3(0.0f, 10.0f, 2.0f));
     renderer = std::make_shared<GameGLRenderer>(WIN_WIDTH, WIN_HEIGHT, camera.get());
     renderRsrcManager = std::make_shared<RenderRsrcManager>();
@@ -43,15 +40,15 @@ GameScene::GameScene(int WIN_W, int WIN_H, SDL_Window* window) {
 
 }
 
-bool GameScene::bulletCollisionCallback(btManifoldPoint& cp, 
-  const btCollisionObjectWrapper* colObj0, int partId0, int index0, const btCollisionObjectWrapper* colObj1, int partId1, int index1) 
+bool GameScene::bulletCollisionCallback(btManifoldPoint& cp,
+  const btCollisionObjectWrapper* colObj0, int partId0, int index0, const btCollisionObjectWrapper* colObj1, int partId1, int index1)
 {
     //std::cout << "Collision Detected!" << std::endl;
 
     // Get the two colliding objects
     btCollisionObject* obj0 = (btCollisionObject*)colObj0->getCollisionObject();
     btCollisionObject* obj1 = (btCollisionObject*)colObj1->getCollisionObject();
-    
+
       // Retrieve user pointers and cast them back to int
     int userPtr0 = reinterpret_cast<intptr_t>(obj0->getUserPointer());
     int userPtr1 = reinterpret_cast<intptr_t>(obj1->getUserPointer());
@@ -65,33 +62,33 @@ bool GameScene::bulletCollisionCallback(btManifoldPoint& cp,
     }
 
     if( impulse > 5000.0f && GameScene::instance) {
-        Mix_PlayChannel(-1, GameScene::instance->crashSound, 0); 
+        Mix_PlayChannel(-1, GameScene::instance->crashSound, 0);
     }
 
     return false;
 }
 
 void GameScene::updateImGui() {
-    
+
     // --- Speed Plot ----
     static float speed_values[90] = { 0 };
     static int speed_offset = 0; // Index of the current value
 
     // --- Inferencing Time Plot ----
     static float ECS_INFR_values[90] = { 0 };
-    static int ECS_INFR_offset = 0; 
+    static int ECS_INFR_offset = 0;
 
     //FPS Time Plot
     static float FPS_values[90] = { 0 };
-    static int FPS_offset = 0; 
+    static int FPS_offset = 0;
 
     static double refresh_time = 0.0;
 
     if (ImGui::Begin("Game Controls")) {
         if (ImGui::BeginTabBar("Tabs")) {
-            
+
             if (ImGui::BeginTabItem("DEBUG TOOLS")) { // Debug Tools Tab
-                
+
 
                 ImGui::Text("Vehicle Speed: %.2f", vSpeed);
                 ImGui::Spacing();
@@ -119,7 +116,7 @@ void GameScene::updateImGui() {
             }
 
             if (ImGui::BeginTabItem("PERFORMANCE")) { // Performance Tab
-                
+
                 // Create a simple line plot
                 if (ImGui::GetTime() > refresh_time) {
                     ECS_INFR_values[ECS_INFR_offset] = ecInferenceTimeMS;
@@ -156,11 +153,29 @@ void GameScene::tickScene() { //* Main Game Loop Function (Scene Tick)
 }
 
 void GameScene::update(float dt) {
-    
+
     //TODO: Accumulate deltaTime and pass it to physicsWorld->dynamicsWorld->stepSimulation
     //world.get()->physicsWorld->dynamicsWorld->stepSimulation(deltaTimeWithTimeScale, 2, deltaTime);
-    
+
     physicsWorld->dynamicsWorld->stepSimulation(1.0f / 60.0f);
+}
+
+glm::vec3 GameScene::BulletRaycast() {
+
+    glm::vec3 rayStart, rayEnd;
+    camera.get()->GenerateRay(rayStart, rayEnd, 1000.0f);
+
+    btCollisionWorld::ClosestRayResultCallback rayCallback(btVector3(rayStart.x, rayStart.y, rayStart.z), btVector3(rayEnd.x, rayEnd.y, rayEnd.z));
+    rayCallback.m_collisionFilterGroup = COLLISION_GROUP_ALL | COLLISION_GROUP_CHUNKS;
+
+    physicsWorld->dynamicsWorld->rayTest(btVector3(rayStart.x, rayStart.y, rayStart.z), btVector3(rayEnd.x, rayEnd.y, rayEnd.z), rayCallback);
+
+    if(rayCallback.hasHit()) {
+        std::cout << "Ray hit at: " << rayCallback.m_hitPointWorld.getX() << " " << rayCallback.m_hitPointWorld.getY() << " " << rayCallback.m_hitPointWorld.getZ() << std::endl;
+        return glm::vec3(rayCallback.m_hitPointWorld.getX(), rayCallback.m_hitPointWorld.getY(), rayCallback.m_hitPointWorld.getZ());
+    }
+
+    return glm::vec3(0.0f, 0.0f, 0.0f);
 }
 
 void GameScene::render() {
@@ -180,23 +195,9 @@ void GameScene::render() {
     auto end = std::chrono::high_resolution_clock::now();
     ecInferenceTimeMS = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 
-    //Get and Draw Camera Ray Cast (todo make this optional)
-    glm::vec3 rayStart, rayEnd;
-    camera.get()->GenerateRay(rayStart, rayEnd, 1000.0f);
-
     if(isBulletDebugDraw) {
-      renderer.get()->DebugDrawLine(rayStart, rayEnd, glm::vec3(1.0f, 0.0f, 0.0f));
+     // renderer.get()->DebugDrawLine(rayStart, rayEnd, glm::vec3(1.0f, 0.0f, 0.0f));
       renderer.get()->DebugRender();
-    }
-
-    // Bullet Raycasting: 
-    btCollisionWorld::ClosestRayResultCallback rayCallback(btVector3(rayStart.x, rayStart.y, rayStart.z), btVector3(rayEnd.x, rayEnd.y, rayEnd.z));
-    rayCallback.m_collisionFilterGroup = COLLISION_GROUP_ALL | COLLISION_GROUP_CHUNKS;
-    
-    physicsWorld->dynamicsWorld->rayTest(btVector3(rayStart.x, rayStart.y, rayStart.z), btVector3(rayEnd.x, rayEnd.y, rayEnd.z), rayCallback);
-
-    if(rayCallback.hasHit()) {
-        std::cout << "Ray hit at: " << rayCallback.m_hitPointWorld.getX() << " " << rayCallback.m_hitPointWorld.getY() << " " << rayCallback.m_hitPointWorld.getZ() << std::endl;
     }
 
     camera.get()->Matrix(45.0f, 0.1f, 9000.0f, renderer.get()->mainShader, "camMatrix"); //! IMPORTANT
@@ -205,7 +206,7 @@ void GameScene::render() {
 void GameScene::procGameInputs() {
 
   const Uint8 *KB_InputState = SDL_GetKeyboardState(NULL);
-  
+
   GameInput* gameInputPtr = gameInput.get();
   gameInputPtr->keyboardUpdateInput(KB_InputState);
 
@@ -229,7 +230,14 @@ void GameScene::procGameInputs() {
     if (mouseButtons & SDL_BUTTON(SDL_BUTTON_LEFT))
     {
       printf("Mouse Left Button Pressed\n");
+      glm::vec3 rayHit = BulletRaycast();
+
+      gameInputPtr->setDebugRaycastXYZ(rayHit.x, rayHit.y, rayHit.z);
+
+    } else {
+      gameInputPtr->setDebugRaycastXYZ(0.0f, 0.0f, 0.0f);
     }
+
 
     if (firstClick)
     {
@@ -289,19 +297,19 @@ void GameScene::load_HighRoadHills_Map(std::shared_ptr<Entity> terrainEntity) {
     float terrainEntityScale = 15.0f;
 
     auto terrainRenderComponent = std::make_shared<RenderComponent>("../src/ressources/DE_MAP0/MAPOI.obj",
-                                                           "../src/ressources/DE_Map1/Map01_Albedo.png", 
+                                                           "../src/ressources/DE_Map1/Map01_Albedo.png",
                                                            renderRsrcManager, 0, true, false);
     terrainRenderComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation, terrainEntityScale);
 
     auto terrainRoadRenderComponent = std::make_shared<RenderComponent>("../src/ressources/DE_MAP0/MAPOI.obj",
-                                                           "../src/ressources/DE_MAP0/BIG_ROAD_TEX.jpg", 
+                                                           "../src/ressources/DE_MAP0/BIG_ROAD_TEX.jpg",
                                                            renderRsrcManager, 2, true, false);
     terrainRoadRenderComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation, terrainEntityScale);
 
     auto terrainBottomRoadRenderComponent = std::make_shared<RenderComponent>("../src/ressources/DE_MAP0/MAPOI.obj",
-                                                           "../src/ressources/DE_MAP0/STONE_WALL_04.jpg", 
+                                                           "../src/ressources/DE_MAP0/STONE_WALL_04.jpg",
                                                            renderRsrcManager, 3, false, false);
-    terrainBottomRoadRenderComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation, terrainEntityScale);                                                          
+    terrainBottomRoadRenderComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation, terrainEntityScale);
 
     auto terrainChunks_physics_Component = std::make_shared<TerrainChunksComponent>("../src/ressources/DE_MAP0/chunks", terrainEntityScale);
     ecManager.get()->setTerrainChunks(terrainChunks_physics_Component);
@@ -310,7 +318,7 @@ void GameScene::load_HighRoadHills_Map(std::shared_ptr<Entity> terrainEntity) {
     terrainEntity->addComponent(terrainRenderComponent);
     terrainEntity->addComponent(terrainRoadRenderComponent);
     terrainEntity->addComponent(terrainBottomRoadRenderComponent);
-    
+
     // Add Physics Component:
     terrainEntity->addComponent(terrainChunks_physics_Component);
 }
@@ -345,7 +353,7 @@ void GameScene::init() {
             printf(
               "JOYSTICK CONNECTION :-)\n"
             );
-  }    
+  }
 
     // Init reference to physics singleton
 
@@ -366,36 +374,19 @@ void GameScene::init() {
   // //body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
   // planeBody->setCollisionFlags(planeBody->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
   // physicsWorld->dynamicsWorld->addRigidBody(planeBody, COLLISION_GROUP_CHUNKS, COLLISION_GROUP_ALL);
-  
-  //!__ ENDOF Prototype Plane 
+
+  //!__ ENDOF Prototype Plane
 
     // auto terrainRenderComponent = std::make_shared<RenderComponent>("../src/ressources/DE_Map1/Landscape01.obj",
-    //                                                        "../src/ressources/DE_Map1/Map01_Albedo.png", 
+    //                                                        "../src/ressources/DE_Map1/Map01_Albedo.png",
     //                                                        renderRsrcManager);
 
-    std::shared_ptr<Entity> roadBarrierEntity = std::make_shared<Entity>();
 
-
-    //! Clean up
-   // physicsWorld->dynamicsWorld->addRigidBody(roadBarrierPhysicsComponent->meshRigidBody, COLLISION_GROUP_ALL, COLLISION_GROUP_CHUNKS);
-    
-
-    auto roadBarrierComponent = std::make_shared<MovableObjectComponent>("../assets/road_barrier_01/road_barrier_01.obj",
-                                                           "../assets/road_barrier_01/road_barrier_01_tex2.jpg", 
-                                                           renderRsrcManager, 0, false, false, 10.0f, 0.1f);
-
-    physicsWorld->dynamicsWorld->addRigidBody(roadBarrierComponent.get()->phyMesh->meshRigidBody, COLLISION_GROUP_ALL, COLLISION_GROUP_CHUNKS);
-
-    roadBarrierComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation, 10.0f);                                                                                                                      
-
-    roadBarrierEntity->addComponent(roadBarrierComponent);
-
-    entities.push_back(roadBarrierEntity);
 
     //* ----------------- Terrain Entity Definition ----------------- *//
 
     std::shared_ptr<Entity> terrainEntity = std::make_shared<Entity>();
-    load_HighRoadHills_Map(terrainEntity); 
+    load_HighRoadHills_Map(terrainEntity);
     entities.push_back(terrainEntity);
 
     //* ----------------- Vehicle Entity Definition ----------------- *//
@@ -404,21 +395,43 @@ void GameScene::init() {
 
     //auto playerVehicleComponent = std::make_shared<PlayerVehicleComponent>(10.0f, 10.0f, 10.0f);
     auto playerVehicleComponent = std::make_shared<PlayerVehicleComponent>(135.0f, 135.0f, -165.0f);
-    
+
     ecManager.get()->setPlayerVehicle(playerVehicleComponent);
 
     playerVehicleEntity->addComponent(playerVehicleComponent);
-    
+
 
     auto playerVehicleRenderComponent = std::make_shared<VehicleRenderComponent>("../src/ressources/volga/volga.obj", "../src/ressources/first_car_wheel.obj",
-                                                           "../src/ressources/volga/volga.png", 
+                                                           "../src/ressources/volga/volga.png",
                                                            renderRsrcManager, 0, true);
 
     playerVehicleRenderComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation, 1.0f);
 
-    playerVehicleEntity->addComponent(playerVehicleRenderComponent);                                                           
+    playerVehicleEntity->addComponent(playerVehicleRenderComponent);
 
     entities.push_back(playerVehicleEntity);
+
+
+    //
+
+    std::shared_ptr<Entity> roadBarrierEntity = std::make_shared<Entity>();
+
+    auto roadBarrierComponent = std::make_shared<MovableObjectComponent>("../assets/road_barrier_01/road_barrier_01.obj",
+                                                           "../assets/road_barrier_01/road_barrier_01_tex2.jpg",
+                                                           renderRsrcManager, 0, false, false, 1.0f, 0.5f);
+
+    // roadBarrierComponent->phyMesh->meshRigidBody->setCollisionFlags(roadBarrierComponent->phyMesh->meshRigidBody->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
+
+    // physicsWorld->dynamicsWorld->addRigidBody(roadBarrierComponent.get()->phyMesh->meshRigidBody, COLLISION_GROUP_ALL, COLLISION_GROUP_ALL);
+
+    roadBarrierComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation, 10.0f);
+
+    roadBarrierEntity->addComponent(roadBarrierComponent);
+
+    entities.push_back(roadBarrierEntity);
+
+    //
+
 
     logger->log(Logger::INFO,"GameScene Loaded in " + std::to_string(entities.size()) + " entities");
 }

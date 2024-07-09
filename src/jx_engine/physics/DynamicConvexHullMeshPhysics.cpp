@@ -2,6 +2,9 @@
 
 DynamicConvexHullMeshPhysics::DynamicConvexHullMeshPhysics(const std::vector<glm::vec3> &ordered_verts, const glm::mat4 &modelMatrix, float scaleFactor, float mass) 
 {
+
+    PhysicsWorldSingleton *physicsWorld = PhysicsWorldSingleton::getInstance();
+
     // Create a triangle mesh
     btTriangleMesh* triangleMesh = new btTriangleMesh();
 
@@ -36,6 +39,16 @@ DynamicConvexHullMeshPhysics::DynamicConvexHullMeshPhysics(const std::vector<glm
     btRigidBody::btRigidBodyConstructionInfo rigidBodyCI(mass, motionState, gimpactShape, inertia);
     meshRigidBody = new btRigidBody(rigidBodyCI);
     //meshRigidBody->setUserPointer(this);
+
+    meshRigidBody->setUserPointer((void *)7);
+    meshRigidBody->setCollisionFlags(meshRigidBody->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
+
+    // Set the activation state : 1 = active, 0 = inactive
+    meshRigidBody->setActivationState(DISABLE_DEACTIVATION);
+
+    physicsWorld->dynamicsWorld->addRigidBody(meshRigidBody, COLLISION_GROUP_ALL, COLLISION_GROUP_CHUNKS);
+
+
 }
 
 btTransform DynamicConvexHullMeshPhysics::GetTransform() const
@@ -43,6 +56,19 @@ btTransform DynamicConvexHullMeshPhysics::GetTransform() const
     btTransform trans;
     motionState->getWorldTransform(trans);
     return trans;
+}
+
+void DynamicConvexHullMeshPhysics::SetPosition(float x, float y, float z)
+{
+    btTransform transform;
+    motionState->getWorldTransform(transform);
+    transform.setOrigin(btVector3(x, y, z));
+    motionState->setWorldTransform(transform);
+    meshRigidBody->setWorldTransform(transform);
+
+    meshRigidBody->setLinearVelocity(btVector3(0, 0, 0));
+    //meshRigidBody->setAngularVelocity(btVector3(0, 0, 0));
+    //meshRigidBody->clearForces();
 }
 
 DynamicConvexHullMeshPhysics::~DynamicConvexHullMeshPhysics() 

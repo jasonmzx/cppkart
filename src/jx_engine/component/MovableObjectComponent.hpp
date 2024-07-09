@@ -14,6 +14,7 @@ public:
     MovableObjectComponent(std::string modelPath, std::string texPath, std::shared_ptr<RenderRsrcManager> rrm, int meshIndex, bool cD, bool isTexAlpha, float scale, float mass);
     
     void UpdateTransforms();
+    void SetPosition(float x, float y, float z);
 
     DynamicConvexHullMeshPhysics* phyMesh;
     btRigidBody* GetRigidBody();

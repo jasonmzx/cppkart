@@ -2,9 +2,6 @@
 
 #include "bullet/btFilterableVehicleRaycaster.h"
 
-#define COLLISION_GROUP_CHUNKS 0x1
-#define COLLISION_GROUP_ALL 0x2
-
 VehiclePhysics::VehiclePhysics(float xPos, float yPos, float zPos)
 {
     PhysicsWorldSingleton *physicsWorld = PhysicsWorldSingleton::getInstance();
