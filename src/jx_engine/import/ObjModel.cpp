@@ -36,6 +36,8 @@ void ObjModel::LoadObj(const std::string &filepath)
     {
         logger->log(Logger::ERROR, "ObjModel.cpp | Failed to load the model: " + filepath);
         return;
+    } else {
+        logger->log(Logger::INFO, "ObjModel.cpp | Loaded the model: " + filepath);
     }
 
     for (int meshIndex = 0; meshIndex < scene->mNumMeshes; meshIndex++)
@@ -66,8 +68,15 @@ void ObjModel::LoadObj(const std::string &filepath)
 
             if (mesh->mTextureCoords[0])
             { // If there are texture coords
-                vertices.push_back(mesh->mTextureCoords[0][i].x);
-                vertices.push_back(mesh->mTextureCoords[0][i].y);
+                
+                
+                float u = mesh->mTextureCoords[0][i].x;
+                float v = mesh->mTextureCoords[0][i].y;
+
+                vertices.push_back(u);
+                vertices.push_back(v);
+
+                printf("OBJ_MODEL UV : u: %f, v: %f\n", u, v);
             }
 
             if (mesh->mNormals)

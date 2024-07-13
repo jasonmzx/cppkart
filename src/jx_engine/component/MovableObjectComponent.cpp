@@ -15,7 +15,7 @@ MovableObjectComponent::MovableObjectComponent(
 
     DynamicConvexHullMeshPhysics *roadBarrierPhysicsComponent = new DynamicConvexHullMeshPhysics(xyz_verts, scaledMdlMatrix, scale, mass);
 
-    phyMesh = roadBarrierPhysicsComponent;
+    phyMesh.reset(roadBarrierPhysicsComponent);
 
 }
 

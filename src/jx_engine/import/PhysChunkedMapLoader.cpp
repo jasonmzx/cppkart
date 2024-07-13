@@ -49,7 +49,6 @@ std::vector<LoadedChunk> PhysChunkedMapLoader::loadChunks(const std::string &fil
             chunks.back().triangle_ordered_verts.push_back(vec3List[0]);
             chunks.back().triangle_ordered_verts.push_back(vec3List[1]);
             chunks.back().triangle_ordered_verts.push_back(vec3List[2]);
-
         }
     }
 

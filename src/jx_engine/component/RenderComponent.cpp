@@ -80,3 +80,4 @@ std::vector<glm::vec3> RenderComponent::GetXYZvertices()
 {
     return Geom->GetXYZvertices();
 }
+

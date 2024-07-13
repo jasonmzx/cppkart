@@ -15,6 +15,8 @@ private:
 
 public:
     btRigidBody* meshRigidBody;
+    
+    btTriangleMesh* triangleMesh;
 
     btDefaultMotionState* motionState;
 

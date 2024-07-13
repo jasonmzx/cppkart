@@ -13,11 +13,16 @@
 
 class StaticTriangleMeshPhysics {
 private:
+btBvhTriangleMeshShape* triangleShape;
+btTriangleMesh* mesh;
 
 public:
     btRigidBody* meshRigidBody;
 
-    StaticTriangleMeshPhysics(const std::vector<glm::vec3> &ordered_verts, const glm::mat4 &modelMatrix, float scaleFactor);
+   StaticTriangleMeshPhysics(const std::vector<glm::vec3> &ordered_verts, const glm::mat4 &modelMatrix, float scaleFactor);
+   StaticTriangleMeshPhysics(const StaticTriangleMeshPhysics&) = delete;
+   StaticTriangleMeshPhysics& operator=(const StaticTriangleMeshPhysics&) = delete;
+   ~StaticTriangleMeshPhysics();
 };
 
 #endif

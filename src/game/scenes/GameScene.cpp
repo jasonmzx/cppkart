@@ -157,7 +157,7 @@ void GameScene::update(float dt) {
     //TODO: Accumulate deltaTime and pass it to physicsWorld->dynamicsWorld->stepSimulation
     //world.get()->physicsWorld->dynamicsWorld->stepSimulation(deltaTimeWithTimeScale, 2, deltaTime);
 
-    physicsWorld->dynamicsWorld->stepSimulation(1.0f / 60.0f);
+    physicsWorld->dynamicsWorld->stepSimulation(1.0f / 60.0f, 4, 1/240.0f);
 }
 
 glm::vec3 GameScene::BulletRaycast() {
@@ -177,6 +177,25 @@ glm::vec3 GameScene::BulletRaycast() {
 
     return glm::vec3(0.0f, 0.0f, 0.0f);
 }
+
+
+void GameScene::makeBarrier() {
+    std::shared_ptr<Entity> roadBarrierEntity = std::make_shared<Entity>();
+
+    auto roadBarrierComponent = std::make_shared<MovableObjectComponent>("../assets/road_barrier_01/road_barrier_01.obj",
+                                                           "../assets/road_barrier_01/road_barrier_01_tex2.jpg",
+                                                           renderRsrcManager, 0, false, false, 1.0f, 0.5f);
+
+    // roadBarrierComponent->phyMesh->meshRigidBody->setCollisionFlags(roadBarrierComponent->phyMesh->meshRigidBody->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
+    // physicsWorld->dynamicsWorld->addRigidBody(roadBarrierComponent.get()->phyMesh->meshRigidBody, COLLISION_GROUP_ALL, COLLISION_GROUP_ALL);
+
+    roadBarrierComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation, 10.0f);
+
+    roadBarrierEntity->addComponent(roadBarrierComponent);
+
+    entities.push_back(roadBarrierEntity);
+}
+
 
 void GameScene::render() {
 
@@ -233,6 +252,8 @@ void GameScene::procGameInputs() {
       glm::vec3 rayHit = BulletRaycast();
 
       gameInputPtr->setDebugRaycastXYZ(rayHit.x, rayHit.y, rayHit.z);
+
+      makeBarrier();      
 
     } else {
       gameInputPtr->setDebugRaycastXYZ(0.0f, 0.0f, 0.0f);
@@ -381,8 +402,6 @@ void GameScene::init() {
     //                                                        "../src/ressources/DE_Map1/Map01_Albedo.png",
     //                                                        renderRsrcManager);
 
-
-
     //* ----------------- Terrain Entity Definition ----------------- *//
 
     std::shared_ptr<Entity> terrainEntity = std::make_shared<Entity>();
@@ -411,29 +430,24 @@ void GameScene::init() {
 
     entities.push_back(playerVehicleEntity);
 
-
     //
 
-    std::shared_ptr<Entity> roadBarrierEntity = std::make_shared<Entity>();
+    this->makeBarrier();
 
-    auto roadBarrierComponent = std::make_shared<MovableObjectComponent>("../assets/road_barrier_01/road_barrier_01.obj",
-                                                           "../assets/road_barrier_01/road_barrier_01_tex2.jpg",
-                                                           renderRsrcManager, 0, false, false, 1.0f, 0.5f);
+    auto skyboxEntity = std::make_shared<Entity>();
 
-    // roadBarrierComponent->phyMesh->meshRigidBody->setCollisionFlags(roadBarrierComponent->phyMesh->meshRigidBody->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
+    auto skyboxRenderComponent = std::make_shared<RenderComponent>("../assets/skybox_01/simple_sph.obj",
+                                                           "../assets/skybox_01/sq_skybox.jpg",
+                                                           renderRsrcManager, 0, false, false);
 
-    // physicsWorld->dynamicsWorld->addRigidBody(roadBarrierComponent.get()->phyMesh->meshRigidBody, COLLISION_GROUP_ALL, COLLISION_GROUP_ALL);
+    skyboxRenderComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation, 4200.0f);
 
-    roadBarrierComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation, 10.0f);
+    skyboxEntity->addComponent(skyboxRenderComponent);
 
-    roadBarrierEntity->addComponent(roadBarrierComponent);
-
-    entities.push_back(roadBarrierEntity);
-
-    //
-
+    entities.push_back(skyboxEntity);
 
     logger->log(Logger::INFO,"GameScene Loaded in " + std::to_string(entities.size()) + " entities");
+
 }
 
 void GameScene::initECS(std::shared_ptr<SceneManager> sceneManager) {

@@ -15,7 +15,7 @@ class ThreadPool {
 public:
     explicit ThreadPool(size_t);
     template<class F, class... Args>
-    auto enqueue(F&& f, Args&&... args) -> std::future<typename std::result_of<F(Args...)>::type>;
+    auto enqueue(F&& f, Args&&... args) -> std::future<std::result_of_t<F(Args...)>>;
     ~ThreadPool();
 private:
     std::vector<std::thread> workers;
@@ -24,12 +24,13 @@ private:
     std::mutex queue_mutex;
     std::condition_variable condition;
     bool stop;
+
 };
 
 // Include the implementation of the enqueue method inside the header
 template<class F, class... Args>
-auto ThreadPool::enqueue(F&& f, Args&&... args) -> std::future<typename std::result_of<F(Args...)>::type> {
-    using return_type = typename std::result_of<F(Args...)>::type;
+auto ThreadPool::enqueue(F&& f, Args&&... args) -> std::future<std::result_of_t<F(Args...)>> {
+    using return_type = std::result_of_t<F(Args...)>;
 
     auto task = std::make_shared<std::packaged_task<return_type()>>(
         std::bind(std::forward<F>(f), std::forward<Args>(args)...)

@@ -16,7 +16,7 @@
 class RenderComponent : public EComponent {
     public:
         RenderComponent(std::string modelPath, std::string texPath, std::shared_ptr<RenderRsrcManager> rrm, int meshIndex, bool cD, bool isTexAlpha);
-        
+
         std::vector<glm::vec3> GetXYZvertices();
 
         void SetGLContext(GLint texLOCATION, GLint mmLOCATION, GLint colorUniformLOCATION, float scale);

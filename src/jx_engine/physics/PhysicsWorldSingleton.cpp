@@ -4,7 +4,9 @@ PhysicsWorldSingleton* PhysicsWorldSingleton::instance = nullptr;
 
 PhysicsWorldSingleton::PhysicsWorldSingleton() {
     
-    broadphase = new btDbvtBroadphase(); //uses QuadTree Data Structure to minimize expensive collision checking
+    //broadphase = new btDbvtBroadphase(); //uses QuadTree Data Structure to minimize expensive collision checking
+
+    broadphase = new btAxisSweep3(btVector3(-1000, -1000, -1000), btVector3(1000, 1000, 1000)); // TODO: Make sure world size is correct
 
     collisionConfiguration = new btDefaultCollisionConfiguration();
     dispatcher = new btCollisionDispatcher(collisionConfiguration);

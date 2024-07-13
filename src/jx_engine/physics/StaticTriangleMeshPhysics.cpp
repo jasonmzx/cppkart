@@ -6,7 +6,7 @@ StaticTriangleMeshPhysics::StaticTriangleMeshPhysics(
 
     //* Construction of Mesh (btTriangleMesh is OK for static objects)
 
-    btTriangleMesh* mesh = new btTriangleMesh();
+    mesh = new btTriangleMesh();
 
     for (size_t i = 0; i < ordered_verts.size(); i += 3)
     {
@@ -17,7 +17,7 @@ StaticTriangleMeshPhysics::StaticTriangleMeshPhysics(
         mesh->addTriangle(vertex0, vertex1, vertex2);
     }
     
-    btBvhTriangleMeshShape* triangleShape = new btBvhTriangleMeshShape(mesh, true);
+    triangleShape = new btBvhTriangleMeshShape(mesh, true);
 
     // Convert glm::mat4 to btTransform, and apply parameters
     
@@ -40,4 +40,12 @@ StaticTriangleMeshPhysics::StaticTriangleMeshPhysics(
 
     meshRigidBody = new btRigidBody(info);
 
+}
+
+StaticTriangleMeshPhysics::~StaticTriangleMeshPhysics()
+{
+    delete meshRigidBody->getMotionState();
+    delete meshRigidBody;
+    delete triangleShape;
+    delete mesh;
 }

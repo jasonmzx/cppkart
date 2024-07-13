@@ -51,6 +51,8 @@ class GameScene : public Scene {
         void update(float dt);
         void render();
 
+        void makeBarrier();
+
         void updateImGui();
 
         glm::vec3 BulletRaycast();

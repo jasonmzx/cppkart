@@ -18,7 +18,7 @@ void ECManager::tick(std::vector<std::shared_ptr<Entity>>& entities, std::shared
 
             if (auto playerVehicleComponent = std::dynamic_pointer_cast<PlayerVehicleComponent>(component)) {
                 
-                playerVehicleComponent.get()->updateVehicleControl(gameInput.get()->currentAcceleration, gameInput.get()->currentTurn);
+                 playerVehicleComponent.get()->updateVehicleControl(gameInput.get()->currentAcceleration, gameInput.get()->currentTurn);
                 
                 float pX = playerVehicleComponent.get()->vehiclePhysics.getX();
                 float pY = playerVehicleComponent.get()->vehiclePhysics.getY();

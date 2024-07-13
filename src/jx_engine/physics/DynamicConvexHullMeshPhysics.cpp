@@ -6,7 +6,7 @@ DynamicConvexHullMeshPhysics::DynamicConvexHullMeshPhysics(const std::vector<glm
     PhysicsWorldSingleton *physicsWorld = PhysicsWorldSingleton::getInstance();
 
     // Create a triangle mesh
-    btTriangleMesh* triangleMesh = new btTriangleMesh();
+    triangleMesh = new btTriangleMesh();
 
     for (size_t i = 0; i < ordered_verts.size(); i += 3) {
         const glm::vec3 &v0 = ordered_verts[i];
@@ -19,7 +19,7 @@ DynamicConvexHullMeshPhysics::DynamicConvexHullMeshPhysics(const std::vector<glm
     }
 
     // Create the GImpact mesh shape
-    btGImpactMeshShape* gimpactShape = new btGImpactMeshShape(triangleMesh);
+    auto gimpactShape = new btGImpactMeshShape(triangleMesh);
     gimpactShape->updateBound();
 
     // Create the motion state
@@ -44,7 +44,7 @@ DynamicConvexHullMeshPhysics::DynamicConvexHullMeshPhysics(const std::vector<glm
     meshRigidBody->setCollisionFlags(meshRigidBody->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
 
     // Set the activation state : 1 = active, 0 = inactive
-    meshRigidBody->setActivationState(DISABLE_DEACTIVATION);
+    //meshRigidBody->setActivationState(DISABLE_DEACTIVATION);
 
     physicsWorld->dynamicsWorld->addRigidBody(meshRigidBody, COLLISION_GROUP_ALL, COLLISION_GROUP_CHUNKS);
 
@@ -71,9 +71,17 @@ void DynamicConvexHullMeshPhysics::SetPosition(float x, float y, float z)
     //meshRigidBody->clearForces();
 }
 
+#if 0
+    delete meshRigidBody->getMotionState();
+    delete meshRigidBody;
+    delete triangleShape;
+    delete mesh;
+#endif
+
 DynamicConvexHullMeshPhysics::~DynamicConvexHullMeshPhysics() 
 {
     delete meshRigidBody->getMotionState();
     delete meshRigidBody->getCollisionShape();
     delete meshRigidBody;
+    delete triangleMesh;
 }
