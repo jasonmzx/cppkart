@@ -15,6 +15,8 @@ class PlayerVehicleComponent : public EComponent {
 
         void updateVehicleControl(GameInput::Control acceleration, GameInput::Control steer);
 
+        void tick() override;
+
 };
 
 #endif

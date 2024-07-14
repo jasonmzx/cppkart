@@ -121,7 +121,7 @@ void PhysicsChunkManager::update(btScalar playerX, btScalar playerZ)
 
     static int rigidbodychanges = 0;
     // Define a radius within which chunks should be active
-    constexpr btScalar activationRadius = 200.0;
+    constexpr btScalar activationRadius = 70.0;
 
     if (physicsWorld == nullptr)
     {

@@ -22,6 +22,8 @@ class RenderComponent : public EComponent {
         void SetGLContext(GLint texLOCATION, GLint mmLOCATION, GLint colorUniformLOCATION, float scale);
         void Draw();
 
+        void tick() override;
+
     protected:
         std::shared_ptr<Geometry> Geom;
         std::string modelPath;

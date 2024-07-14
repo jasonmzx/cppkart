@@ -4,6 +4,8 @@
 class EComponent {
     public:
         virtual ~EComponent() = default;
+
+        virtual void tick() = 0;
 };
 
 #endif // ECOMPONENT_HPP

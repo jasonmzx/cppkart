@@ -253,7 +253,7 @@ void GameScene::procGameInputs() {
 
       gameInputPtr->setDebugRaycastXYZ(rayHit.x, rayHit.y, rayHit.z);
 
-      makeBarrier();      
+      //makeBarrier();      
 
     } else {
       gameInputPtr->setDebugRaycastXYZ(0.0f, 0.0f, 0.0f);
@@ -436,7 +436,7 @@ void GameScene::init() {
 
     auto skyboxEntity = std::make_shared<Entity>();
 
-    auto skyboxRenderComponent = std::make_shared<RenderComponent>("../assets/skybox_01/simple_sph.obj",
+    auto skyboxRenderComponent = std::make_shared<RenderComponent>("../assets/skybox_02/skybox_night_fixed.obj",
                                                            "../assets/skybox_01/sq_skybox.jpg",
                                                            renderRsrcManager, 0, false, false);
 

@@ -14,6 +14,8 @@ class TerrainChunksComponent : public EComponent {
         void updateChunks(btScalar playerX, btScalar playerZ);
         int ticker_counter = 0;
 
+        void tick() override;
+
 };
 
 #endif

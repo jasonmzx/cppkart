@@ -43,3 +43,6 @@ void PlayerVehicleComponent::updateVehicleControl(GameInput::Control acceleratio
 
 }
 
+void PlayerVehicleComponent::tick() {
+    // 
+}

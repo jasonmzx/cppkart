@@ -11,3 +11,8 @@ void TerrainChunksComponent::updateChunks(btScalar playerX, btScalar playerZ) {
         ticker_counter = 0;
     }
 }
+
+void TerrainChunksComponent::tick()
+{
+    // Do nothing
+}

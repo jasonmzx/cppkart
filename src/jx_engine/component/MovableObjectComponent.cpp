@@ -36,3 +36,8 @@ void MovableObjectComponent::SetPosition(float x, float y, float z)
     phyMesh->SetPosition(x, y, z);
     this->UpdateTransforms();
 }
+
+void MovableObjectComponent::tick()
+{
+    this->UpdateTransforms();
+}
