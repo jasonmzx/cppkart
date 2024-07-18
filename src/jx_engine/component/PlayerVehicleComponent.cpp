@@ -43,6 +43,31 @@ void PlayerVehicleComponent::updateVehicleControl(GameInput::Control acceleratio
 
 }
 
+void PlayerVehicleComponent::handlePlayerVehicleMoveEvent(const Event& event) {
+    try {
+        auto inputs = std::any_cast<std::pair<GameInput::Control, GameInput::Control>>(event.data);
+        GameInput::Control acceleration = inputs.first;
+        GameInput::Control steer = inputs.second;
+        
+        updateVehicleControl(acceleration, steer);
+
+    } catch (const std::bad_any_cast& e) {
+        Logger::getInstance()->log(Logger::ERROR, "[PlayerVehicleComponent] Failed to cast event data: " + std::string(e.what()));
+    }
+}
+
+void PlayerVehicleComponent::setPlayerPositionCallback(std::function<void(float, float, float, float)> callback) {
+    setPlayerVehiclePosition = callback;
+}
+
 void PlayerVehicleComponent::tick() {
-    // 
+    
+    float pX = vehiclePhysics.getX();
+    float pY = vehiclePhysics.getY();
+    float pZ = vehiclePhysics.getZ();
+
+    float velocity = vehiclePhysics.getSpeed();
+
+    setPlayerVehiclePosition(pX, pY, pZ, velocity);
+
 }

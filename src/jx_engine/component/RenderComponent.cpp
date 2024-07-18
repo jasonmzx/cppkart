@@ -83,5 +83,5 @@ std::vector<glm::vec3> RenderComponent::GetXYZvertices()
 
 void RenderComponent::tick()
 {
-    this->Draw();
+    Draw();
 }

@@ -111,6 +111,35 @@ void Camera::GenerateRay(glm::vec3& rayStart, glm::vec3& rayEnd, float rayLength
     rayEnd = rayStart + direction * rayLength;
 }
 
+
+void Camera::handleVehicleFollowEvent(const Event& event) {
+    try {
+        auto inputs = std::any_cast<std::tuple<float, float, float>>(event.data);
+        float pX = std::get<0>(inputs);
+        float pY = std::get<1>(inputs);
+        float pZ = std::get<2>(inputs);
+
+
+        if(!freeCamera) {
+            VehicleFollowCamera(pX, pY, pZ);
+        }
+        
+    } catch (const std::bad_any_cast& e) {
+        Logger::getInstance()->log(Logger::ERROR, "[Camera] Failed to cast event data: " + std::string(e.what()));
+    }
+}
+
+
+void Camera::handleToggleFreeCamEvent(const Event& event) {
+    try {
+        auto inputs = std::any_cast<bool>(event.data);
+        freeCamera = inputs;
+        
+    } catch (const std::bad_any_cast& e) {
+        Logger::getInstance()->log(Logger::ERROR, "[Camera] Failed to cast event data: " + std::string(e.what()));
+    }
+}
+
 void Camera::UpdateScreenSize(int w, int h)
 {
     width = w;

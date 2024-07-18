@@ -12,6 +12,9 @@
 //For User Input on Windows
 #include <SDL2/SDL.h>
 
+#include "jx_engine/event/Event.hpp"
+#include "jx_engine/logs/Logger.hpp"
+
 #include"shaderClass.h"
 
 class Camera
@@ -19,6 +22,9 @@ class Camera
 public:
 	// Stores the main vectors of the camera
 	bool DEBUG;
+	
+	bool freeCamera = false;
+
 	glm::vec3 Position;
 	glm::vec3 Orientation = glm::vec3(0.0f, 0.0f, -1.0f);
 	glm::vec3 LookAt;
@@ -48,6 +54,9 @@ public:
 	void UpdateScreenSize(int w, int h);
 
 	void VehicleFollowCamera(float pX, float pY, float pZ);
+
+	void handleVehicleFollowEvent(const Event& event);
+	void handleToggleFreeCamEvent(const Event& event);
 
 	void GenerateRay(glm::vec3& rayStart, glm::vec3& rayEnd, float rayLength);
 };

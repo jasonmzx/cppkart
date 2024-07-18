@@ -39,5 +39,6 @@ void MovableObjectComponent::SetPosition(float x, float y, float z)
 
 void MovableObjectComponent::tick()
 {
-    this->UpdateTransforms();
+    // this->UpdateTransforms();
+    this->Draw();
 }

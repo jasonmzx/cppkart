@@ -5,11 +5,21 @@ TerrainChunksComponent::TerrainChunksComponent(const std::string& filename, floa
     //physicsChunkManager->ActiveAll(); //DEBUG
 }
 
-void TerrainChunksComponent::updateChunks(btScalar playerX, btScalar playerZ) {
-    if (++ticker_counter == 5) {
-        physicsChunkManager->update(playerX, playerZ);
-        ticker_counter = 0;
+void TerrainChunksComponent::handleUpdateChunksEvent(const Event& event) {
+    try {
+        auto inputs = std::any_cast<std::pair<btScalar, btScalar>>(event.data);
+        btScalar playerX = inputs.first;
+        btScalar playerZ = inputs.second;
+        
+        if (++ticker_counter == 5) {
+            physicsChunkManager->update(playerX, playerZ);
+            ticker_counter = 0;
+        }
+
+    } catch (const std::bad_any_cast& e) {
+        Logger::getInstance()->log(Logger::ERROR, "[TerrainChunksComponent] Failed to cast event data: " + std::string(e.what()));
     }
+
 }
 
 void TerrainChunksComponent::tick()

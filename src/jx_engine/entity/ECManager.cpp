@@ -1,46 +1,62 @@
 #include "ECManager.hpp"
 
+
+
+// Subscribe to an event with a callback
+void ECManager::subscribeToEvent(EventType type, Callback callback) {
+    int id = nextId++;
+    eventCallbacks[type].emplace_back(id, callback);
+}
+
+// Unsubscribe from an event using the ID
+void ECManager::unsubscribeToEvent(EventType type, int id) {
+    auto it = eventCallbacks.find(type);
+    if (it != eventCallbacks.end()) {
+        auto& subs = it->second;
+        subs.erase(std::remove_if(subs.begin(), subs.end(), [id](const auto& pair) {
+            return pair.first == id;
+        }), subs.end());
+
+        if (subs.empty()) {
+            eventCallbacks.erase(it);
+        }
+    } else {
+        Logger* logger = Logger::getInstance();
+        logger->log(Logger::ERROR, "[ECManager : UNSUB ERROR] Event type not found...");
+    }
+}
+
+// Emit an event to all subscribers of the event type
+void ECManager::emitEvent(const Event& event) {
+    auto it = eventCallbacks.find(event.type);
+    if (it != eventCallbacks.end()) {
+        auto& subs = it->second;
+        for (const auto& [id, callback] : subs) {
+            callback(event);
+        }
+    } else {
+        Logger* logger = Logger::getInstance();
+        logger->log(Logger::ERROR, "[ECManager : EMIT ERROR] Event type not found...");
+    }
+}
+
+//* ------------------- Older Code ------------------- *//
+
 // void ECManager::setSceneManager(std::shared_ptr<SceneManager> sceneManager) {
 //     this->sceneManager = sceneManager;
 //     this->activeScene = sceneManager.get()->getActiveScene();
 // }
 
-void ECManager::tick(std::vector<std::shared_ptr<Entity>>& entities, std::shared_ptr<GameInput> gameInput,
-    std::shared_ptr<Camera> camera, bool followPlayerVehicle, float& vehicleSpeed
-) {
+void ECManager::tick(std::vector<std::shared_ptr<Entity>>& entities, std::shared_ptr<GameInput> gameInput) 
+{
+    //TODO: Make a gameinput component and pass it to the player vehicle component
+    emitEvent(Event(EventType::PLAYER_VEHICLE_MOVE, std::make_pair(gameInput.get()->currentAcceleration, gameInput.get()->currentTurn)));
+
     for(auto entity : entities) {
 
         for (auto& component : entity.get()->components) {
+
             
-            // if (auto renderComponent = std::dynamic_pointer_cast<RenderComponent>(component)) {
-            //     renderComponent.get()->Draw();
-            // }
-
-            if (auto playerVehicleComponent = std::dynamic_pointer_cast<PlayerVehicleComponent>(component)) {
-                
-                 playerVehicleComponent.get()->updateVehicleControl(gameInput.get()->currentAcceleration, gameInput.get()->currentTurn);
-                
-                float pX = playerVehicleComponent.get()->vehiclePhysics.getX();
-                float pY = playerVehicleComponent.get()->vehiclePhysics.getY();
-                float pZ = playerVehicleComponent.get()->vehiclePhysics.getZ();
-
-                dpX = pX;
-                dpY = pY;
-                dpZ = pZ;
-
-                vehicleSpeed = playerVehicleComponent.get()->vehiclePhysics.getSpeed();
-
-                // printf("Player Vehicle Position: %f, %f, %f\n", pX, pY, pZ);
-
-                if(terrainChunksComponents.get()) {
-                    terrainChunksComponents.get()->updateChunks(pX, pZ);
-                }
-
-                if(followPlayerVehicle) {
-                    camera.get()->VehicleFollowCamera(pX,pY,pZ);
-                }
-            }
-
             if(auto movableObjectComponent = std::dynamic_pointer_cast<MovableObjectComponent>(component)) {
                 
                 float yOffset = 10.0f;
@@ -54,6 +70,8 @@ void ECManager::tick(std::vector<std::shared_ptr<Entity>>& entities, std::shared
                 }
                 
             }
+
+            component.get()->tick();
         }
     }
 }
@@ -79,12 +97,6 @@ void ECManager::renderPass(std::vector<std::shared_ptr<Entity>>& entities) {
                 movableObjectComponent.get()->UpdateTransforms();
             }
 
-            // After getting the transforms, perform the rendering
-
-            if (auto renderComponent = std::dynamic_pointer_cast<RenderComponent>(component)) {
-                renderComponent.get()->Draw();
-            }
-
         }
     }
 }
@@ -93,6 +105,11 @@ void ECManager::setTerrainChunks(std::shared_ptr<TerrainChunksComponent> terrain
     // Check if the input is valid
     if (terrainChunks) {
         terrainChunksComponents = terrainChunks;
+
+        subscribeToEvent(EventType::UPDATE_TERRAIN_CHUNKS_XZ, [this](const Event& event) {
+            terrainChunksComponents.get()->handleUpdateChunksEvent(event);
+        });
+
     } else {
         // Handle the error appropriately (e.g., logging, throwing an exception)
         Logger* logger = Logger::getInstance();
@@ -104,10 +121,55 @@ void ECManager::setPlayerVehicle(std::shared_ptr<PlayerVehicleComponent> playerV
     // Check if the input is valid
     if (playerVehicle) {
         playerVehicleComponent = playerVehicle;
+
+        //* Subscribed Events
+
+        subscribeToEvent(EventType::PLAYER_VEHICLE_MOVE, [this](const Event& event) {
+            playerVehicleComponent.get()->handlePlayerVehicleMoveEvent(event);
+        });
+
+        //* Emitting Events (Set Callbacks)
+
+        playerVehicleComponent->setPlayerPositionCallback([this](float pX, float pY, float pZ, float velocity) {
+            emitEvent(Event(EventType::UPDATE_TERRAIN_CHUNKS_XZ, std::make_pair(pX, pZ)));
+
+            emitEvent(Event(EventType::CAMERA_PLAYER_VEHICLE_FOLLOW, std::make_tuple(pX, pY, pZ)));
+
+            emitEvent(Event(EventType::PLAYER_VEHICLE_GET_SPEED, velocity));
+        });
+
     } else {
         // Handle the error appropriately (e.g., logging, throwing an exception)
         Logger* logger = Logger::getInstance();
-        logger->log(Logger::ERROR, "Invalid PlayerVehicleComponent input");
+        logger->log(Logger::ERROR, "Invalid PlayerVehicleComponent Input !");
+    }
+}
+
+void ECManager::debugSetPlayerVehicleVelocity(float& velocity) {
+    subscribeToEvent(EventType::PLAYER_VEHICLE_GET_SPEED, [&velocity](const Event& event) {
+        velocity = std::any_cast<float>(event.data);
+    });
+}
+
+void ECManager::setFreeCameraMode(bool freeCam) {
+    emitEvent(Event(EventType::CAMERA_TOGGLE_FREE_CAM, freeCam));
+}
+
+void ECManager::setCamera(std::shared_ptr<Camera> camera) {
+    // Check if the input is valid
+    if (camera) {
+        subscribeToEvent(EventType::CAMERA_PLAYER_VEHICLE_FOLLOW, [camera](const Event& event) {
+            camera.get()->handleVehicleFollowEvent(event);
+        });
+
+        subscribeToEvent(EventType::CAMERA_TOGGLE_FREE_CAM, [camera](const Event& event) {
+            camera.get()->handleToggleFreeCamEvent(event);
+        });
+
+    } else {
+        // Handle the error appropriately (e.g., logging, throwing an exception)
+        Logger* logger = Logger::getInstance();
+        logger->log(Logger::ERROR, "Invalid Camera Input !");
     }
 }
 

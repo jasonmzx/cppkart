@@ -66,6 +66,8 @@ add_executable(cppkart
      src/jx_engine/entity/Entity.hpp
      src/jx_engine/entity/Entity.cpp
 
+     src/jx_engine/event/Event.hpp
+
      # Components:
 
      src/jx_engine/component/EComponent.hpp

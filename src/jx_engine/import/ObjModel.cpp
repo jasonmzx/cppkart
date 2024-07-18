@@ -76,7 +76,6 @@ void ObjModel::LoadObj(const std::string &filepath)
                 vertices.push_back(u);
                 vertices.push_back(v);
 
-                printf("OBJ_MODEL UV : u: %f, v: %f\n", u, v);
             }
 
             if (mesh->mNormals)

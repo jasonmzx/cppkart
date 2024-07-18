@@ -208,8 +208,10 @@ void GameScene::render() {
 
     vSpeed = 0.0f;
 
-    ecManager->tick(entities, gameInput, camera, followPlayerVehicle, vSpeed); // ECS System Tick
     ecManager->renderPass(entities); // ECS Render Pass
+    ecManager->tick(entities, gameInput); // ECS System Tick
+
+    ecManager->debugSetPlayerVehicleVelocity(vSpeed);
 
     auto end = std::chrono::high_resolution_clock::now();
     ecInferenceTimeMS = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
@@ -236,6 +238,7 @@ void GameScene::procGameInputs() {
 
   if(KB_InputState[SDL_SCANCODE_F1]) { // Toggle Vehicle Camera
     followPlayerVehicle = !followPlayerVehicle;
+    ecManager.get()->setFreeCameraMode(followPlayerVehicle);
   }
 
   if (trackMouse)
@@ -320,6 +323,11 @@ void GameScene::load_HighRoadHills_Map(std::shared_ptr<Entity> terrainEntity) {
     auto terrainRenderComponent = std::make_shared<RenderComponent>("../src/ressources/DE_MAP0/MAPOI.obj",
                                                            "../src/ressources/DE_Map1/Map01_Albedo.png",
                                                            renderRsrcManager, 0, true, false);
+
+    // auto terrainRenderComponent = std::make_shared<RenderComponent>("../assets/big_sq_map/BIG_SQ_MAP.obj",
+    //                                                        "../src/ressources/DE_MAP0/BIG_ROAD_TEX.jpg",
+    //                                                        renderRsrcManager, 2, true, false);
+
     terrainRenderComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation, terrainEntityScale);
 
     auto terrainRoadRenderComponent = std::make_shared<RenderComponent>("../src/ressources/DE_MAP0/MAPOI.obj",
@@ -375,6 +383,10 @@ void GameScene::init() {
               "JOYSTICK CONNECTION :-)\n"
             );
   }
+
+  // ECS Init
+
+  ecManager.get()->setCamera(camera);
 
     // Init reference to physics singleton
 
