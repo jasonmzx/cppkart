@@ -324,9 +324,9 @@ void GameScene::load_HighRoadHills_Map(std::shared_ptr<Entity> terrainEntity) {
                                                            "../src/ressources/DE_Map1/Map01_Albedo.png",
                                                            renderRsrcManager, 0, true, false);
 
-    // auto terrainRenderComponent = std::make_shared<RenderComponent>("../assets/big_sq_map/BIG_SQ_MAP.obj",
-    //                                                        "../src/ressources/DE_MAP0/BIG_ROAD_TEX.jpg",
-    //                                                        renderRsrcManager, 2, true, false);
+    // auto terrainRenderComponent = std::make_shared<RenderComponent>("../assets/square_island/Square_island.obj",
+    //                                                        "../assets/square_island/Map_Base_Color.jpg",
+    //                                                        renderRsrcManager, 0, true, false);
 
     terrainRenderComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation, terrainEntityScale);
 
@@ -349,6 +349,33 @@ void GameScene::load_HighRoadHills_Map(std::shared_ptr<Entity> terrainEntity) {
     terrainEntity->addComponent(terrainBottomRoadRenderComponent);
 
     // Add Physics Component:
+    terrainEntity->addComponent(terrainChunks_physics_Component);
+}
+
+void GameScene::load_SquareIsland_Map(std::shared_ptr<Entity> terrainEntity) {
+
+    float terrainEntityScale = 250.0f;
+
+    auto terrainRenderComponent = std::make_shared<RenderComponent>("../assets/square_island/Square_island.obj",
+                                                           "../assets/square_island/Map_Base_Color.jpg",
+                                                           renderRsrcManager, 0, true, false);
+
+    terrainRenderComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation, terrainEntityScale);
+
+    auto terrainRoadRenderComponent = std::make_shared<RenderComponent>("../assets/square_island/Square_island.obj",
+                                                           "../assets/square_island/High_Way_Tex.jpg",
+                                                           renderRsrcManager, 2, true, false);
+
+    terrainRoadRenderComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation, terrainEntityScale);
+
+    auto terrainChunks_physics_Component = std::make_shared<TerrainChunksComponent>("../assets/square_island/chunks", terrainEntityScale);
+    ecManager.get()->setTerrainChunks(terrainChunks_physics_Component);
+
+    // Render Components:
+    terrainEntity->addComponent(terrainRenderComponent);
+    terrainEntity->addComponent(terrainRoadRenderComponent);
+
+    // Physics Component:
     terrainEntity->addComponent(terrainChunks_physics_Component);
 }
 
@@ -416,16 +443,22 @@ void GameScene::init() {
 
     //* ----------------- Terrain Entity Definition ----------------- *//
 
-    std::shared_ptr<Entity> terrainEntity = std::make_shared<Entity>();
-    load_HighRoadHills_Map(terrainEntity);
-    entities.push_back(terrainEntity);
+    // std::shared_ptr<Entity> terrainEntity = std::make_shared<Entity>();
+    // load_HighRoadHills_Map(terrainEntity);
+    // entities.push_back(terrainEntity);
+
+    std::shared_ptr<Entity> terrainEntity2 = std::make_shared<Entity>();
+    load_SquareIsland_Map(terrainEntity2);
+    entities.push_back(terrainEntity2);
 
     //* ----------------- Vehicle Entity Definition ----------------- *//
 
     std::shared_ptr<Entity> playerVehicleEntity = std::make_shared<Entity>();
 
     //auto playerVehicleComponent = std::make_shared<PlayerVehicleComponent>(10.0f, 10.0f, 10.0f);
-    auto playerVehicleComponent = std::make_shared<PlayerVehicleComponent>(135.0f, 135.0f, -165.0f);
+    //auto playerVehicleComponent = std::make_shared<PlayerVehicleComponent>(135.0f, 135.0f, -165.0f);
+
+    auto playerVehicleComponent = std::make_shared<PlayerVehicleComponent>(-2570.0f, 415.0f, 3652.0f);
 
     ecManager.get()->setPlayerVehicle(playerVehicleComponent);
 

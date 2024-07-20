@@ -133,6 +133,10 @@ void ECManager::setPlayerVehicle(std::shared_ptr<PlayerVehicleComponent> playerV
         playerVehicleComponent->setPlayerPositionCallback([this](float pX, float pY, float pZ, float velocity) {
             emitEvent(Event(EventType::UPDATE_TERRAIN_CHUNKS_XZ, std::make_pair(pX, pZ)));
 
+            dpX = pX;
+            dpY = pY;
+            dpZ = pZ;
+
             emitEvent(Event(EventType::CAMERA_PLAYER_VEHICLE_FOLLOW, std::make_tuple(pX, pY, pZ)));
 
             emitEvent(Event(EventType::PLAYER_VEHICLE_GET_SPEED, velocity));

@@ -81,9 +81,9 @@ VehiclePhysics::VehiclePhysics(float xPos, float yPos, float zPos)
     vehicle->addWheel(wheelConnectionPoint * btVector3(-2, 0, 1), wheelDirection, wheelAxle, suspensionRestLength, wheelRadius, tuning, true);
 
     // Adds the rear wheels
-    vehicle->addWheel(wheelConnectionPoint * btVector3(2, 0, -1), wheelDirection, wheelAxle, suspensionRestLength, wheelRadius, tuning, false);
+    vehicle->addWheel(wheelConnectionPoint * btVector3(2.4, 0, -1), wheelDirection, wheelAxle, suspensionRestLength, wheelRadius, tuning, false);
 
-    vehicle->addWheel(wheelConnectionPoint * btVector3(-2, 0, -1), wheelDirection, wheelAxle, suspensionRestLength, wheelRadius, tuning, false);
+    vehicle->addWheel(wheelConnectionPoint * btVector3(-2.4, 0, -1), wheelDirection, wheelAxle, suspensionRestLength, wheelRadius, tuning, false);
 
     for (int i = 0; i < vehicle->getNumWheels(); i++)
     {

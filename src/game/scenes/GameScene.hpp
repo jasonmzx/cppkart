@@ -76,6 +76,7 @@ class GameScene : public Scene {
     private:
 
         void load_HighRoadHills_Map(std::shared_ptr<Entity> terrainEntity);
+        void load_SquareIsland_Map(std::shared_ptr<Entity> terrainEntity);
 
         float ecInferenceTimeMS;
         float vSpeed;
