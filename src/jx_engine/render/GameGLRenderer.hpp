@@ -12,6 +12,10 @@
 class GameGLRenderer {
 
     public:
+
+        static GameGLRenderer* getInstance(int winWidth, int winHeight, Camera *cam);
+        static GameGLRenderer* getInstance();
+
         GameGLRenderer(int winWidth, int winHeight, Camera* cam);
 
         BulletDebugDrawer* debugDrawer;
@@ -31,8 +35,11 @@ class GameGLRenderer {
         void UpdateScreenSize(int winWidth, int winHeight);
 
     private:
+        
+        static GameGLRenderer* instance;
+        
         Camera* camera;
-
+    
 
         float lightCtr = 0.0f;
 };

@@ -15,7 +15,13 @@ typedef std::unordered_map<std::string, std::shared_ptr<ObjModel>> ModelCache;
 
 class RenderRsrcManager {
 
+    private:
+        static RenderRsrcManager* instance;
+
     public:
+    
+        static RenderRsrcManager* getInstance();
+
         RenderRsrcManager() = default;
         void debugPrint();
         

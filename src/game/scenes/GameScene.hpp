@@ -9,7 +9,6 @@
 #include "jx_engine/entity/ECManager.hpp"
 
 #include "jx_engine/render/GameGLRenderer.hpp"
-#include "jx_engine/render/RenderRsrcManager.hpp"
 #include "jx_engine/render/gl/Camera.h"
 
 #include "jx_engine/physics/PhysicsWorldSingleton.h"
@@ -75,6 +74,9 @@ class GameScene : public Scene {
 
     private:
 
+        //OGL Render: TODO: Make a Renderer Frontend
+        GameGLRenderer* renderer;
+
         void load_HighRoadHills_Map(std::shared_ptr<Entity> terrainEntity);
         void load_SquareIsland_Map(std::shared_ptr<Entity> terrainEntity);
 
@@ -91,8 +93,6 @@ class GameScene : public Scene {
 
         std::unique_ptr<PhysicsChunkManager> physicsChunkManager;
 
-        std::shared_ptr<GameGLRenderer> renderer;
-        std::shared_ptr<RenderRsrcManager> renderRsrcManager;
 
         static Logger* logger;
 

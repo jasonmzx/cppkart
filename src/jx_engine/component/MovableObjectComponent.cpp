@@ -1,8 +1,8 @@
 #include "MovableObjectComponent.hpp"
 
 MovableObjectComponent::MovableObjectComponent(
-    std::string modelPath, std::string texPath, std::shared_ptr<RenderRsrcManager> rrm, int meshIndex, bool cD, bool isTexAlpha, float scale, float mass) 
-: RenderComponent(modelPath, texPath, rrm, meshIndex, cD, isTexAlpha)
+    std::string modelPath, std::string texPath, int meshIndex, bool cD, bool isTexAlpha, float scale, float mass) 
+: RenderComponent(modelPath, texPath, meshIndex, cD, isTexAlpha)
 {
 
     std::vector<glm::vec3> xyz_verts = this->GetXYZvertices();

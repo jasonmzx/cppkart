@@ -16,14 +16,20 @@ private:
 
     btScalar VEHICLE_SCALE;
 
+
+
     float engineForce;
+    float brakeForce;
+
+
     float vehicleSteering;
     float steeringIncrement;
     float steeringClamp;
-    float brakeForce;
+
+    float MaxSteeringClamp;
 
     //Will make this slowly incr/decr for steer inputs
-    float currentSteer;
+    float clampSteerAngleAtSpeed(float speed);
 
 
 public:

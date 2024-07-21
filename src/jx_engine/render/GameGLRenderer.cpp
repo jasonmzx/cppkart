@@ -80,3 +80,22 @@ void GameGLRenderer::DebugDrawLine(glm::vec3 start, glm::vec3 end, glm::vec3 col
 void GameGLRenderer::UpdateScreenSize(int winWidth, int winHeight) {
     glViewport(0, 0, winWidth, winHeight);
 }
+
+
+// Singleton stuff
+
+GameGLRenderer* GameGLRenderer::instance = nullptr;
+
+GameGLRenderer* GameGLRenderer::getInstance(int winWidth, int winHeight, Camera *cam) {
+    if (!instance) {
+        instance = new GameGLRenderer(winWidth, winHeight, cam);
+    }
+    return instance;
+}
+
+GameGLRenderer* GameGLRenderer::getInstance() {
+    if (!instance) {
+        throw std::runtime_error("GameGLRenderer instance is not yet initialized. Call getInstance with parameters first.");
+    }
+    return instance;
+}

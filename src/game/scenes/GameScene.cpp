@@ -20,8 +20,7 @@ GameScene::GameScene(int WIN_W, int WIN_H, SDL_Window* window) {
 
     // Rendering
     camera = std::make_shared<Camera>(WIN_WIDTH, WIN_HEIGHT, glm::vec3(0.0f, 10.0f, 2.0f));
-    renderer = std::make_shared<GameGLRenderer>(WIN_WIDTH, WIN_HEIGHT, camera.get());
-    renderRsrcManager = std::make_shared<RenderRsrcManager>();
+    renderer = GameGLRenderer::getInstance(WIN_WIDTH, WIN_HEIGHT, camera.get()); // Init Renderer
 
     // IO
     gameInput = std::make_shared<GameInput>();
@@ -184,12 +183,12 @@ void GameScene::makeBarrier() {
 
     auto roadBarrierComponent = std::make_shared<MovableObjectComponent>("../assets/road_barrier_01/road_barrier_01.obj",
                                                            "../assets/road_barrier_01/road_barrier_01_tex2.jpg",
-                                                           renderRsrcManager, 0, false, false, 1.0f, 0.5f);
+                                                           0, false, false, 1.0f, 0.5f);
 
     // roadBarrierComponent->phyMesh->meshRigidBody->setCollisionFlags(roadBarrierComponent->phyMesh->meshRigidBody->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
     // physicsWorld->dynamicsWorld->addRigidBody(roadBarrierComponent.get()->phyMesh->meshRigidBody, COLLISION_GROUP_ALL, COLLISION_GROUP_ALL);
 
-    roadBarrierComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation, 10.0f);
+    roadBarrierComponent->SetRenderScale(10.0f);
 
     roadBarrierEntity->addComponent(roadBarrierComponent);
 
@@ -202,7 +201,7 @@ void GameScene::render() {
     procGameInputs();
 
     // Render game objects
-    renderer.get()->RenderPrep();
+    renderer->RenderPrep();
 
     auto start = std::chrono::high_resolution_clock::now();
 
@@ -217,11 +216,10 @@ void GameScene::render() {
     ecInferenceTimeMS = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 
     if(isBulletDebugDraw) {
-     // renderer.get()->DebugDrawLine(rayStart, rayEnd, glm::vec3(1.0f, 0.0f, 0.0f));
-      renderer.get()->DebugRender();
+      renderer->DebugRender();
     }
 
-    camera.get()->Matrix(45.0f, 0.1f, 9000.0f, renderer.get()->mainShader, "camMatrix"); //! IMPORTANT
+    camera.get()->Matrix(45.0f, 0.1f, 9000.0f, renderer->mainShader, "camMatrix"); //! IMPORTANT
 }
 
 void GameScene::procGameInputs() {
@@ -322,23 +320,23 @@ void GameScene::load_HighRoadHills_Map(std::shared_ptr<Entity> terrainEntity) {
 
     auto terrainRenderComponent = std::make_shared<RenderComponent>("../src/ressources/DE_MAP0/MAPOI.obj",
                                                            "../src/ressources/DE_Map1/Map01_Albedo.png",
-                                                           renderRsrcManager, 0, true, false);
+                                                            0, true, false);
 
     // auto terrainRenderComponent = std::make_shared<RenderComponent>("../assets/square_island/Square_island.obj",
     //                                                        "../assets/square_island/Map_Base_Color.jpg",
-    //                                                        renderRsrcManager, 0, true, false);
+    //                                                         0, true, false);
 
-    terrainRenderComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation, terrainEntityScale);
+    terrainRenderComponent->SetRenderScale(terrainEntityScale);
 
     auto terrainRoadRenderComponent = std::make_shared<RenderComponent>("../src/ressources/DE_MAP0/MAPOI.obj",
                                                            "../src/ressources/DE_MAP0/BIG_ROAD_TEX.jpg",
-                                                           renderRsrcManager, 2, true, false);
-    terrainRoadRenderComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation, terrainEntityScale);
+                                                            2, true, false);
+    terrainRoadRenderComponent->SetRenderScale(terrainEntityScale);
 
     auto terrainBottomRoadRenderComponent = std::make_shared<RenderComponent>("../src/ressources/DE_MAP0/MAPOI.obj",
                                                            "../src/ressources/DE_MAP0/STONE_WALL_04.jpg",
-                                                           renderRsrcManager, 3, false, false);
-    terrainBottomRoadRenderComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation, terrainEntityScale);
+                                                            3, false, false);
+    terrainBottomRoadRenderComponent->SetRenderScale(terrainEntityScale);
 
     auto terrainChunks_physics_Component = std::make_shared<TerrainChunksComponent>("../src/ressources/DE_MAP0/chunks", terrainEntityScale);
     ecManager.get()->setTerrainChunks(terrainChunks_physics_Component);
@@ -358,15 +356,15 @@ void GameScene::load_SquareIsland_Map(std::shared_ptr<Entity> terrainEntity) {
 
     auto terrainRenderComponent = std::make_shared<RenderComponent>("../assets/square_island/Square_island.obj",
                                                            "../assets/square_island/Map_Base_Color.jpg",
-                                                           renderRsrcManager, 0, true, false);
+                                                            0, true, false);
 
-    terrainRenderComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation, terrainEntityScale);
+    terrainRenderComponent->SetRenderScale(terrainEntityScale);
 
     auto terrainRoadRenderComponent = std::make_shared<RenderComponent>("../assets/square_island/Square_island.obj",
                                                            "../assets/square_island/High_Way_Tex.jpg",
-                                                           renderRsrcManager, 2, true, false);
+                                                          2, true, false);
 
-    terrainRoadRenderComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation, terrainEntityScale);
+    terrainRoadRenderComponent->SetRenderScale(terrainEntityScale);
 
     auto terrainChunks_physics_Component = std::make_shared<TerrainChunksComponent>("../assets/square_island/chunks", terrainEntityScale);
     ecManager.get()->setTerrainChunks(terrainChunks_physics_Component);
@@ -437,10 +435,6 @@ void GameScene::init() {
 
   //!__ ENDOF Prototype Plane
 
-    // auto terrainRenderComponent = std::make_shared<RenderComponent>("../src/ressources/DE_Map1/Landscape01.obj",
-    //                                                        "../src/ressources/DE_Map1/Map01_Albedo.png",
-    //                                                        renderRsrcManager);
-
     //* ----------------- Terrain Entity Definition ----------------- *//
 
     // std::shared_ptr<Entity> terrainEntity = std::make_shared<Entity>();
@@ -467,9 +461,9 @@ void GameScene::init() {
 
     auto playerVehicleRenderComponent = std::make_shared<VehicleRenderComponent>("../src/ressources/volga/volga.obj", "../src/ressources/first_car_wheel.obj",
                                                            "../src/ressources/volga/volga.png",
-                                                           renderRsrcManager, 0, true);
+                                                           0, true);
 
-    playerVehicleRenderComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation, 1.0f);
+    playerVehicleRenderComponent->SetRenderScale(1.0f);
 
     playerVehicleEntity->addComponent(playerVehicleRenderComponent);
 
@@ -483,9 +477,9 @@ void GameScene::init() {
 
     auto skyboxRenderComponent = std::make_shared<RenderComponent>("../assets/skybox_02/skybox_night_fixed.obj",
                                                            "../assets/skybox_01/sq_skybox.jpg",
-                                                           renderRsrcManager, 0, false, false);
+                                                           0, false, false);
 
-    skyboxRenderComponent->SetGLContext(renderer.get()->useTextureLOC, renderer.get()->modelMatrixLOC, renderer.get()->colorUniformLocation, 4200.0f);
+    skyboxRenderComponent->SetRenderScale(4200.0f);
 
     skyboxEntity->addComponent(skyboxRenderComponent);
 
@@ -503,5 +497,5 @@ void GameScene::updateScreenSize(int w, int h) {
     WIN_WIDTH = w;
     WIN_HEIGHT = h;
     camera.get()->UpdateScreenSize(w, h);
-    renderer.get()->UpdateScreenSize(w, h);
+    renderer->UpdateScreenSize(w, h);
 }

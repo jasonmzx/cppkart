@@ -8,7 +8,7 @@ class VehicleRenderComponent : public RenderComponent
 {   
     public:
         VehicleRenderComponent
-        (std::string modelPath, std::string wheelModelPath, std::string texPath, std::shared_ptr<RenderRsrcManager> rrm, int meshIndex, bool isTexAlpha);
+        (std::string modelPath, std::string wheelModelPath, std::string texPath, int meshIndex, bool isTexAlpha);
 
         void UpdateChassisTransform(glm::vec3 glmVehiclePos, glm::quat glmVehicleRot);
         void UpdateWheelTransforms(VehiclePhysics* vehiclePhysics);

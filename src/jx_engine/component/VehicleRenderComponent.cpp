@@ -1,8 +1,8 @@
 #include "VehicleRenderComponent.hpp"
 
 VehicleRenderComponent::VehicleRenderComponent
-(std::string modelPath, std::string wheelModelPath, std::string texPath, std::shared_ptr<RenderRsrcManager> rrm, int meshIndex, bool isTexAlpha)
-: RenderComponent(modelPath, texPath, rrm, meshIndex, true, isTexAlpha)
+(std::string modelPath, std::string wheelModelPath, std::string texPath, int meshIndex, bool isTexAlpha)
+: RenderComponent(modelPath, texPath, meshIndex, true, isTexAlpha)
 {
     // wheelModelPath = wheelModelPath;
     WheelGeom = ressources->tryGetGeometry(wheelModelPath, 0);

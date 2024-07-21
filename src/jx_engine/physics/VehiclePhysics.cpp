@@ -56,6 +56,7 @@ VehiclePhysics::VehiclePhysics(float xPos, float yPos, float zPos)
 
     btVector3 wheelDirection = btVector3(0, -1, 0);
     btVector3 wheelAxle = btVector3(-1.0, 0, 0); //used to be -1
+    
     btScalar suspensionRestLength = 0.75;
     btScalar wheelRadius = 1.5*VEHICLE_SCALE;
     btScalar wheelWidth = 0.5;
@@ -71,7 +72,7 @@ VehiclePhysics::VehiclePhysics(float xPos, float yPos, float zPos)
     vehicle->setCoordinateSystem(0, 1, 2);
 
     auto halfExtents = vehicleChassisShape->getHalfExtentsWithoutMargin();
-    btScalar connectionHeight(3.2);
+    btScalar connectionHeight = 3.2f;
 
     btVector3 wheelConnectionPoint(halfExtents.x() - 0.6, connectionHeight, halfExtents.z() - 0.5);
 
@@ -115,10 +116,14 @@ VehiclePhysics::VehiclePhysics(float xPos, float yPos, float zPos)
 
     // Vehicle setup:
     engineForce = 0.0;
+    brakeForce = 0.0;
+
     vehicleSteering = 0.0;
     steeringIncrement = 0.04;
+
     steeringClamp = 0.35;
-    brakeForce = 0.0;
+    MaxSteeringClamp = 0.35;
+
 }
 
 void VehiclePhysics::ApplyEngineForce(float force)
@@ -132,10 +137,50 @@ void VehiclePhysics::ApplyEngineForce(float force)
     // TODO: Add any Bullet physics code here that applies this force
 }
 
+
+
+float VehiclePhysics::clampSteerAngleAtSpeed(float speed) {
+    // Define the parameters for the steering angle interpolation
+    float maxSteer = 0.35f;  // Max steer angle at low speed
+    float midSteer = 0.05f;  // Steer angle at mid speed (150.0f)
+    float minSteer = 0.01f;  // Min steer angle at high speed
+    float midSpeed = 150.0f; // Speed at which steer angle is 0.05f
+    float maxSpeed = 250.0f; // Max speed for interpolation
+
+    // Clamp the speed to the range [0, maxSpeed]
+    if (speed > maxSpeed) {
+        speed = maxSpeed;
+    } else if (speed < 0.0f) {
+        speed = 0.0f;
+    }
+
+    float steerAngle;
+
+    if (speed <= midSpeed) {
+        // Interpolate between maxSteer and midSteer
+        steerAngle = maxSteer + (midSteer - maxSteer) * (speed / midSpeed);
+    } else {
+        // Interpolate between midSteer and minSteer
+        steerAngle = midSteer + (minSteer - midSteer) * ((speed - midSpeed) / (maxSpeed - midSpeed));
+    }
+
+    return steerAngle;
+}
+
+
+
+
 void VehiclePhysics::ApplySteer(float steerIncr)
 {
     if (steerIncr != 0)
     {
+
+        // Get the linear velocity of the vehicle's rigid body
+        float speed = getSpeed();
+        steeringClamp = clampSteerAngleAtSpeed(speed);
+
+        printf("STEER CLAMP: %.2f\n", steeringClamp);
+
         // Increment or decrement steering based on steerIncr
         vehicleSteering += steerIncr;
 

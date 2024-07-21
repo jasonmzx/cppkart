@@ -8,6 +8,8 @@
 #include "EComponent.hpp"
 
 #include "jx_engine/render/RenderRsrcManager.hpp"
+#include "jx_engine/render/GameGLRenderer.hpp"
+
 #include "jx_engine/render/gl/Geometry.hpp"
 
 #include "jx_engine/logs/Logger.hpp"
@@ -15,11 +17,13 @@
 
 class RenderComponent : public EComponent {
     public:
-        RenderComponent(std::string modelPath, std::string texPath, std::shared_ptr<RenderRsrcManager> rrm, int meshIndex, bool cD, bool isTexAlpha);
+        RenderComponent(std::string modelPath, std::string texPath, int meshIndex, bool cD, bool isTexAlpha);
 
         std::vector<glm::vec3> GetXYZvertices();
 
-        void SetGLContext(GLint texLOCATION, GLint mmLOCATION, GLint colorUniformLOCATION, float scale);
+        void SetGLContext(GLint texLOCATION, GLint mmLOCATION, GLint colorUniformLOCATION);
+        void SetRenderScale(float scale);
+
         void Draw();
 
         void tick() override;
@@ -31,7 +35,7 @@ class RenderComponent : public EComponent {
 
         bool cullDisable;
 
-        std::shared_ptr<RenderRsrcManager> ressources;
+        RenderRsrcManager* ressources;
 
         std::shared_ptr<Texture> Tex;
 

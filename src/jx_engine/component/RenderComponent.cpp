@@ -5,15 +5,20 @@
 
 //Logger* logger = Logger::getInstance();
 
-RenderComponent::RenderComponent(std::string modelPath, std::string texPath, std::shared_ptr<RenderRsrcManager> rrm, int meshIndex, bool cD, bool isTexAlpha)
+RenderComponent::RenderComponent(std::string modelPath, std::string texPath, int meshIndex, bool cD, bool isTexAlpha)
 {
+
+    ressources = RenderRsrcManager::getInstance();
+
+    GameGLRenderer* renderer = GameGLRenderer::getInstance();
+
+    SetGLContext(renderer->useTextureLOC, renderer->modelMatrixLOC, renderer->colorUniformLocation);
 
     Logger* logger = Logger::getInstance();
 
     auto chunk_loading_start = std::chrono::high_resolution_clock::now();
 
     cullDisable = !cD;
-    ressources = rrm;
     
     // modelPath = modelPath;
     Geom = ressources->tryGetGeometry(modelPath, meshIndex);
@@ -29,12 +34,15 @@ RenderComponent::RenderComponent(std::string modelPath, std::string texPath, std
     logger->log(Logger::TIMER, "[RENDER COMPONENT] : Total Chunk Loading Time: " + std::to_string(chunk_loading_time.count()) + "sec(s) | \n >>> Mesh: " + modelPath + " \n Tex " + texPath);
 }
 
-void RenderComponent::SetGLContext(GLint texLOCATION, GLint mmLOCATION, GLint colorUniformLOCATION, float scale)
-{
+void RenderComponent::SetGLContext(GLint texLOCATION, GLint mmLOCATION, GLint colorUniformLOCATION)
+{    
     useTextureLOC = texLOCATION;
     modelMatrixLOC = mmLOCATION;
     colorUniformLOC = colorUniformLOCATION;
+}
 
+void RenderComponent::SetRenderScale(float scale)
+{
     ObjmodelMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(scale, scale, scale));
 }
 

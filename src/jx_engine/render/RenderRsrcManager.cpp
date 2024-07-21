@@ -99,3 +99,12 @@ void RenderRsrcManager::debugPrint() {
 
 }
 
+// Singleton stuff
+
+RenderRsrcManager* RenderRsrcManager::instance = nullptr;
+
+RenderRsrcManager* RenderRsrcManager::getInstance() {
+    if (!instance)
+        instance = new RenderRsrcManager();
+    return instance;
+}
