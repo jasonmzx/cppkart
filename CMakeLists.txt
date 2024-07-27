@@ -17,10 +17,9 @@ find_package(OpenGL REQUIRED)
 find_package(Bullet CONFIG REQUIRED)
 find_package(assimp REQUIRED)
 
+# Compile External Source Libraries
 
-# External Source Libraries
-
-include_directories(src/glad/include src ${BULLET_INCLUDE_DIRS} src/imgui src/imgui/backends)
+include_directories(src src/glad/include src/imgui src/imgui/backends)
 
 # --- Allows CMake to know all Imgui source files & backend impls I'm using
 file(GLOB IMGUI_SOURCES 
