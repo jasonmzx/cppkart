@@ -10,6 +10,10 @@
 
 #include <functional>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 class PlayerVehicleComponent : public EComponent {
 
     public:
@@ -24,10 +28,14 @@ class PlayerVehicleComponent : public EComponent {
 
         void tick() override;
 
+        // Callbacks
+
+        void setPlayerDirectionCallback(std::function<void(float, float, float)> callback);
         void setPlayerPositionCallback(std::function<void(float, float, float, float)> callback);
 
     private:
         std::function<void(float, float, float, float)> setPlayerVehiclePosition;
+        std::function<void(float, float, float)> setPlayerVehicleDirection;
 
 };
 

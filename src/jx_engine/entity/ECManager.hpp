@@ -7,6 +7,8 @@
 
 #include "jx_engine/core/SceneManager.hpp"
 
+#include "Entity.hpp"
+
 // Entity Components:
 #include "jx_engine/component/EComponent.hpp"
 #include "jx_engine/component/RenderComponent.hpp"
@@ -55,6 +57,7 @@ class ECManager { // Entity Component Manager
     private:
         std::shared_ptr<SceneManager> sceneManager;
         std::shared_ptr<Scene> activeScene;
+        std::shared_ptr<Camera> m_camera;
 
         std::shared_ptr<TerrainChunksComponent> terrainChunksComponents;
         std::shared_ptr<PlayerVehicleComponent> playerVehicleComponent;
@@ -64,6 +67,8 @@ class ECManager { // Entity Component Manager
         float dpX; // Debug Player X
         float dpY; // Debug Player Y
         float dpZ; // Debug Player Z
+
+        int NRoadBarriers = 0;
 
 };
 

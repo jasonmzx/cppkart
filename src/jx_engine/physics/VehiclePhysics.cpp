@@ -17,7 +17,14 @@ VehiclePhysics::VehiclePhysics(float xPos, float yPos, float zPos)
     tuning.m_maxSuspensionForce = 6000.0f;
 
     // Vehicle setup
-    btBoxShape *vehicleChassisShape = new btBoxShape(btVector3(1.6f * VEHICLE_SCALE, 0.5f * VEHICLE_SCALE, 3.0f * VEHICLE_SCALE));
+    
+    // Vehicle Box Shape:
+    //btBoxShape *vehicleChassisShape = new btBoxShape(btVector3(1.6f * VEHICLE_SCALE, 0.5f * VEHICLE_SCALE, 3.0f * VEHICLE_SCALE));
+    
+    float capsuleRadius = 1.0f * VEHICLE_SCALE;
+    float capsuleHeight = 6.0f * VEHICLE_SCALE; // Adjusted height to maintain overall length
+    btCapsuleShapeZ *vehicleChassisShape = new btCapsuleShapeZ(capsuleRadius, capsuleHeight);
+
     vehicleMotionState = new btDefaultMotionState();
     btTransform localTransform;
 
@@ -71,10 +78,16 @@ VehiclePhysics::VehiclePhysics(float xPos, float yPos, float zPos)
     //!This like, fixes the wonky vehicle sim lmao
     vehicle->setCoordinateSystem(0, 1, 2);
 
-    auto halfExtents = vehicleChassisShape->getHalfExtentsWithoutMargin();
+    //auto halfExtents = vehicleChassisShape->getHalfExtentsWithoutMargin();
+
+    //printf("[vp] : Half Extents: %.2f, %.2f, %.2f\n", halfExtents.x(), halfExtents.y(), halfExtents.z());
+
+
     btScalar connectionHeight = 3.2f;
 
-    btVector3 wheelConnectionPoint(halfExtents.x() - 0.6, connectionHeight, halfExtents.z() - 0.5);
+    //btVector3 wheelConnectionPoint(halfExtents.x() - 0.6, connectionHeight, halfExtents.z() - 0.5);
+
+    btVector3 wheelConnectionPoint = btVector3(1.40 - 0.6, connectionHeight, 2.66 - 0.5);
 
     // Adds the front wheels
     vehicle->addWheel(wheelConnectionPoint * btVector3(2, 0, 1), wheelDirection, wheelAxle, suspensionRestLength, wheelRadius, tuning, true);

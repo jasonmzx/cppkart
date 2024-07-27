@@ -36,7 +36,7 @@ void ECManager::emitEvent(const Event& event) {
         }
     } else {
         Logger* logger = Logger::getInstance();
-        logger->log(Logger::ERROR, "[ECManager : EMIT ERROR] Event type not found...");
+        logger->log(Logger::ERROR, "[ECManager : EMIT ERROR] Event type not found... " + std::to_string(static_cast<int>(event.type)));
     }
 }
 
@@ -52,28 +52,40 @@ void ECManager::tick(std::vector<std::shared_ptr<Entity>>& entities, std::shared
     //TODO: Make a gameinput component and pass it to the player vehicle component
     emitEvent(Event(EventType::PLAYER_VEHICLE_MOVE, std::make_pair(gameInput.get()->currentAcceleration, gameInput.get()->currentTurn)));
 
+    glm::vec3 camPos = m_camera.get()->getCameraPosition();
+    
+    float pX = camPos.x;
+    float pZ = camPos.z;
+
+    emitEvent(Event(EventType::UPDATE_TERRAIN_CHUNKS_XZ, std::make_pair(pX, pZ)));
+
+    float rcX = 0.0f;
+    
+    float yOffset = 10.0f;
+    float rcY = yOffset;
+    
+    float rcZ = 0.0f;
+    
+
     for(auto entity : entities) {
 
         for (auto& component : entity.get()->components) {
-
             
-            if(auto movableObjectComponent = std::dynamic_pointer_cast<MovableObjectComponent>(component)) {
-                
-                float yOffset = 10.0f;
-
-                float rcX = gameInput.get()->debugRaycastX;
-                float rcY = gameInput.get()->debugRaycastY + yOffset;
-                float rcZ = gameInput.get()->debugRaycastZ;
+                rcX = gameInput.get()->debugRaycastX;
+                rcY = gameInput.get()->debugRaycastY + yOffset;
+                rcZ = gameInput.get()->debugRaycastZ;
 
                 if( rcX != 0.0f && rcY != yOffset && rcZ != 0.0f) {
-                    movableObjectComponent.get()->SetPosition(rcX, rcY, rcZ);
+                    printf("Raycast: %f, %f, %f\n", rcX, rcY, rcZ);
                 }
-                
-            }
 
             component.get()->tick();
         }
     }
+
+
+    Logger* logger = Logger::getInstance();
+    logger->log(Logger::INFO, "Road Barriers: " + std::to_string(NRoadBarriers));
 }
 
 void ECManager::renderPass(std::vector<std::shared_ptr<Entity>>& entities) {
@@ -100,6 +112,8 @@ void ECManager::renderPass(std::vector<std::shared_ptr<Entity>>& entities) {
         }
     }
 }
+
+//* =============================== Getters/Setters to the "World" System ===============================
 
 void ECManager::setTerrainChunks(std::shared_ptr<TerrainChunksComponent> terrainChunks) {
     // Check if the input is valid
@@ -131,15 +145,17 @@ void ECManager::setPlayerVehicle(std::shared_ptr<PlayerVehicleComponent> playerV
         //* Emitting Events (Set Callbacks)
 
         playerVehicleComponent->setPlayerPositionCallback([this](float pX, float pY, float pZ, float velocity) {
-            emitEvent(Event(EventType::UPDATE_TERRAIN_CHUNKS_XZ, std::make_pair(pX, pZ)));
+            //emitEvent(Event(EventType::UPDATE_TERRAIN_CHUNKS_XZ, std::make_pair(pX, pZ)));
 
             dpX = pX;
             dpY = pY;
             dpZ = pZ;
 
-            emitEvent(Event(EventType::CAMERA_PLAYER_VEHICLE_FOLLOW, std::make_tuple(pX, pY, pZ)));
-
             emitEvent(Event(EventType::PLAYER_VEHICLE_GET_SPEED, velocity));
+        });
+
+        playerVehicleComponent->setPlayerDirectionCallback([this](float dirX, float dirY, float dirZ) {
+            emitEvent(Event(EventType::CAMERA_PLAYER_VEHICLE_FOLLOW, std::make_tuple(dpX, dpY, dpZ, dirX, dirY, dirZ)) );
         });
 
     } else {
@@ -169,6 +185,8 @@ void ECManager::setCamera(std::shared_ptr<Camera> camera) {
         subscribeToEvent(EventType::CAMERA_TOGGLE_FREE_CAM, [camera](const Event& event) {
             camera.get()->handleToggleFreeCamEvent(event);
         });
+
+        m_camera = camera;
 
     } else {
         // Handle the error appropriately (e.g., logging, throwing an exception)

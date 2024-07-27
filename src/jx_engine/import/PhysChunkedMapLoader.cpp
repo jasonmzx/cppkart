@@ -85,3 +85,42 @@ std::vector<glm::vec3> PhysChunkedMapLoader::parseVec3List(const std::string& li
 
     return vec3List;
 }
+
+// Load AI Splines
+
+std::vector<glm::vec3> PhysChunkedMapLoader::loadAISpline(const std::string &filename) 
+{
+    Logger* logger = Logger::getInstance();
+
+    std::vector<glm::vec3> verts;
+
+    // Open file with Input File (IF) stream
+    std::ifstream spline_file;
+    spline_file.open(filename);
+
+    // Assertion to check if file is open
+    if (!spline_file.is_open())
+    {
+        logger->log(Logger::ERROR, "Failed to open chunk map file: " + filename);
+        return verts;
+    }
+
+    std::string line; 
+
+    float scale = 250.0f;
+
+    while (std::getline(spline_file, line)) // Line by Line Reading
+    {
+        line.erase(0, line.find_first_not_of(" \t\n\r\f\v"));
+        glm::vec3 spline_vert = parseVec3(line);
+
+        glm::vec3 scaled_vert = spline_vert * scale;
+
+        verts.push_back(spline_vert);
+    }
+
+    // Debug
+    logger->log(Logger::INFO, "Loaded " + std::to_string(verts.size()) + " verts from AI Spline file: " + filename);
+
+    return verts;
+}

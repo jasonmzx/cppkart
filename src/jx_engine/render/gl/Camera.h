@@ -26,6 +26,8 @@ public:
 	bool freeCamera = false;
 
 	glm::vec3 Position;
+	glm::vec3 getCameraPosition();
+
 	glm::vec3 Orientation = glm::vec3(0.0f, 0.0f, -1.0f);
 	glm::vec3 LookAt;
 	glm::vec3 Up = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -53,7 +55,7 @@ public:
 	void ProcessMouseLook(int mouseXRel, int mouseYRel);
 	void UpdateScreenSize(int w, int h);
 
-	void VehicleFollowCamera(float pX, float pY, float pZ);
+	void VehicleFollowCamera(float pX, float pY, float pZ, float backX, float backY, float backZ);
 
 	void handleVehicleFollowEvent(const Event& event);
 	void handleToggleFreeCamEvent(const Event& event);

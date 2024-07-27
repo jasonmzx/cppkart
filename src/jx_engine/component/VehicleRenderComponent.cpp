@@ -25,6 +25,36 @@ void VehicleRenderComponent::UpdateChassisTransform(glm::vec3 glmVehiclePos, glm
 
     ObjmodelMatrix = translation * rotation * rotate90DEG_Adjustment * translateDown * glm::scale(glm::vec3(0.7f));
 
+    // ---- Get Direction Vector ----
+    
+    glm::mat4 rotation3x3 = glm::mat4_cast(glmVehicleRot);
+
+    glm::mat rotation3x3_90_features = rotation3x3 * rotate90DEG_Adjustment;
+
+    glm::vec4 objectSpaceForward = glm::vec4(0.0f, 0.0f, 1.0f, 0.0f);
+
+    glm::vec3 forward = glm::vec3(rotation3x3 * objectSpaceForward);
+    forward = glm::normalize(forward) * 10.0f;
+
+    printf("Forward: VRC %f, %f, %f\n", forward.x, forward.y, forward.z);
+
+    glm::vec3 right_side = glm::vec3(rotation3x3_90_features * objectSpaceForward);
+    right_side = glm::normalize(right_side) * 5.0f;
+
+    glm::vec3 relate_right = glmVehiclePos + right_side;     
+    glm::vec3 relate_left = glmVehiclePos - right_side;
+
+    glm::vec3 relate_forward = glmVehiclePos + forward;
+    glm::vec3 relate_backward = glmVehiclePos - forward;
+
+    GameGLRenderer* renderer = GameGLRenderer::getInstance();
+
+    // Draw a line to represent the forward direction of the vehicle
+
+    renderer->DebugDrawLine(glmVehiclePos, relate_forward,  glm::vec3(1.0f, 0.0f, 0.0f));
+    renderer->DebugDrawLine(glmVehiclePos, relate_backward, glm::vec3(1.0f, 0.0f, 0.0f));
+    renderer->DebugDrawLine(glmVehiclePos, relate_right, glm::vec3(1.0f, 0.0f, 0.0f));
+    renderer->DebugDrawLine(glmVehiclePos, relate_left,  glm::vec3(1.0f, 0.0f, 0.0f));
 }
 
 void VehicleRenderComponent::UpdateWheelTransforms(VehiclePhysics* vehiclePhysics) {

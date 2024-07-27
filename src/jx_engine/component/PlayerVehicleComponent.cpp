@@ -56,6 +56,11 @@ void PlayerVehicleComponent::handlePlayerVehicleMoveEvent(const Event& event) {
     }
 }
 
+void PlayerVehicleComponent::setPlayerDirectionCallback(std::function<void(float,float,float)> callback) {
+    setPlayerVehicleDirection = callback; //set forward direction
+}
+
+
 void PlayerVehicleComponent::setPlayerPositionCallback(std::function<void(float, float, float, float)> callback) {
     setPlayerVehiclePosition = callback;
 }
@@ -66,8 +71,25 @@ void PlayerVehicleComponent::tick() {
     float pY = vehiclePhysics.getY();
     float pZ = vehiclePhysics.getZ();
 
+    glm::vec3 vPos = glm::vec3(pX, pY, pZ);
+
     float velocity = vehiclePhysics.getSpeed();
 
     setPlayerVehiclePosition(pX, pY, pZ, velocity);
 
+    btTransform vehicleTransform = vehiclePhysics.GetTransform();
+    btQuaternion vehicleRotation = vehicleTransform.getRotation();
+    glm::quat gVr(vehicleRotation.w(), vehicleRotation.x(), vehicleRotation.y(), vehicleRotation.z());
+
+    //  Convert the quaternion to a rotation matrix                                                                                                     
+    glm::mat4 rotation3x3 = glm::mat4_cast(gVr); // 3 X 3 Rotation matrix (Top-Left) and then bottom row & right col (0,0,0,1)
+
+    glm::vec4 objectSpaceForward = glm::vec4(0.0f, 0.0f, 1.0f, 0.0f);
+
+    glm::vec3 forward = glm::vec3(rotation3x3 * objectSpaceForward);
+    forward = glm::normalize(forward);
+
+    printf("Forward: PVC %f, %f, %f\n", forward.x, forward.y, forward.z);
+
+    setPlayerVehicleDirection(forward.x, forward.y, forward.z);
 }

@@ -29,6 +29,10 @@
 #include "jx_engine/component/VehicleRenderComponent.hpp"
 #include "jx_engine/component/MovableObjectComponent.hpp"
 
+
+//TODO: Remove, just for testing
+#include "jx_engine/import/PhysChunkedMapLoader.hpp"
+
 // ImGUI Imports:
 #include "imgui.h"
 #include "imgui_impl_sdl2.h"
@@ -50,7 +54,7 @@ class GameScene : public Scene {
         void update(float dt);
         void render();
 
-        void makeBarrier();
+        void makeBarrier(float x, float y, float z);
 
         void updateImGui();
 
@@ -71,6 +75,8 @@ class GameScene : public Scene {
         std::shared_ptr<Camera> camera;
         
         PhysicsWorldSingleton *physicsWorld;
+
+        std::vector<glm::vec3> spline_verts;
 
     private:
 

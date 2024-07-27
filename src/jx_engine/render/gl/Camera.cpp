@@ -66,18 +66,23 @@ void Camera::Inputs()
 
 }
 
-void Camera::VehicleFollowCamera(float pX, float pY, float pZ)
-{
-    auto targetVec = glm::vec3(pX + 1.0f, pY + 3.0f, pZ - 5.0f); //* Camera Offset
-    auto dirVec = targetVec - Position;
-     
-     if (glm::distance2(targetVec, Position) > 0.02f)
-        Position += dirVec * 0.03f;
+void Camera::VehicleFollowCamera(float pX, float pY, float pZ, float forwardX, float forwardY, float forwardZ) {
 
-      glm::vec3 lookAtPosition = glm::vec3(pX, pY, pZ);
-      
-      LookAt = lookAtPosition;
+    glm::vec3 normalizedForwardVec = glm::vec3(forwardX, forwardY, forwardZ);
+
+    glm::vec3 offset = normalizedForwardVec * 6.0f; // Scale down that vector's direction
+
+    glm::vec3 heightOffset = glm::vec3(0.0f, 2.5f, 0.0f); // Add Height, Y up 
+
+    glm::vec3 targetVec = glm::vec3(pX, pY, pZ) - offset + heightOffset;
+
+    float speedFactor = 0.05f; // As this value approaches 1, the clamp approaches the target, so less smooth
+    Position = glm::mix(Position, targetVec, speedFactor); // LERP
+
+    // Set the look-at position to the vehicle's position
+    LookAt = glm::vec3(pX, pY, pZ);
 }
+
 
 void Camera::ProcessMouseLook(int mouseXRel, int mouseYRel)
 {
@@ -114,21 +119,26 @@ void Camera::GenerateRay(glm::vec3& rayStart, glm::vec3& rayEnd, float rayLength
 
 void Camera::handleVehicleFollowEvent(const Event& event) {
     try {
-        auto inputs = std::any_cast<std::tuple<float, float, float>>(event.data);
+        auto inputs = std::any_cast<std::tuple<float, float, float, float, float, float>>(event.data);
         float pX = std::get<0>(inputs);
         float pY = std::get<1>(inputs);
         float pZ = std::get<2>(inputs);
 
+        // Back of the Vehicle, for camera offset (opposite of driving dir)
+
+        float bX = std::get<3>(inputs);
+        float bY = std::get<4>(inputs);
+        float bZ = std::get<5>(inputs);
+
 
         if(!freeCamera) {
-            VehicleFollowCamera(pX, pY, pZ);
+            VehicleFollowCamera(pX, pY, pZ, bX, bY, bZ);
         }
         
     } catch (const std::bad_any_cast& e) {
         Logger::getInstance()->log(Logger::ERROR, "[Camera] Failed to cast event data: " + std::string(e.what()));
     }
 }
-
 
 void Camera::handleToggleFreeCamEvent(const Event& event) {
     try {
@@ -144,4 +154,8 @@ void Camera::UpdateScreenSize(int w, int h)
 {
     width = w;
     height = h;
+}
+
+glm::vec3 Camera::getCameraPosition() {
+    return Position;
 }
