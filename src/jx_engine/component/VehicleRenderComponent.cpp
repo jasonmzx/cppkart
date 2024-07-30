@@ -36,8 +36,6 @@ void VehicleRenderComponent::UpdateChassisTransform(glm::vec3 glmVehiclePos, glm
     glm::vec3 forward = glm::vec3(rotation3x3 * objectSpaceForward);
     forward = glm::normalize(forward) * 10.0f;
 
-    printf("Forward: VRC %f, %f, %f\n", forward.x, forward.y, forward.z);
-
     glm::vec3 right_side = glm::vec3(rotation3x3_90_features * objectSpaceForward);
     right_side = glm::normalize(right_side) * 5.0f;
 

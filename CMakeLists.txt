@@ -19,30 +19,32 @@ find_package(assimp REQUIRED)
 
 # Compile External Source Libraries
 
-include_directories(src src/glad/include src/imgui src/imgui/backends)
+include_directories(src src/libs/glad/include src/libs/imgui src/libs/imgui/backends)
 
-# --- Allows CMake to know all Imgui source files & backend impls I'm using
+# --- Allows CMake to know all Imgui source files & backend impls I'm using ---
 file(GLOB IMGUI_SOURCES 
-     src/imgui/*.cpp 
-     src/imgui/backends/imgui_impl_sdl2.cpp 
-     src/imgui/backends/imgui_impl_opengl3.cpp)
+     src/libs/imgui/*.cpp 
+     src/libs/imgui/backends/imgui_impl_sdl2.cpp 
+     src/libs/imgui/backends/imgui_impl_opengl3.cpp)
+
+# --- Other External Libraries (using globs for now) ---
+
+file(GLOB STB_SOURCES src/libs/stb/*.cpp)
+
+file(GLOB GLAD_SOURCES src/libs/glad/src/glad.c)
+
+file(GLOB FASTGLTF_SOURCES src/libs/fastgltf/*.hpp)
 
 add_executable(cppkart
      ${IMGUI_SOURCES}
-     src/glad/src/glad.c
-     src/stb/stb_image.h
-     src/stb/stb.cpp
+     ${GLAD_SOURCES}     
+     ${STB_SOURCES}
+     ${FASTGLTF_SOURCES}
 
 #    ######## Project Source Code: ########
 
       src/main.cpp 
 
-     # src/game/state/GameInput.cpp
-     # src/game/state/GameInput.hpp
-
-     src/game/debug/GameDebugHelper.cpp
-     src/game/debug/GameDebugHelper.hpp
-     
      #!  ------------------------------ NEW FILES ------------------------------
 
      #---! Engine Rewrite Files !---:
@@ -87,6 +89,11 @@ add_executable(cppkart
      src/jx_engine/component/MovableObjectComponent.hpp
      src/jx_engine/component/MovableObjectComponent.cpp
 
+     # AI / Pathfinding:
+
+     src/jx_engine/component/AISplineComponent.hpp
+     src/jx_engine/component/AISplineComponent.cpp
+
      # I/O: 
 
      src/jx_engine/io/GameInput.hpp
@@ -96,6 +103,9 @@ add_executable(cppkart
 
      src/jx_engine/import/ObjModel.hpp
      src/jx_engine/import/ObjModel.cpp
+
+     src/jx_engine/import/GLTFModel.hpp
+     src/jx_engine/import/GLTFModel.cpp
 
      src/jx_engine/import/PhysChunkedMapLoader.hpp
      src/jx_engine/import/PhysChunkedMapLoader.cpp

@@ -2,7 +2,6 @@
 #define STATICTRIANGLEMESHPHYSICS_CLASS_HPP
 
 #include <bullet/btBulletDynamicsCommon.h>
-#include <stb/stb_image.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
