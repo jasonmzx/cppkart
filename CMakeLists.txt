@@ -19,7 +19,14 @@ find_package(assimp REQUIRED)
 
 # Compile External Source Libraries
 
-include_directories(src src/libs/glad/include src/libs/imgui src/libs/imgui/backends)
+include_directories(
+     src 
+     src/libs/glad/include 
+     src/libs/imgui 
+     src/libs/imgui/backends
+     src/libs/fastgltf/include 
+     src/libs/simdjson
+)
 
 # --- Allows CMake to know all Imgui source files & backend impls I'm using ---
 file(GLOB IMGUI_SOURCES 
@@ -33,13 +40,16 @@ file(GLOB STB_SOURCES src/libs/stb/*.cpp)
 
 file(GLOB GLAD_SOURCES src/libs/glad/src/glad.c)
 
-file(GLOB FASTGLTF_SOURCES src/libs/fastgltf/*.hpp)
+file(GLOB FASTGLTF_SOURCES src/libs/fastgltf/include/*.hpp src/libs/fastgltf/src/*.cpp)
+
+set(SIMDJSON_SOURCES src/libs/simdjson/simdjson.cpp)
 
 add_executable(cppkart
      ${IMGUI_SOURCES}
      ${GLAD_SOURCES}     
      ${STB_SOURCES}
      ${FASTGLTF_SOURCES}
+     ${SIMDJSON_SOURCES}
 
 #    ######## Project Source Code: ########
 
