@@ -25,7 +25,7 @@ struct LoadedChunk {
 class PhysChunkedMapLoader {
     public:
         static std::vector<LoadedChunk> loadChunks(const std::string& filename);
-        static std::vector<glm::vec3> loadAISpline(const std::string &filename);
+        static std::vector<glm::vec3> loadAISpline(const std::string &filename, float scale);
 
     private:
         static glm::vec3 parseVec3(const std::string& line);

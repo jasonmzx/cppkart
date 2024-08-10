@@ -13,12 +13,15 @@ class VehicleRenderComponent : public RenderComponent
         void UpdateChassisTransform(glm::vec3 glmVehiclePos, glm::quat glmVehicleRot);
         void UpdateWheelTransforms(VehiclePhysics* vehiclePhysics);
         void DrawWheels();
+        void getForwardVector(glm::vec3 &forward);
 
     private:
         std::shared_ptr<Geometry> WheelGeom;
 
         int wheelCount = 4;
         std::vector<glm::mat4> wheelModelMatrices;
+
+        glm::vec3 relative_forward;
 
 };
 

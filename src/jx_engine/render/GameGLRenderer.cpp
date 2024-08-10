@@ -68,13 +68,7 @@ void GameGLRenderer::DebugRender() {
 }
 
 void GameGLRenderer::DebugDrawLine(glm::vec3 start, glm::vec3 end, glm::vec3 color) {
-    glUniform1i(useTextureLOC, GL_FALSE);
-
-      glm::mat4 identityMatrix = glm::mat4(1.0f);
-      glUniformMatrix4fv(modelMatrixLOC, 1, GL_FALSE, glm::value_ptr(identityMatrix));
-
     debugDrawer->drawLine(btVector3(start.x, start.y, start.z), btVector3(end.x, end.y, end.z), btVector3(color.x, color.y, color.z));
-    glUniform1i(useTextureLOC, GL_TRUE);
 }
 
 void GameGLRenderer::UpdateScreenSize(int winWidth, int winHeight) {

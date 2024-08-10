@@ -218,14 +218,14 @@ void GameScene::render() {
     ecInferenceTimeMS = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 
     if(isBulletDebugDraw) {
-      renderer->DebugRender();
       
-      int spline_verts_size = spline_verts.size();
+      // int spline_verts_size = spline_verts.size();
 
-      for(int j = 0; j < spline_verts_size - 1; j++) {
-        renderer->DebugDrawLine(spline_verts[j], spline_verts[j + 1], glm::vec3(1.0f, 0.0f, 0.0f));
-      }
+      // for(int j = 0; j < spline_verts_size - 1; j++) {
+      //   renderer->DebugDrawLine(spline_verts[j], spline_verts[j + 1], glm::vec3(1.0f, 0.0f, 0.0f));
+      // }
 
+      renderer->DebugRender();
     }
 
     camera.get()->Matrix(45.0f, 0.1f, 9000.0f, renderer->mainShader, "camMatrix"); //! IMPORTANT
@@ -362,6 +362,7 @@ void GameScene::load_HighRoadHills_Map(std::shared_ptr<Entity> terrainEntity) {
 void GameScene::load_SquareIsland_Map(std::shared_ptr<Entity> terrainEntity) {
 
     float terrainEntityScale = 260.0f;
+    auto aiSplineComponent = std::make_shared<AISplineComponent>(terrainEntityScale);
 
     auto terrainRenderComponent = std::make_shared<RenderComponent>("../assets/square_island/Square_island.obj",
                                                            "../assets/square_island/Map_Base_Color.jpg",
@@ -381,6 +382,9 @@ void GameScene::load_SquareIsland_Map(std::shared_ptr<Entity> terrainEntity) {
     // Render Components:
     terrainEntity->addComponent(terrainRenderComponent);
     terrainEntity->addComponent(terrainRoadRenderComponent);
+    terrainEntity->addComponent(aiSplineComponent);
+
+    ecManager.get()->setAISpline(aiSplineComponent);
 
     // Physics Component:
     terrainEntity->addComponent(terrainChunks_physics_Component);
@@ -389,7 +393,6 @@ void GameScene::load_SquareIsland_Map(std::shared_ptr<Entity> terrainEntity) {
 
 void GameScene::init() {
 
-  spline_verts = PhysChunkedMapLoader::loadAISpline("../assets/square_island/ai_splines.txt");
 
     // * =================== Joystick Input =================== * //
 
@@ -429,23 +432,6 @@ void GameScene::init() {
 
     physicsWorld = PhysicsWorldSingleton::getInstance();
 
-  //!__ Prototype Plane
-
-  // btTransform protoPlaneTransform;
-  // protoPlaneTransform.setIdentity();
-  // protoPlaneTransform.setOrigin(btVector3(0, 0, 0));
-  // btStaticPlaneShape *plane = new btStaticPlaneShape(btVector3(0, 1, 0), btScalar(0));
-  // // Create Motion shape:
-  // btMotionState *motion = new btDefaultMotionState(protoPlaneTransform); //! He put btDefaultMotionShape
-  // btRigidBody::btRigidBodyConstructionInfo info(0.0, motion, plane);
-  // info.m_friction = 2.0f;
-  // btRigidBody *planeBody = new btRigidBody(info);
-  // //body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
-  // planeBody->setCollisionFlags(planeBody->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
-  // physicsWorld->dynamicsWorld->addRigidBody(planeBody, COLLISION_GROUP_CHUNKS, COLLISION_GROUP_ALL);
-
-  //!__ ENDOF Prototype Plane
-
     //* ----------------- Terrain Entity Definition ----------------- *//
 
     // std::shared_ptr<Entity> terrainEntity = std::make_shared<Entity>();
@@ -484,19 +470,23 @@ void GameScene::init() {
 
     //this->makeBarrier();
 
-    // auto skyboxEntity = std::make_shared<Entity>();
+    auto skyboxEntity = std::make_shared<Entity>();
 
-    // auto skyboxRenderComponent = std::make_shared<RenderComponent>("../assets/skybox_02/skybox_night_fixed.obj",
-    //                                                        "../assets/skybox_01/sq_skybox.jpg",
-    //                                                        0, false, false);
+    auto skyboxRenderComponent = std::make_shared<RenderComponent>("../assets/skybox_02/skybox_night_fixed.obj",
+                                                           "../assets/skybox_01/sq_skybox.jpg",
+                                                           0, false, false);
 
-    // skyboxRenderComponent->SetRenderScale(4200.0f);
+    skyboxRenderComponent->SetRenderScale(5200.0f);
 
-    // skyboxEntity->addComponent(skyboxRenderComponent);
+    skyboxEntity->addComponent(skyboxRenderComponent);
 
-    // entities.push_back(skyboxEntity);
+    entities.push_back(skyboxEntity);
 
     logger->log(Logger::INFO,"GameScene Loaded in " + std::to_string(entities.size()) + " entities");
+
+    auto aiSplineEntity = std::make_shared<Entity>();
+
+
 
 }
 

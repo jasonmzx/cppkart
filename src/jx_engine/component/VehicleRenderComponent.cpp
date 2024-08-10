@@ -45,6 +45,9 @@ void VehicleRenderComponent::UpdateChassisTransform(glm::vec3 glmVehiclePos, glm
     glm::vec3 relate_left = glmVehiclePos - right_side;
 
     glm::vec3 relate_forward = glmVehiclePos + forward;
+
+    relative_forward =  relate_forward;
+
     glm::vec3 relate_backward = glmVehiclePos - forward;
 
     GameGLRenderer* renderer = GameGLRenderer::getInstance();
@@ -55,6 +58,11 @@ void VehicleRenderComponent::UpdateChassisTransform(glm::vec3 glmVehiclePos, glm
     renderer->DebugDrawLine(glmVehiclePos, relate_backward, glm::vec3(1.0f, 0.0f, 0.0f));
     renderer->DebugDrawLine(glmVehiclePos, relate_right, glm::vec3(1.0f, 0.0f, 0.0f));
     renderer->DebugDrawLine(glmVehiclePos, relate_left,  glm::vec3(1.0f, 0.0f, 0.0f));
+}
+
+
+void VehicleRenderComponent::getForwardVector(glm::vec3 &forward) {
+    forward = relative_forward;
 }
 
 void VehicleRenderComponent::UpdateWheelTransforms(VehiclePhysics* vehiclePhysics) {

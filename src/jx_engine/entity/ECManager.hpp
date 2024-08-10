@@ -9,6 +9,8 @@
 
 #include "Entity.hpp"
 
+#include "jx_engine/render/GameGLRenderer.hpp"
+
 // Entity Components:
 #include "jx_engine/component/EComponent.hpp"
 #include "jx_engine/component/RenderComponent.hpp"
@@ -16,6 +18,7 @@
 #include "jx_engine/component/TerrainChunksComponent.hpp"
 #include "jx_engine/component/VehicleRenderComponent.hpp"
 #include "jx_engine/component/MovableObjectComponent.hpp"
+#include "jx_engine/component/AISplineComponent.hpp"
 
 #include "jx_engine/render/gl/Camera.h"
 #include "jx_engine/logs/Logger.hpp"
@@ -49,6 +52,7 @@ class ECManager { // Entity Component Manager
 
         void setTerrainChunks(std::shared_ptr<TerrainChunksComponent> terrainChunks);
         void setPlayerVehicle(std::shared_ptr<PlayerVehicleComponent> playerVehicle);
+        void setAISpline(std::shared_ptr<AISplineComponent> aiSpline);
 
         void resetPlayerVehicle();
         std::string debugStateSTR();
@@ -61,6 +65,7 @@ class ECManager { // Entity Component Manager
 
         std::shared_ptr<TerrainChunksComponent> terrainChunksComponents;
         std::shared_ptr<PlayerVehicleComponent> playerVehicleComponent;
+        std::shared_ptr<AISplineComponent> aiSplineComponent;
 
         // Debug State:
 

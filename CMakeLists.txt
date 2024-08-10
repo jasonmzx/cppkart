@@ -87,6 +87,9 @@ add_executable(cppkart
      src/jx_engine/component/MovableObjectComponent.hpp
      src/jx_engine/component/MovableObjectComponent.cpp
 
+     src/jx_engine/component/AISplineComponent.hpp
+     src/jx_engine/component/AISplineComponent.cpp
+
      # I/O: 
 
      src/jx_engine/io/GameInput.hpp

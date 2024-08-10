@@ -71,14 +71,13 @@ void ECManager::tick(std::vector<std::shared_ptr<Entity>>& entities, std::shared
 
         for (auto& component : entity.get()->components) {
             
-                rcX = gameInput.get()->debugRaycastX;
-                rcY = gameInput.get()->debugRaycastY + yOffset;
-                rcZ = gameInput.get()->debugRaycastZ;
+            rcX = gameInput.get()->debugRaycastX;
+            rcY = gameInput.get()->debugRaycastY + yOffset;
+            rcZ = gameInput.get()->debugRaycastZ;
 
-                if( rcX != 0.0f && rcY != yOffset && rcZ != 0.0f) {
-                    printf("Raycast: %f, %f, %f\n", rcX, rcY, rcZ);
-                }
-
+            if( rcX != 0.0f && rcY != yOffset && rcZ != 0.0f) {
+                printf("Raycast: %f, %f, %f\n", rcX, rcY, rcZ);
+            }
             component.get()->tick();
         }
     }
@@ -93,6 +92,7 @@ void ECManager::renderPass(std::vector<std::shared_ptr<Entity>>& entities) {
         for (auto& component : entity.get()->components) {
 
             if (auto vehicleRenderComponent = std::dynamic_pointer_cast<VehicleRenderComponent>(component)) {
+
                 btTransform vehicleTransform = playerVehicleComponent.get()->vehiclePhysics.GetTransform();
                 btVector3 vehiclePosition = vehicleTransform.getOrigin();
                 btQuaternion vehicleRotation = vehicleTransform.getRotation();
@@ -103,6 +103,26 @@ void ECManager::renderPass(std::vector<std::shared_ptr<Entity>>& entities) {
                 vehicleRenderComponent.get()->UpdateChassisTransform(glmVehiclePosition, glmVehicleRotation);
                 vehicleRenderComponent.get()->UpdateWheelTransforms(&playerVehicleComponent.get()->vehiclePhysics);
                 vehicleRenderComponent.get()->DrawWheels();
+                
+
+                //A Bit Dirty, so change this later
+
+            glm::vec3 forward;
+
+            vehicleRenderComponent.get()->getForwardVector(forward);
+
+            glm::vec3 nearestVertex;
+            
+            aiSplineComponent.get()->getNearestVertexFromPos(forward, nearestVertex);
+
+            printf("Nearest Vertex: %f, %f, %f\n", nearestVertex.x, nearestVertex.y, nearestVertex.z);
+
+            //TODO: fix this
+            auto renderer = GameGLRenderer::getInstance();
+
+            renderer->DebugDrawLine(forward, nearestVertex, glm::vec3(1.0f, 0.0f, 0.0f));
+
+
             }
 
             if( auto movableObjectComponent = std::dynamic_pointer_cast<MovableObjectComponent>(component)) {
@@ -131,6 +151,18 @@ void ECManager::setTerrainChunks(std::shared_ptr<TerrainChunksComponent> terrain
     }
 }
 
+void ECManager::setAISpline(std::shared_ptr<AISplineComponent> aiSpline) {
+    // Check if the input is valid
+    if (aiSpline) {
+        aiSplineComponent = aiSpline;
+
+    } else {
+        // Handle the error appropriately (e.g., logging, throwing an exception)
+        Logger* logger = Logger::getInstance();
+        logger->log(Logger::ERROR, "Invalid AISplineComponent input");
+    }
+}
+
 void ECManager::setPlayerVehicle(std::shared_ptr<PlayerVehicleComponent> playerVehicle) {
     // Check if the input is valid
     if (playerVehicle) {
@@ -150,6 +182,8 @@ void ECManager::setPlayerVehicle(std::shared_ptr<PlayerVehicleComponent> playerV
             dpX = pX;
             dpY = pY;
             dpZ = pZ;
+
+
 
             emitEvent(Event(EventType::PLAYER_VEHICLE_GET_SPEED, velocity));
         });

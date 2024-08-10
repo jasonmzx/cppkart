@@ -28,10 +28,9 @@
 #include "jx_engine/component/TerrainChunksComponent.hpp"
 #include "jx_engine/component/VehicleRenderComponent.hpp"
 #include "jx_engine/component/MovableObjectComponent.hpp"
+#include "jx_engine/component/AISplineComponent.hpp"
 
 
-//TODO: Remove, just for testing
-#include "jx_engine/import/PhysChunkedMapLoader.hpp"
 
 // ImGUI Imports:
 #include "imgui.h"
@@ -76,7 +75,6 @@ class GameScene : public Scene {
         
         PhysicsWorldSingleton *physicsWorld;
 
-        std::vector<glm::vec3> spline_verts;
 
     private:
 

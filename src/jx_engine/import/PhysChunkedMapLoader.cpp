@@ -88,7 +88,7 @@ std::vector<glm::vec3> PhysChunkedMapLoader::parseVec3List(const std::string& li
 
 // Load AI Splines
 
-std::vector<glm::vec3> PhysChunkedMapLoader::loadAISpline(const std::string &filename) 
+std::vector<glm::vec3> PhysChunkedMapLoader::loadAISpline(const std::string &filename, float scale) 
 {
     Logger* logger = Logger::getInstance();
 
@@ -107,8 +107,6 @@ std::vector<glm::vec3> PhysChunkedMapLoader::loadAISpline(const std::string &fil
 
     std::string line; 
 
-    float scale = 250.0f;
-
     while (std::getline(spline_file, line)) // Line by Line Reading
     {
         line.erase(0, line.find_first_not_of(" \t\n\r\f\v"));
@@ -116,7 +114,7 @@ std::vector<glm::vec3> PhysChunkedMapLoader::loadAISpline(const std::string &fil
 
         glm::vec3 scaled_vert = spline_vert * scale;
 
-        verts.push_back(spline_vert);
+        verts.push_back(scaled_vert);
     }
 
     // Debug

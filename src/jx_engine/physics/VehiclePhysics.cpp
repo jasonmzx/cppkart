@@ -18,12 +18,12 @@ VehiclePhysics::VehiclePhysics(float xPos, float yPos, float zPos)
 
     // Vehicle setup
     
-    // Vehicle Box Shape:
-    //btBoxShape *vehicleChassisShape = new btBoxShape(btVector3(1.6f * VEHICLE_SCALE, 0.5f * VEHICLE_SCALE, 3.0f * VEHICLE_SCALE));
+    //Vehicle Box Shape:
+    btBoxShape *vehicleChassisShape = new btBoxShape(btVector3(1.6f * VEHICLE_SCALE, 0.5f * VEHICLE_SCALE, 3.0f * VEHICLE_SCALE));
     
-    float capsuleRadius = 1.0f * VEHICLE_SCALE;
-    float capsuleHeight = 6.0f * VEHICLE_SCALE; // Adjusted height to maintain overall length
-    btCapsuleShapeZ *vehicleChassisShape = new btCapsuleShapeZ(capsuleRadius, capsuleHeight);
+    // float capsuleRadius = 1.0f * VEHICLE_SCALE;
+    // float capsuleHeight = 6.0f * VEHICLE_SCALE; // Adjusted height to maintain overall length
+    // btCapsuleShapeZ *vehicleChassisShape = new btCapsuleShapeZ(capsuleRadius, capsuleHeight);
 
     vehicleMotionState = new btDefaultMotionState();
     btTransform localTransform;
