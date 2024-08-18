@@ -217,3 +217,108 @@ std::vector<GLuint> GameGLRenderer::GetCylinderIndices(int n_sides) {
 //* =================================================================================
 // Cone Geometry                                                            < ===
 //* =================================================================================
+
+std::vector<GLfloat> GameGLRenderer::GetConeVertices(int n_sides, float height) {
+    
+    const float PI = 3.14159265359f;
+    float sectorStep = 2 * PI / n_sides;
+
+    std::vector<GLfloat> vertices;
+
+    // Generate vertices for the top and bottom circles
+    for (int i = 0; i < 1; ++i) { // i= 0: bottom
+        float h = -height / 2.0f + i * height; // -h/2 to +h/2 for bottom to top
+        for (int j = 0; j < n_sides; ++j) {
+
+            float sectorAngle = j * sectorStep;
+            
+            // X, and Y are coordinates on a normalized circle (-1 , 1) on x and y axis
+            
+            float x = cos(sectorAngle);
+            float y = sin(sectorAngle);
+
+            // Vertex (X, Y, Z)
+
+            vertices.push_back(x); // x
+            vertices.push_back(y); // y
+            vertices.push_back(h); // z
+
+            // Color (R, G, B)
+
+            vertices.push_back(0.0f); // r
+            vertices.push_back(1.0f); // g
+            vertices.push_back(0.0f); // b
+
+            // Texture coordinates (U,V)
+
+            vertices.push_back((float)j / n_sides); // u
+            vertices.push_back(1.0f - i); // v
+
+            // Normals
+            vertices.push_back(x); // nx
+            vertices.push_back(y); // ny
+            vertices.push_back(0.0f); // nz
+        }
+    }
+
+    // Bottom Center Point
+    
+    vertices.push_back(0.0f);           // X
+    vertices.push_back(0.0f);           // Y
+    vertices.push_back(-height / 2.0f); // Z
+
+    vertices.push_back(1.0f);        // r
+    vertices.push_back(0.0f);        // g
+    vertices.push_back(0.0f);        // b
+
+    vertices.push_back(0.0f);        // u
+    vertices.push_back(0.0f);        // v
+
+    vertices.push_back(0.0f);        // nx
+    vertices.push_back(0.0f);        // ny
+    vertices.push_back(-1.0f);       // nz
+
+    // Top Center Point
+
+    vertices.push_back(0.0f);          // X
+    vertices.push_back(0.0f);          // Y
+    vertices.push_back(height / 2.0f); // Z
+
+    vertices.push_back(0.0f);        // r
+    vertices.push_back(0.0f);        // g
+    vertices.push_back(1.0f);        // b
+
+    vertices.push_back(0.0f);        // u
+    vertices.push_back(1.0f);        // v
+
+    vertices.push_back(0.0f);        // nx
+    vertices.push_back(0.0f);        // ny
+    vertices.push_back(1.0f);        // nz
+
+    return vertices;
+}
+
+std::vector<GLuint> GameGLRenderer::GetConeIndices(int n_sides) {
+    std::vector<GLuint> indices;
+
+    // Bottom face
+    int bottomCenterIndex = n_sides;  // Index of the bottom center point
+    for (int i = 0; i < n_sides; ++i) {
+        int next = (i + 1) % n_sides;  // Wrap around to form a closed loop
+        indices.push_back(bottomCenterIndex);  // Center point of the bottom circle
+        indices.push_back(i);                  // Current vertex
+        indices.push_back(next);               // Next vertex
+    }
+
+    // Side faces
+    int topCenterIndex = n_sides + 1;  // Index of the top center point (apex)
+    for (int i = 0; i < n_sides; ++i) {
+        int next = (i + 1) % n_sides;  // Wrap around to form a closed loop
+
+        indices.push_back(i);            // Current vertex on the base
+        indices.push_back(next);         // Next vertex on the base
+        indices.push_back(topCenterIndex); // Apex of the cone
+    }
+
+    return indices;
+}

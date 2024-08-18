@@ -34,8 +34,13 @@ class GameGLRenderer {
 
         void UpdateScreenSize(int winWidth, int winHeight);
 
+        // ** Geometric Shape Gens **
+
         std::vector<GLfloat> GetCylinderVertices(int n_sides, float height);
         std::vector<GLuint> GetCylinderIndices(int n_sides);
+
+        std::vector<GLfloat> GetConeVertices(int n_sides, float height);
+        std::vector<GLuint> GetConeIndices(int n_sides);
 
     private:
         

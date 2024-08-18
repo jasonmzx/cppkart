@@ -233,12 +233,6 @@ void GameScene::render() {
 
     if(isBulletDebugDraw) {
       
-      // int spline_verts_size = spline_verts.size();
-
-      // for(int j = 0; j < spline_verts_size - 1; j++) {
-      //   renderer->DebugDrawLine(spline_verts[j], spline_verts[j + 1], glm::vec3(1.0f, 0.0f, 0.0f));
-      // }
-
       renderer->DebugRender();
     }
 

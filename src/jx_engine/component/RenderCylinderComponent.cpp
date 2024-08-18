@@ -10,8 +10,9 @@ RenderCylinderComponent::RenderCylinderComponent()
     colorUniformLOC = renderer->colorUniformLocation;
 
 
-    std::vector<GLfloat> vertices = renderer->GetCylinderVertices(60, 5);
-    std::vector<GLuint> indices = renderer->GetCylinderIndices(60);
+    std::vector<GLfloat> vertices = renderer->GetConeVertices(60, 5);
+    std::vector<GLuint> indices = renderer->GetConeIndices(60);
+
 
     std::shared_ptr<Geometry> geom_construct = std::make_shared<Geometry>(vertices, indices);
 
@@ -20,6 +21,7 @@ RenderCylinderComponent::RenderCylinderComponent()
     float scale = 1.0f;
 
     ObjmodelMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(scale, scale, scale));
+
 }
 
 void RenderCylinderComponent::Draw()
