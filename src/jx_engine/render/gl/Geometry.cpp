@@ -15,7 +15,7 @@ Geometry::Geometry(const std::vector<GLfloat>& vertices, const std::vector<GLuin
     vao->Bind();
 
     // x y z r g b u v Nx Ny Nz     (11)
-    // Assuming each vertex consists of 8 floats: position (x, y, z), color (r, g, b), texture (u, v), normal (x, y, z)
+    // Each vertex consists of 11 floats: position (x, y, z), color (r, g, b), texture (u, v), normal (x, y, z)
 
     vao->LinkAttrib(*vbo, 0, 3, GL_FLOAT, VERT_LEN * sizeof(float), (void *)0);
     vao->LinkAttrib(*vbo, 1, 3, GL_FLOAT, VERT_LEN * sizeof(float), (void *)(3 * sizeof(float)));
@@ -26,13 +26,6 @@ Geometry::Geometry(const std::vector<GLfloat>& vertices, const std::vector<GLuin
 
     vao->Unbind();
 }
-
-// Geometry::~Geometry()
-// {
-//     // vao->Delete();
-//     // vbo->Delete();
-//     // ebo->Delete();
-// }
 
 void Geometry::Draw(GLuint modelMatrixLocation, glm::mat4& modelMatrix, GLuint colorUniformLocation, bool debugTriangles)
 {

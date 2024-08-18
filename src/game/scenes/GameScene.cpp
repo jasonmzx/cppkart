@@ -109,7 +109,21 @@ void GameScene::updateImGui() {
                     isBulletDebugDraw = !isBulletDebugDraw;
                 }
 
+                // This is the X,Y,Z Location of the vehicle
                 ImGui::Text("%s", ecManager.get()->debugStateSTR().c_str());
+   
+                // Input fields for x, y, z coordinates
+                static float cam_tp_x = 0.0f, cam_tp_y = 0.0f, cam_tp_z = 0.0f;
+                ImGui::InputFloat("X", &cam_tp_x);
+                ImGui::InputFloat("Y", &cam_tp_y);
+                ImGui::InputFloat("Z", &cam_tp_z);
+
+                if (ImGui::Button("Teleport Camera")) {
+                    printf("Teleporting Camera to: %f, %f, %f\n", cam_tp_x, cam_tp_y, cam_tp_z);
+
+                    glm::vec3 tptopos = glm::vec3(cam_tp_x, cam_tp_y, cam_tp_z);
+                    camera.get()->setCameraPosition(tptopos);
+                } 
 
                 ImGui::EndTabItem();
             }
@@ -484,10 +498,14 @@ void GameScene::init() {
 
     logger->log(Logger::INFO,"GameScene Loaded in " + std::to_string(entities.size()) + " entities");
 
-    auto aiSplineEntity = std::make_shared<Entity>();
+    auto cylinderEntity = std::make_shared<Entity>();
 
+    auto cylinderRenderComponent = std::make_shared<RenderCylinderComponent>();
 
+    cylinderEntity->addComponent(cylinderRenderComponent);
 
+    entities.push_back(cylinderEntity);
+    
 }
 
 void GameScene::initECS(std::shared_ptr<SceneManager> sceneManager) {

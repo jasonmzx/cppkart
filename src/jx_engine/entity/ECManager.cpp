@@ -106,22 +106,21 @@ void ECManager::renderPass(std::vector<std::shared_ptr<Entity>>& entities) {
                 
 
                 //A Bit Dirty, so change this later
+                glm::vec3 forward;
 
-            glm::vec3 forward;
+                vehicleRenderComponent.get()->getForwardVector(forward);
 
-            vehicleRenderComponent.get()->getForwardVector(forward);
+                glm::vec3 nearestVertex;
+                glm::vec3 nextNearestVertex;
+                
+                aiSplineComponent.get()->getNearestVertexFromPos(forward, nearestVertex, nextNearestVertex);
 
-            glm::vec3 nearestVertex;
-            
-            aiSplineComponent.get()->getNearestVertexFromPos(forward, nearestVertex);
+                printf("Nearest Vertex: %f, %f, %f\n", nearestVertex.x, nearestVertex.y, nearestVertex.z);
 
-            printf("Nearest Vertex: %f, %f, %f\n", nearestVertex.x, nearestVertex.y, nearestVertex.z);
+                //TODO: fix this
+                auto renderer = GameGLRenderer::getInstance();
 
-            //TODO: fix this
-            auto renderer = GameGLRenderer::getInstance();
-
-            renderer->DebugDrawLine(forward, nearestVertex, glm::vec3(1.0f, 0.0f, 0.0f));
-
+                renderer->DebugDrawLine(forward, nearestVertex, glm::vec3(1.0f, 0.0f, 0.0f));
 
             }
 
@@ -182,7 +181,6 @@ void ECManager::setPlayerVehicle(std::shared_ptr<PlayerVehicleComponent> playerV
             dpX = pX;
             dpY = pY;
             dpZ = pZ;
-
 
 
             emitEvent(Event(EventType::PLAYER_VEHICLE_GET_SPEED, velocity));

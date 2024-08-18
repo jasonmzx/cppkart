@@ -34,6 +34,9 @@ class GameGLRenderer {
 
         void UpdateScreenSize(int winWidth, int winHeight);
 
+        std::vector<GLfloat> GetCylinderVertices(int n_sides, float height);
+        std::vector<GLuint> GetCylinderIndices(int n_sides);
+
     private:
         
         static GameGLRenderer* instance;

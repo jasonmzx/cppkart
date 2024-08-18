@@ -29,6 +29,7 @@
 #include "jx_engine/component/VehicleRenderComponent.hpp"
 #include "jx_engine/component/MovableObjectComponent.hpp"
 #include "jx_engine/component/AISplineComponent.hpp"
+#include "jx_engine/component/RenderCylinderComponent.hpp"
 
 
 

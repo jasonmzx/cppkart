@@ -67,6 +67,7 @@ void GameGLRenderer::DebugRender() {
     }
 }
 
+
 void GameGLRenderer::DebugDrawLine(glm::vec3 start, glm::vec3 end, glm::vec3 color) {
     debugDrawer->drawLine(btVector3(start.x, start.y, start.z), btVector3(end.x, end.y, end.z), btVector3(color.x, color.y, color.z));
 }
@@ -74,7 +75,6 @@ void GameGLRenderer::DebugDrawLine(glm::vec3 start, glm::vec3 end, glm::vec3 col
 void GameGLRenderer::UpdateScreenSize(int winWidth, int winHeight) {
     glViewport(0, 0, winWidth, winHeight);
 }
-
 
 // Singleton stuff
 
@@ -93,3 +93,127 @@ GameGLRenderer* GameGLRenderer::getInstance() {
     }
     return instance;
 }
+
+//* =================================================================================
+// Cylinder Geometry                                                            < ===
+//* =================================================================================
+
+std::vector<GLfloat> GameGLRenderer::GetCylinderVertices(int n_sides, float height) {
+    
+    const float PI = 3.14159265359f;
+    float sectorStep = 2 * PI / n_sides;
+
+    std::vector<GLfloat> vertices;
+
+    // Generate vertices for the top and bottom circles
+    for (int i = 0; i <= 1; ++i) { // i=0: bottom, i=1: top
+        float h = -height / 2.0f + i * height; // -h/2 to +h/2 for bottom to top
+        for (int j = 0; j < n_sides; ++j) {
+
+            float sectorAngle = j * sectorStep;
+            
+            // X, and Y are coordinates on a normalized circle (-1 , 1) on x and y axis
+            
+            float x = cos(sectorAngle);
+            float y = sin(sectorAngle);
+
+            // Vertex (X, Y, Z)
+
+            vertices.push_back(x); // x
+            vertices.push_back(y); // y
+            vertices.push_back(h); // z
+
+            // Color (R, G, B)
+
+            vertices.push_back(0.0f); // r
+            vertices.push_back(1.0f); // g
+            vertices.push_back(0.0f); // b
+
+            // Texture coordinates (U,V)
+
+            vertices.push_back((float)j / n_sides); // u
+            vertices.push_back(1.0f - i); // v
+
+            // Normals
+            vertices.push_back(x); // nx
+            vertices.push_back(y); // ny
+            vertices.push_back(0.0f); // nz
+        }
+    }
+
+    // Bottom Center Point
+    
+    vertices.push_back(0.0f);           // X
+    vertices.push_back(0.0f);           // Y
+    vertices.push_back(-height / 2.0f); // Z
+
+    vertices.push_back(1.0f);        // r
+    vertices.push_back(0.0f);        // g
+    vertices.push_back(0.0f);        // b
+
+    vertices.push_back(0.0f);        // u
+    vertices.push_back(0.0f);        // v
+
+    vertices.push_back(0.0f);        // nx
+    vertices.push_back(0.0f);        // ny
+    vertices.push_back(-1.0f);       // nz
+
+    // Top Center Point
+
+    vertices.push_back(0.0f);          // X
+    vertices.push_back(0.0f);          // Y
+    vertices.push_back(height / 2.0f); // Z
+
+    vertices.push_back(0.0f);        // r
+    vertices.push_back(0.0f);        // g
+    vertices.push_back(1.0f);        // b
+
+    vertices.push_back(0.0f);        // u
+    vertices.push_back(1.0f);        // v
+
+    vertices.push_back(0.0f);        // nx
+    vertices.push_back(0.0f);        // ny
+    vertices.push_back(1.0f);        // nz
+
+    return vertices;
+}
+
+std::vector<GLuint> GameGLRenderer::GetCylinderIndices(int n_sides) {
+    std::vector<GLuint> indices;
+
+    // Bottom face
+    for (int i = 0; i < n_sides; ++i) {
+        indices.push_back(n_sides * 2);      // center point of bottom circle
+        indices.push_back(i);                // current vertex
+        indices.push_back((i + 1) % n_sides);// next vertex
+    }
+
+    // Top face
+    int topOffset = n_sides;
+    for (int i = 0; i < n_sides; ++i) {
+        indices.push_back(n_sides * 2 + 1);  // center point of top circle
+        indices.push_back(topOffset + i);    // current vertex
+        indices.push_back(topOffset + (i + 1) % n_sides); // next vertex
+    }
+
+    // Side faces
+    for (int i = 0; i < n_sides; ++i) {
+        int next = (i + 1) % n_sides;
+
+        // First triangle
+        indices.push_back(i);                // bottom current
+        indices.push_back(next);             // bottom next
+        indices.push_back(n_sides + i);    // top current
+
+        // Second triangle
+        indices.push_back(n_sides + i);    // top current
+        indices.push_back(next);             // bottom next
+        indices.push_back(n_sides + next); // top next
+    }
+
+    return indices;
+}
+
+//* =================================================================================
+// Cone Geometry                                                            < ===
+//* =================================================================================

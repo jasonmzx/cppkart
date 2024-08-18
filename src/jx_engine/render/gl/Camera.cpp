@@ -159,3 +159,7 @@ void Camera::UpdateScreenSize(int w, int h)
 glm::vec3 Camera::getCameraPosition() {
     return Position;
 }
+
+void Camera::setCameraPosition(glm::vec3 pos) {
+    Position = pos;
+}

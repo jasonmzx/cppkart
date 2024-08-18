@@ -90,6 +90,9 @@ add_executable(cppkart
      src/jx_engine/component/AISplineComponent.hpp
      src/jx_engine/component/AISplineComponent.cpp
 
+     src/jx_engine/component/RenderCylinderComponent.hpp
+     src/jx_engine/component/RenderCylinderComponent.cpp
+
      # I/O: 
 
      src/jx_engine/io/GameInput.hpp
