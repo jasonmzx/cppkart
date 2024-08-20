@@ -13,9 +13,11 @@
 class AISplineComponent : public EComponent {
     public:
         AISplineComponent(float scale);
-        std::vector<glm::vec3> spline_verts;
+        std::vector<SplineVertex> spline_verts;
+        std::vector<glm::vec3> spline_verts_perpendicular_dirs;
+
          
-        void getNearestVertexFromPos(glm::vec3 position, glm::vec3 &nearestVertex, glm::vec3 &nextNearestVertex);
+        void getNearestVertexFromPos(glm::vec3 position, glm::vec3 &nearestVertex, glm::vec3 &p_diddy);
         void tick() override;
 
         void Draw();

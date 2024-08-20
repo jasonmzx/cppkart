@@ -57,11 +57,11 @@ void Camera::Inputs()
     }
     if (keyState[SDL_SCANCODE_RCTRL])
     {
-        speed = 1.2f;
+        speed = 5.2f;
     }
     else
     {
-        speed = 0.4f;
+        speed = 0.5f;
     }
 
 }

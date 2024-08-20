@@ -37,7 +37,7 @@ VehiclePhysics::VehiclePhysics(float xPos, float yPos, float zPos)
     vehicleMotionState->setWorldTransform(localTransform);
 
     //* VEHICLE MASS !
-    btScalar vehicleMass = 800;
+    btScalar vehicleMass = 600;
 
     btVector3 vehicleInertia(0, 0, 0);
     vehicleChassisShape->calculateLocalInertia(vehicleMass, vehicleInertia);
@@ -66,7 +66,7 @@ VehiclePhysics::VehiclePhysics(float xPos, float yPos, float zPos)
     
     btScalar suspensionRestLength = 0.75;
     btScalar wheelRadius = 1.5*VEHICLE_SCALE;
-    btScalar wheelWidth = 0.5;
+    btScalar wheelWidth = 0.6;
     btScalar suspensionStiffness = 40.0;
     btScalar dampingRelaxation = 4.3;
     btScalar dampingCompression = 2.4;

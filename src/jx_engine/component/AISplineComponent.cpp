@@ -16,70 +16,30 @@ AISplineComponent::AISplineComponent(float scale) {
     std::vector<GLfloat> vertices;
     std::vector<GLuint> indices;
 
+
+
+    //TODO: Use SplineVertex Array to do shit properly 
+
     int base_vertex_count = base_vertices.size() / 11; // each vertex has 11 attributes (position, color, texture, normal)
 
-    // Iterate through spline vertices
+
     for (size_t i = 0; i < spline_verts.size(); ++i) {
         
-        glm::vec3 position = spline_verts[i];
+        SplineVertex sv = spline_verts.at(i);
 
-        // Compute direction vector
-        glm::vec3 direction;
-        if (i < spline_verts.size() - 1) {
-            // Calculate direction to the next spline vertex
-            direction = glm::normalize(spline_verts[i + 1] - position);
-           } else {
-            // For the last point, use the direction from the previous vertex
-            direction = glm::normalize(position - spline_verts[i - 1]);
-        }
+        // printf("##################");
+        // printf("Position: (%f, %f, %f)\n", sv.position.x, sv.position.y, sv.position.z);
+        // printf("Direction: (%f, %f, %f)\n", sv.direction.x, sv.direction.y, sv.direction.z);
+        // printf("XZ Orthogonal Direction: (%f, %f, %f)\n", sv.xz_orthogonal_dir.x, sv.xz_orthogonal_dir.y, sv.xz_orthogonal_dir.z);
 
-        // Flip direction
-        direction = -direction;
+    //* Up direction crossed with the direction vector, gives: perpendicular to the direction vector, for vehicle orientation on the spline
 
-        // Calculate rotation matrix to align the cone with the direction vector (Cone Initially Aligned with +Z axis)
         glm::vec3 init_direction = glm::vec3(0.0f, 0.0f, 1.0f);
-        glm::quat rotationQuat = glm::rotation(init_direction, direction); // Calculate quaternion to rotate the up vector to the direction vector
-        glm::mat4 rotationMatrix = glm::toMat4(rotationQuat); // quat to mat4
-
-        // Add the first cone (aligned with the direction vector)
-        for (int j = 0; j < base_vertex_count; ++j) {
-            // Apply rotation to the position
-            glm::vec4 rotatedPos = rotationMatrix * glm::vec4(
-                base_vertices[j * 11 + 0],
-                base_vertices[j * 11 + 1],
-                base_vertices[j * 11 + 2],
-                1.0f
-            );
-
-            // Translate the rotated position
-            GLfloat x = rotatedPos.x + position.x;
-            GLfloat y = rotatedPos.y + position.y;
-            GLfloat z = rotatedPos.z + position.z;
-            vertices.push_back(x);
-            vertices.push_back(y);
-            vertices.push_back(z);
-
-            // Copy the rest of the un-touched attributes (color, texture coordinates, normals)
-            for (int k = 3; k < 11; ++k) {
-                vertices.push_back(base_vertices[j * 11 + k]);
-            }
-        }
-
-        // Adjust and add indices
-        GLuint index_offset = i * base_vertex_count * 2; // * 2 because we'll have two cones per vertex
-        for (size_t j = 0; j < base_indices.size(); ++j) {
-            indices.push_back(base_indices[j] + index_offset);
-        }
-
-        //* Up direction crossed with the direction vector, gives: perpendicular to the direction vector, for vehicle orientation on the spline
-        glm::vec3 plus_y_up = glm::vec3(0.0f, 1.0f, 0.0f);
-        glm::vec3 perpendicular_dir = glm::normalize(glm::cross(direction, plus_y_up));  // Perpendicular vector
 
         // Calculate the rotation matrix for the second cone
-        glm::quat perpendicularQuat = glm::rotation(init_direction, perpendicular_dir);
+        glm::quat perpendicularQuat = glm::rotation(init_direction, sv.xz_orthogonal_dir);
         glm::mat4 perpendicularRotationMatrix = glm::toMat4(perpendicularQuat);
 
-        // Add the second cone (aligned with the perpendicular direction)
         for (int j = 0; j < base_vertex_count; ++j) {
             // Apply rotation to the position
             glm::vec4 rotatedPos = perpendicularRotationMatrix * glm::vec4(
@@ -90,9 +50,9 @@ AISplineComponent::AISplineComponent(float scale) {
             );
 
             // Translate the rotated position
-            GLfloat x = rotatedPos.x + position.x;
-            GLfloat y = rotatedPos.y + position.y;
-            GLfloat z = rotatedPos.z + position.z;
+            GLfloat x = rotatedPos.x + sv.position.x;
+            GLfloat y = rotatedPos.y + sv.position.y;
+            GLfloat z = rotatedPos.z + sv.position.z;
             vertices.push_back(x);
             vertices.push_back(y);
             vertices.push_back(z);
@@ -103,33 +63,35 @@ AISplineComponent::AISplineComponent(float scale) {
             }
         }
 
-        // Adjust and add indices for the second cone
-        index_offset = i * base_vertex_count * 2 + base_vertex_count;
+        GLuint index_offset = i * base_vertex_count * 2;
+
+
         for (size_t j = 0; j < base_indices.size(); ++j) {
             indices.push_back(base_indices[j] + index_offset);
         }
+    
     }
 
     std::shared_ptr<Geometry> geom_construct = std::make_shared<Geometry>(vertices, indices);
     this->Geom = geom_construct;
 
+    printf("SIZEOF VERTS: %ld\n", spline_verts.size());
+
     ObjmodelMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 }
 
-void AISplineComponent::getNearestVertexFromPos(glm::vec3 position, glm::vec3 &nearestVertex, glm::vec3 &nextNearestVertex) {
+void AISplineComponent::getNearestVertexFromPos(glm::vec3 position, glm::vec3 &nearestVertexPosition, glm::vec3 &nearestPerendicularDir) {
     
-    int nearestIndex = 0;
     float minDist = 1000000.0f;
     
     for (int i = 0; i < spline_verts.size(); i++) {
-        float dist = glm::distance(position, spline_verts[i]);
+        float dist = glm::distance(position, spline_verts[i].position);
+        
         if (dist < minDist) {
-            
             minDist =     dist;
-            nearestIndex = i;
 
-            nearestVertex = spline_verts[i];
-            nextNearestVertex = spline_verts[(i + 1) % spline_verts.size()];
+            nearestVertexPosition = spline_verts[i].position;
+            nearestPerendicularDir = spline_verts[i].xz_orthogonal_dir;
         }
     }
 }

@@ -84,7 +84,6 @@ void ECManager::tick(std::vector<std::shared_ptr<Entity>>& entities, std::shared
 
 
     Logger* logger = Logger::getInstance();
-    logger->log(Logger::INFO, "Road Barriers: " + std::to_string(NRoadBarriers));
 }
 
 void ECManager::renderPass(std::vector<std::shared_ptr<Entity>>& entities) {
@@ -110,17 +109,32 @@ void ECManager::renderPass(std::vector<std::shared_ptr<Entity>>& entities) {
 
                 vehicleRenderComponent.get()->getForwardVector(forward);
 
-                glm::vec3 nearestVertex;
-                glm::vec3 nextNearestVertex;
-                
-                aiSplineComponent.get()->getNearestVertexFromPos(forward, nearestVertex, nextNearestVertex);
+                glm::vec3 nearestSplineVertex;
+                glm::vec3 perpendicularDirection; // Perpendicular Direction (XZ Orthogonal to Direction of Spline)
 
-                printf("Nearest Vertex: %f, %f, %f\n", nearestVertex.x, nearestVertex.y, nearestVertex.z);
+                aiSplineComponent.get()->getNearestVertexFromPos(forward, nearestSplineVertex, perpendicularDirection);
 
-                //TODO: fix this
+
+                    // Calculate Alpha, the direction from the vehicle to the nearest spline vertex
+    glm::vec3 Alpha = glm::normalize(nearestSplineVertex - forward);
+
+    // Calculate the dot product of Alpha with the perpendicular direction
+    float dotProduct = glm::dot(Alpha, perpendicularDirection);
+
+    if (dotProduct > 0) {
+        printf("\nTurn Right\n");
+    } else if (dotProduct < 0) {
+        printf("\nTurn Left\n");
+    } else {
+        printf("Move Forward\n");
+    }
+
+                printf("xz_orthogonal_dir: %f, %f, %f\n", perpendicularDirection.x, perpendicularDirection.y, perpendicularDirection.z);
+                printf("nearestSplineVertex: %f, %f, %f\n", nearestSplineVertex.x, nearestSplineVertex.y, nearestSplineVertex.z);
+
                 auto renderer = GameGLRenderer::getInstance();
-
-                renderer->DebugDrawLine(forward, nearestVertex, glm::vec3(1.0f, 0.0f, 0.0f));
+                // Draw line from Vehicle Forward to the nearest spline vertex
+                renderer->DebugDrawLine(forward, nearestSplineVertex, glm::vec3(1.0f, 0.0f, 0.0f)); // Red line
 
             }
 

@@ -89,7 +89,5 @@ void PlayerVehicleComponent::tick() {
     glm::vec3 forward = glm::vec3(rotation3x3 * objectSpaceForward);
     forward = glm::normalize(forward);
 
-    printf("Forward: PVC %f, %f, %f\n", forward.x, forward.y, forward.z);
-
     setPlayerVehicleDirection(forward.x, forward.y, forward.z);
 }

@@ -22,10 +22,19 @@ struct LoadedChunk {
     float Z_origin;
 };
 
+
+struct SplineVertex {
+    glm::vec3 position;
+    glm::vec3 direction;
+    glm::vec3 xz_orthogonal_dir;
+};
+
+
+
 class PhysChunkedMapLoader {
     public:
         static std::vector<LoadedChunk> loadChunks(const std::string& filename);
-        static std::vector<glm::vec3> loadAISpline(const std::string &filename, float scale);
+        static std::vector<SplineVertex> loadAISpline(const std::string &filename, float scale);
 
     private:
         static glm::vec3 parseVec3(const std::string& line);
