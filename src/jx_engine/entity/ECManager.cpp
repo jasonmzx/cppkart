@@ -47,30 +47,41 @@ void ECManager::emitEvent(const Event& event) {
 //     this->activeScene = sceneManager.get()->getActiveScene();
 // }
 
-void ECManager::tick(std::vector<std::shared_ptr<Entity>>& entities, std::shared_ptr<GameInput> gameInput) 
+void ECManager::tick(std::vector<std::shared_ptr<Entity>>& entities) 
 {
-    //TODO: Make a gameinput component and pass it to the player vehicle component
-    emitEvent(Event(EventType::PLAYER_VEHICLE_MOVE, std::make_pair(gameInput.get()->currentAcceleration, gameInput.get()->currentTurn)));
-
     glm::vec3 camPos = m_camera.get()->getCameraPosition();
     
     float pX = camPos.x;
     float pZ = camPos.z;
 
     emitEvent(Event(EventType::UPDATE_TERRAIN_CHUNKS_XZ, std::make_pair(pX, pZ)));
-
-    float rcX = 0.0f;
     
+    for(auto entity : entities) {
+        for (auto& component : entity.get()->components) {
+            component.get()->tick();
+        }
+    }
+}
+
+void ECManager::componentSpecificPass(std::vector<std::shared_ptr<Entity>>& entities, std::shared_ptr<GameInput> gameInput) {
+
+    // --- Player Vehicle Movement ---
+    if( !isAIVehicleControl) {
+        emitEvent(Event(EventType::PLAYER_VEHICLE_MOVE, std::make_pair(gameInput.get()->currentAcceleration, gameInput.get()->currentTurn)));
+    }
+    
+    float rcX = 0.0f;
+
     float yOffset = 10.0f;
     float rcY = yOffset;
-    
+
     float rcZ = 0.0f;
-    
 
     for(auto entity : entities) {
-
         for (auto& component : entity.get()->components) {
-            
+
+            // Get RayTest:
+
             rcX = gameInput.get()->debugRaycastX;
             rcY = gameInput.get()->debugRaycastY + yOffset;
             rcZ = gameInput.get()->debugRaycastZ;
@@ -78,17 +89,6 @@ void ECManager::tick(std::vector<std::shared_ptr<Entity>>& entities, std::shared
             if( rcX != 0.0f && rcY != yOffset && rcZ != 0.0f) {
                 printf("Raycast: %f, %f, %f\n", rcX, rcY, rcZ);
             }
-            component.get()->tick();
-        }
-    }
-
-
-    Logger* logger = Logger::getInstance();
-}
-
-void ECManager::renderPass(std::vector<std::shared_ptr<Entity>>& entities) {
-    for(auto entity : entities) {
-        for (auto& component : entity.get()->components) {
 
             if (auto vehicleRenderComponent = std::dynamic_pointer_cast<VehicleRenderComponent>(component)) {
 
@@ -102,9 +102,7 @@ void ECManager::renderPass(std::vector<std::shared_ptr<Entity>>& entities) {
                 vehicleRenderComponent.get()->UpdateChassisTransform(glmVehiclePosition, glmVehicleRotation);
                 vehicleRenderComponent.get()->UpdateWheelTransforms(&playerVehicleComponent.get()->vehiclePhysics);
                 vehicleRenderComponent.get()->DrawWheels();
-                
 
-                //A Bit Dirty, so change this later
                 glm::vec3 forward;
 
                 vehicleRenderComponent.get()->getForwardVector(forward);
@@ -113,24 +111,7 @@ void ECManager::renderPass(std::vector<std::shared_ptr<Entity>>& entities) {
                 glm::vec3 perpendicularDirection; // Perpendicular Direction (XZ Orthogonal to Direction of Spline)
 
                 aiSplineComponent.get()->getNearestVertexFromPos(forward, nearestSplineVertex, perpendicularDirection);
-
-
-                    // Calculate Alpha, the direction from the vehicle to the nearest spline vertex
-    glm::vec3 Alpha = glm::normalize(nearestSplineVertex - forward);
-
-    // Calculate the dot product of Alpha with the perpendicular direction
-    float dotProduct = glm::dot(Alpha, perpendicularDirection);
-
-    if (dotProduct > 0) {
-        printf("\nTurn Right\n");
-    } else if (dotProduct < 0) {
-        printf("\nTurn Left\n");
-    } else {
-        printf("Move Forward\n");
-    }
-
-                printf("xz_orthogonal_dir: %f, %f, %f\n", perpendicularDirection.x, perpendicularDirection.y, perpendicularDirection.z);
-                printf("nearestSplineVertex: %f, %f, %f\n", nearestSplineVertex.x, nearestSplineVertex.y, nearestSplineVertex.z);
+                aiVehicleComponent.get()->performControls(nearestSplineVertex, perpendicularDirection, forward);
 
                 auto renderer = GameGLRenderer::getInstance();
                 // Draw line from Vehicle Forward to the nearest spline vertex
@@ -146,6 +127,12 @@ void ECManager::renderPass(std::vector<std::shared_ptr<Entity>>& entities) {
     }
 }
 
+//* Debug Toggles
+
+void ECManager::toggleAIVehicleControl() {
+    isAIVehicleControl = !isAIVehicleControl;
+}
+
 //* =============================== Getters/Setters to the "World" System ===============================
 
 void ECManager::setTerrainChunks(std::shared_ptr<TerrainChunksComponent> terrainChunks) {
@@ -158,7 +145,6 @@ void ECManager::setTerrainChunks(std::shared_ptr<TerrainChunksComponent> terrain
         });
 
     } else {
-        // Handle the error appropriately (e.g., logging, throwing an exception)
         Logger* logger = Logger::getInstance();
         logger->log(Logger::ERROR, "Invalid TerrainChunksComponent input");
     }
@@ -170,13 +156,24 @@ void ECManager::setAISpline(std::shared_ptr<AISplineComponent> aiSpline) {
         aiSplineComponent = aiSpline;
 
     } else {
-        // Handle the error appropriately (e.g., logging, throwing an exception)
         Logger* logger = Logger::getInstance();
         logger->log(Logger::ERROR, "Invalid AISplineComponent input");
     }
 }
 
-void ECManager::setPlayerVehicle(std::shared_ptr<PlayerVehicleComponent> playerVehicle) {
+void ECManager::setAIVehicle(std::shared_ptr<AIVehicleComponent> aiVehicle) {
+
+    if ( aiVehicle ) {
+        aiVehicleComponent = aiVehicle;
+
+    } else {
+        Logger* logger = Logger::getInstance();
+        logger->log(Logger::ERROR, "Invalid AI Vehicle Component input");
+    }
+}
+
+
+void ECManager::setPlayerVehicle(std::shared_ptr<VehicleControlComponent> playerVehicle) {
     // Check if the input is valid
     if (playerVehicle) {
         playerVehicleComponent = playerVehicle;
@@ -196,6 +193,8 @@ void ECManager::setPlayerVehicle(std::shared_ptr<PlayerVehicleComponent> playerV
             dpY = pY;
             dpZ = pZ;
 
+            playerPosition = glm::vec3(pX, pY, pZ);
+
 
             emitEvent(Event(EventType::PLAYER_VEHICLE_GET_SPEED, velocity));
         });
@@ -207,7 +206,7 @@ void ECManager::setPlayerVehicle(std::shared_ptr<PlayerVehicleComponent> playerV
     } else {
         // Handle the error appropriately (e.g., logging, throwing an exception)
         Logger* logger = Logger::getInstance();
-        logger->log(Logger::ERROR, "Invalid PlayerVehicleComponent Input !");
+        logger->log(Logger::ERROR, "Invalid VehicleControlComponent Input !");
     }
 }
 

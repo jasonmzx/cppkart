@@ -24,7 +24,8 @@
 // Component Includes:
 
 #include "jx_engine/component/RenderComponent.hpp"
-#include "jx_engine/component/PlayerVehicleComponent.hpp"
+#include "jx_engine/component/VehicleControlComponent.hpp"
+#include "jx_engine/component/AIVehicleComponent.hpp"
 #include "jx_engine/component/TerrainChunksComponent.hpp"
 #include "jx_engine/component/VehicleRenderComponent.hpp"
 #include "jx_engine/component/MovableObjectComponent.hpp"

@@ -1,9 +1,9 @@
-#include "PlayerVehicleComponent.hpp"
+#include "VehicleControlComponent.hpp"
 
-PlayerVehicleComponent::PlayerVehicleComponent(float xPos, float yPos, float zPos) 
+VehicleControlComponent::VehicleControlComponent(float xPos, float yPos, float zPos) 
 : vehiclePhysics(xPos, yPos, zPos) {} 
 
-void PlayerVehicleComponent::updateVehicleControl(GameInput::Control acceleration, GameInput::Control steer) {
+void VehicleControlComponent::updateVehicleControl(GameInput::Control acceleration, GameInput::Control steer) {
 
     switch (acceleration) {
         case GameInput::VehicleAccelerate:
@@ -43,7 +43,7 @@ void PlayerVehicleComponent::updateVehicleControl(GameInput::Control acceleratio
 
 }
 
-void PlayerVehicleComponent::handlePlayerVehicleMoveEvent(const Event& event) {
+void VehicleControlComponent::handlePlayerVehicleMoveEvent(const Event& event) {
     try {
         auto inputs = std::any_cast<std::pair<GameInput::Control, GameInput::Control>>(event.data);
         GameInput::Control acceleration = inputs.first;
@@ -52,20 +52,20 @@ void PlayerVehicleComponent::handlePlayerVehicleMoveEvent(const Event& event) {
         updateVehicleControl(acceleration, steer);
 
     } catch (const std::bad_any_cast& e) {
-        Logger::getInstance()->log(Logger::ERROR, "[PlayerVehicleComponent] Failed to cast event data: " + std::string(e.what()));
+        Logger::getInstance()->log(Logger::ERROR, "[VehicleControlComponent] Failed to cast event data: " + std::string(e.what()));
     }
 }
 
-void PlayerVehicleComponent::setPlayerDirectionCallback(std::function<void(float,float,float)> callback) {
+void VehicleControlComponent::setPlayerDirectionCallback(std::function<void(float,float,float)> callback) {
     setPlayerVehicleDirection = callback; //set forward direction
 }
 
 
-void PlayerVehicleComponent::setPlayerPositionCallback(std::function<void(float, float, float, float)> callback) {
+void VehicleControlComponent::setPlayerPositionCallback(std::function<void(float, float, float, float)> callback) {
     setPlayerVehiclePosition = callback;
 }
 
-void PlayerVehicleComponent::tick() {
+void VehicleControlComponent::tick() {
     
     float pX = vehiclePhysics.getX();
     float pY = vehiclePhysics.getY();
@@ -82,9 +82,9 @@ void PlayerVehicleComponent::tick() {
     glm::quat gVr(vehicleRotation.w(), vehicleRotation.x(), vehicleRotation.y(), vehicleRotation.z());
 
     //  Convert the quaternion to a rotation matrix                                                                                                     
-    glm::mat4 rotation3x3 = glm::mat4_cast(gVr); // 3 X 3 Rotation matrix (Top-Left) and then bottom row & right col (0,0,0,1)
+    glm::mat4 rotation3x3 = glm::mat4_cast(gVr); // 3 X 3 Rotation matrix (Top-Left), the bottom row & right col of matrix looks like: (0,0,0,1)
 
-    glm::vec4 objectSpaceForward = glm::vec4(0.0f, 0.0f, 1.0f, 0.0f);
+    glm::vec4 objectSpaceForward = glm::vec4(0.0f, 0.0f, 1.0f, 0.0f); // +Z
 
     glm::vec3 forward = glm::vec3(rotation3x3 * objectSpaceForward);
     forward = glm::normalize(forward);

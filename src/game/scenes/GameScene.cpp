@@ -109,6 +109,10 @@ void GameScene::updateImGui() {
                     isBulletDebugDraw = !isBulletDebugDraw;
                 }
 
+                if (ImGui::Button("Activate AI Control")) {
+                    ecManager.get()->toggleAIVehicleControl();
+                }
+
                 // This is the X,Y,Z Location of the vehicle
                 ImGui::Text("%s", ecManager.get()->debugStateSTR().c_str());
    
@@ -121,8 +125,8 @@ void GameScene::updateImGui() {
                 if (ImGui::Button("Teleport Camera")) {
                     printf("Teleporting Camera to: %f, %f, %f\n", cam_tp_x, cam_tp_y, cam_tp_z);
 
-                    glm::vec3 tptopos = glm::vec3(cam_tp_x, cam_tp_y, cam_tp_z);
-                    camera.get()->setCameraPosition(tptopos);
+                    glm::vec3 teleport_to = glm::vec3(cam_tp_x, cam_tp_y, cam_tp_z);
+                    camera.get()->setCameraPosition(teleport_to);
                 } 
 
                 ImGui::EndTabItem();
@@ -223,8 +227,9 @@ void GameScene::render() {
 
     vSpeed = 0.0f;
 
-    ecManager->renderPass(entities); // ECS Render Pass
-    ecManager->tick(entities, gameInput); // ECS System Tick
+    ecManager->componentSpecificPass(entities, gameInput); // ECS Component Specifics Pass
+    
+    ecManager->tick(entities); // ECS System Tick (All Components)
 
     ecManager->debugSetPlayerVehicleVelocity(vSpeed);
 
@@ -454,15 +459,16 @@ void GameScene::init() {
 
     std::shared_ptr<Entity> playerVehicleEntity = std::make_shared<Entity>();
 
-    //auto playerVehicleComponent = std::make_shared<PlayerVehicleComponent>(10.0f, 10.0f, 10.0f);
-    //auto playerVehicleComponent = std::make_shared<PlayerVehicleComponent>(135.0f, 135.0f, -165.0f);
 
-    auto playerVehicleComponent = std::make_shared<PlayerVehicleComponent>(-2670.0f, 415.0f, 3752.0f);
+    auto playerVehicleComponent = std::make_shared<VehicleControlComponent>(-2670.0f, 415.0f, 3752.0f);
+
+    auto aiVehicleComponent = std::make_shared<AIVehicleComponent>();
 
     ecManager.get()->setPlayerVehicle(playerVehicleComponent);
+    ecManager.get()->setAIVehicle(aiVehicleComponent);
 
     playerVehicleEntity->addComponent(playerVehicleComponent);
-
+    playerVehicleEntity->addComponent(aiVehicleComponent);
 
     auto playerVehicleRenderComponent = std::make_shared<VehicleRenderComponent>("../src/ressources/volga/volga.obj", "../src/ressources/first_car_wheel.obj",
                                                            "../src/ressources/volga/volga.png",
@@ -473,8 +479,6 @@ void GameScene::init() {
     playerVehicleEntity->addComponent(playerVehicleRenderComponent);
 
     entities.push_back(playerVehicleEntity);
-
-    //
 
     //this->makeBarrier();
 

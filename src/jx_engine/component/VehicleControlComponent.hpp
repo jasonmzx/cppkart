@@ -1,5 +1,5 @@
-#ifndef PLAYERVEHICLECOMPONENT_HPP
-#define PLAYERVEHICLECOMPONENT_HPP
+#ifndef VEHICLECONTROLCOMPONENT_HPP
+#define VEHICLECONTROLCOMPONENT_HPP
 
 #include "EComponent.hpp"
 #include "jx_engine/physics/VehiclePhysics.hpp"
@@ -14,11 +14,11 @@
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-class PlayerVehicleComponent : public EComponent {
+class VehicleControlComponent : public EComponent {
 
     public:
         
-        PlayerVehicleComponent(float xPos, float yPos, float zPos);
+        VehicleControlComponent(float xPos, float yPos, float zPos);
 
         VehiclePhysics vehiclePhysics;
 
@@ -39,4 +39,4 @@ class PlayerVehicleComponent : public EComponent {
 
 };
 
-#endif
+#endif // VEHICLECONTROLCOMPONENT_HPP

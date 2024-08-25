@@ -1,7 +1,4 @@
 #include "RenderComponent.hpp"
-#include "jx_engine/logs/Logger.hpp"
-
-#include <chrono>
 
 //Logger* logger = Logger::getInstance();
 

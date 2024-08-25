@@ -78,8 +78,8 @@ add_executable(cppkart
      src/jx_engine/component/VehicleRenderComponent.hpp
      src/jx_engine/component/VehicleRenderComponent.cpp
 
-     src/jx_engine/component/PlayerVehicleComponent.hpp
-     src/jx_engine/component/PlayerVehicleComponent.cpp
+     src/jx_engine/component/VehicleControlComponent.hpp
+     src/jx_engine/component/VehicleControlComponent.cpp
 
      src/jx_engine/component/TerrainChunksComponent.hpp
      src/jx_engine/component/TerrainChunksComponent.cpp
@@ -89,6 +89,9 @@ add_executable(cppkart
 
      src/jx_engine/component/AISplineComponent.hpp
      src/jx_engine/component/AISplineComponent.cpp
+
+     src/jx_engine/component/AIVehicleComponent.hpp
+     src/jx_engine/component/AIVehicleComponent.cpp
 
      src/jx_engine/component/RenderCylinderComponent.hpp
      src/jx_engine/component/RenderCylinderComponent.cpp

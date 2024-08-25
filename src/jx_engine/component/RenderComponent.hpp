@@ -4,6 +4,7 @@
 #include <string>
 #include <memory>
 #include <glad/glad.h>
+#include <chrono>
 
 #include "EComponent.hpp"
 
