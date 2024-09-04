@@ -1,8 +1,8 @@
 #include "VehicleRenderComponent.hpp"
 
 VehicleRenderComponent::VehicleRenderComponent
-(std::string modelPath, std::string wheelModelPath, std::string texPath, int meshIndex, bool isTexAlpha)
-: RenderComponent(modelPath, texPath, meshIndex, true, isTexAlpha)
+(std::string modelPath, std::string wheelModelPath, std::string texPath, std::vector<int> meshIndices, bool isTexAlpha)
+: RenderComponent(modelPath, texPath, meshIndices, true, isTexAlpha)
 {
     // wheelModelPath = wheelModelPath;
     WheelGeom = ressources->tryGetGeometry(wheelModelPath, 0);
@@ -18,17 +18,17 @@ void VehicleRenderComponent::UpdateChassisTransform(glm::vec3 glmVehiclePos, glm
     glm::mat4 rotation = glm::mat4_cast(glmVehicleRot);
 
     // Rotate the model 90 degrees arround the Y axis, to align it with the world
-    glm::mat4 rotate90DEG_Adjustment = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
     // Translate down the Y axis:
     glm::mat4 translateDown = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.5f, 0.0f));
 
-    ObjmodelMatrix = translation * rotation * rotate90DEG_Adjustment * translateDown * glm::scale(glm::vec3(0.7f));
+    ObjmodelMatrix = translation * rotation * translateDown * glm::scale(glm::vec3(0.7f));
 
     // ---- Get Direction Vector ----
     
     glm::mat4 rotation3x3 = glm::mat4_cast(glmVehicleRot);
 
+    glm::mat4 rotate90DEG_Adjustment = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     glm::mat rotation3x3_90_features = rotation3x3 * rotate90DEG_Adjustment;
 
     glm::vec4 objectSpaceForward = glm::vec4(0.0f, 0.0f, 1.0f, 0.0f);

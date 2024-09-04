@@ -11,7 +11,7 @@
 class MovableObjectComponent : public RenderComponent 
 {
 public:
-    MovableObjectComponent(std::string modelPath, std::string texPath, int meshIndex, bool cD, bool isTexAlpha, float scale, float mass);
+    MovableObjectComponent(std::string modelPath, std::string texPath, std::vector<int> meshIndices, bool cD, bool isTexAlpha, float scale, float mass);
     
     void UpdateTransforms();
     void tick() override;

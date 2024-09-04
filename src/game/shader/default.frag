@@ -17,7 +17,15 @@ void main()
 {
     if (useTexture) {
         // Sample the texture if useTexture is true
-        FragColor = texture(tex0, texCoord);
+        
+        vec4 textureColor = texture(tex0, texCoord);
+
+        if (textureColor.a < 0.1) {
+            discard;
+        }
+        
+        FragColor = textureColor;
+
     } else {
         // Output the solid color if useTexture is false
 		FragColor = vec4(color, 1.0); //texture(tex0, texCoord);

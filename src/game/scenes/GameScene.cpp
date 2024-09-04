@@ -199,9 +199,10 @@ glm::vec3 GameScene::BulletRaycast() {
 void GameScene::makeBarrier(float x, float y, float z) {
     std::shared_ptr<Entity> roadBarrierEntity = std::make_shared<Entity>();
 
+
     auto roadBarrierComponent = std::make_shared<MovableObjectComponent>("../assets/road_barrier_01/road_barrier_01.obj",
                                                            "../assets/road_barrier_01/road_barrier_01_tex2.jpg",
-                                                           0, false, false, 1.0f, 0.5f);
+                                                           std::vector<int>{0}, false, false, 1.0f, 0.5f);
 
     // roadBarrierComponent->phyMesh->meshRigidBody->setCollisionFlags(roadBarrierComponent->phyMesh->meshRigidBody->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
     // physicsWorld->dynamicsWorld->addRigidBody(roadBarrierComponent.get()->phyMesh->meshRigidBody, COLLISION_GROUP_ALL, COLLISION_GROUP_ALL);
@@ -342,7 +343,7 @@ void GameScene::load_HighRoadHills_Map(std::shared_ptr<Entity> terrainEntity) {
 
     auto terrainRenderComponent = std::make_shared<RenderComponent>("../src/ressources/DE_MAP0/MAPOI.obj",
                                                            "../src/ressources/DE_Map1/Map01_Albedo.png",
-                                                            0, true, false);
+                                                            std::vector<int>{0}, true, false);
 
     // auto terrainRenderComponent = std::make_shared<RenderComponent>("../assets/square_island/Square_island.obj",
     //                                                        "../assets/square_island/Map_Base_Color.jpg",
@@ -352,12 +353,12 @@ void GameScene::load_HighRoadHills_Map(std::shared_ptr<Entity> terrainEntity) {
 
     auto terrainRoadRenderComponent = std::make_shared<RenderComponent>("../src/ressources/DE_MAP0/MAPOI.obj",
                                                            "../src/ressources/DE_MAP0/BIG_ROAD_TEX.jpg",
-                                                            2, true, false);
+                                                            std::vector<int>{2}, true, false);
     terrainRoadRenderComponent->SetRenderScale(terrainEntityScale);
 
     auto terrainBottomRoadRenderComponent = std::make_shared<RenderComponent>("../src/ressources/DE_MAP0/MAPOI.obj",
                                                            "../src/ressources/DE_MAP0/STONE_WALL_04.jpg",
-                                                            3, false, false);
+                                                            std::vector<int>{3}, false, false);
     terrainBottomRoadRenderComponent->SetRenderScale(terrainEntityScale);
 
     auto terrainChunks_physics_Component = std::make_shared<TerrainChunksComponent>("../src/ressources/DE_MAP0/chunks", terrainEntityScale);
@@ -379,13 +380,13 @@ void GameScene::load_SquareIsland_Map(std::shared_ptr<Entity> terrainEntity) {
 
     auto terrainRenderComponent = std::make_shared<RenderComponent>("../assets/square_island/Square_island.obj",
                                                            "../assets/square_island/Map_Base_Color.jpg",
-                                                            0, true, false);
+                                                            std::vector<int>{0}, true, false);
 
     terrainRenderComponent->SetRenderScale(terrainEntityScale);
 
     auto terrainRoadRenderComponent = std::make_shared<RenderComponent>("../assets/square_island/Square_island.obj",
                                                            "../assets/square_island/High_Way_Tex.jpg",
-                                                          2, true, false);
+                                                          std::vector<int>{2}, true, false);
 
     terrainRoadRenderComponent->SetRenderScale(terrainEntityScale);
 
@@ -470,9 +471,13 @@ void GameScene::init() {
     playerVehicleEntity->addComponent(playerVehicleComponent);
     playerVehicleEntity->addComponent(aiVehicleComponent);
 
-    auto playerVehicleRenderComponent = std::make_shared<VehicleRenderComponent>("../src/ressources/volga/volga.obj", "../src/ressources/first_car_wheel.obj",
-                                                           "../src/ressources/volga/volga.png",
-                                                           0, true);
+    // auto playerVehicleRenderComponent = std::make_shared<VehicleRenderComponent>("../src/ressources/volga/volga.obj", "../src/ressources/first_car_wheel.obj",
+    //                                                        "../src/ressources/volga/volga.png",
+    //                                                        0, true);
+
+    auto playerVehicleRenderComponent = std::make_shared<VehicleRenderComponent>("../assets/dale_aristocrat_vehicle/source/Dale Aristocrat PS1.gltf", "../src/ressources/first_car_wheel.obj",
+                                                           "../assets/dale_aristocrat_vehicle/textures/DaleAristocrat_PS1_Colored.png",
+                                                           std::vector<int>{0,1,2}, true);
 
     playerVehicleRenderComponent->SetRenderScale(1.0f);
 
@@ -486,7 +491,7 @@ void GameScene::init() {
 
     auto skyboxRenderComponent = std::make_shared<RenderComponent>("../assets/skybox_02/skybox_night_fixed.obj",
                                                            "../assets/skybox_01/sq_skybox.jpg",
-                                                           0, false, false);
+                                                           std::vector<int>{0}, false, false);
 
     skyboxRenderComponent->SetRenderScale(5200.0f);
 

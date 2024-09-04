@@ -2,7 +2,7 @@
 
 //Logger* logger = Logger::getInstance();
 
-RenderComponent::RenderComponent(std::string modelPath, std::string texPath, int meshIndex, bool cD, bool isTexAlpha)
+RenderComponent::RenderComponent(std::string modelPath, std::string texPath, std::vector<int> meshIndices, bool cD, bool isTexAlpha)
 {
 
     ressources = RenderRsrcManager::getInstance();
@@ -16,9 +16,9 @@ RenderComponent::RenderComponent(std::string modelPath, std::string texPath, int
     auto chunk_loading_start = std::chrono::high_resolution_clock::now();
 
     cullDisable = !cD;
-    
+
     // modelPath = modelPath;
-    Geom = ressources->tryGetGeometry(modelPath, meshIndex);
+    Geom = ressources->tryGetCombinedGeometry(modelPath, meshIndices);
 
     // texPath = texPath;
     Tex = ressources->tryGetTex(texPath);

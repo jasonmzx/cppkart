@@ -40,6 +40,60 @@ std::shared_ptr<Geometry> RenderRsrcManager::tryGetGeometry(const std::string& m
     }
 }
 
+std::shared_ptr<Geometry> RenderRsrcManager::tryGetCombinedGeometry(
+    const std::string& modelIdentifier, const std::vector<int>& meshIndices) 
+{
+    
+    std::string geomId = modelIdentifier;
+
+    for (int i = 0; i < meshIndices.size(); i++) {
+        geomId += std::to_string(meshIndices[i]);
+    }
+
+    auto iter = geometryCache.find(geomId);
+
+    if (iter != geometryCache.end()) {
+        // Found existing geometry, return it
+        return iter->second;
+    } else {
+        // Geometry not found, so load model and create geometry
+
+        auto model = tryGetModel(modelIdentifier);
+
+        if (model == nullptr) {
+            model = loadModel(modelIdentifier, modelIdentifier);
+        }
+
+        // Get combined vertices and indices
+        std::vector<GLfloat> verts;
+        std::vector<GLuint> indices;
+        GLuint vertexOffset = 0;
+
+        printf("MeshIndices Size: %zu\n", meshIndices.size());
+
+        for (int i = 0; i < meshIndices.size(); i++) {
+            int meshIndex = meshIndices.at(i);
+
+            std::vector<GLfloat> meshVerts = model->GetVertices(meshIndex);
+            std::vector<GLuint> meshIndices = model->GetIndices(meshIndex);
+
+            // Adjust indices with the current vertex offset
+            for (auto& index : meshIndices) {
+                index += vertexOffset;
+            }
+
+            // Insert vertices and adjusted indices into the combined lists
+            verts.insert(verts.end(), meshVerts.begin(), meshVerts.end());
+            indices.insert(indices.end(), meshIndices.begin(), meshIndices.end());
+
+            // Update vertexOffset for the next mesh
+            vertexOffset += static_cast<GLuint>(meshVerts.size() / 11); // Assuming 3 floats per vertex (x, y, z)
+        }
+
+        return getOrCreateGeometry(geomId, verts, indices);
+    }
+}
+
 //----- tex
 
 std::shared_ptr<Texture> RenderRsrcManager::loadTex(const std::string& texId, const std::string& filePath, bool rgbAlpha) {

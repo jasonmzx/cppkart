@@ -18,7 +18,7 @@
 
 class RenderComponent : public EComponent {
     public:
-        RenderComponent(std::string modelPath, std::string texPath, int meshIndex, bool cD, bool isTexAlpha);
+        RenderComponent(std::string modelPath, std::string texPath, std::vector<int> meshIndices, bool cD, bool isTexAlpha);
 
         std::vector<glm::vec3> GetXYZvertices();
 

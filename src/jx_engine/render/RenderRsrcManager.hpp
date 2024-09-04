@@ -35,13 +35,12 @@ class RenderRsrcManager {
                         const std::vector<GLfloat>& verts, const std::vector<GLuint>& indices);
 
         std::shared_ptr<Geometry> tryGetGeometry(const std::string& modelIdentifier, int meshIndex);
+        std::shared_ptr<Geometry> tryGetCombinedGeometry(const std::string& modelIdentifier, const std::vector<int>& meshIndices);
 
         std::shared_ptr<Texture> loadTex(const std::string& texId, const std::string& filePath, bool rgbAlpha);
-
         std::shared_ptr<Texture> tryGetTex(const std::string& texId);
 
         std::shared_ptr<ObjModel> loadModel(const std::string& modelId, const std::string& filePath);
-
         std::shared_ptr<ObjModel> tryGetModel(const std::string& modelId);
 
 
