@@ -5,7 +5,7 @@ VehicleRenderComponent::VehicleRenderComponent
 : RenderComponent(modelPath, texPath, meshIndices, true, isTexAlpha)
 {
     // wheelModelPath = wheelModelPath;
-    WheelGeom = ressources->tryGetGeometry(wheelModelPath, 0);
+    WheelGeom = ressources->tryGetGeometry(wheelModelPath, 3);
 
     wheelModelMatrices.resize(wheelCount);
 }

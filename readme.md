@@ -63,3 +63,16 @@ Dear ImGUI [Example](https://github.com/ocornut/imgui/wiki/Getting-Started#examp
 Dear ImGUI | [Getting Started](https://github.com/ocornut/imgui/wiki/Getting-Started)
 <br/>
 I followed for SDL2 and OpenGL3+ source code : [example_sdl2_opengl3/main.cpp](https://github.com/ocornut/imgui/blob/master/examples/example_sdl2_opengl3/main.cpp) 
+
+
+---
+
+In the spirit of open source, any Asset I use, I'll link the Downloads, and credit the Artists for their Awesome Work on the Model ! 🏁🔥
+
+**1997 Dale Aristocrat (PS1-Style Model)** BY *Aike*
+
+[sketchfab.com Link](https://sketchfab.com/3d-models/ps1-gt1-style-model-1997-dale-aristocrat-e4cf08baa46548e58e96413663daffee)
+
+**Icescape 1 Alien Moon Skybox** BY *Luis Vidal*
+
+[sketchfab.com LINK](https://sketchfab.com/3d-models/icescape-1-alien-moon-skybox-bfc9a041814f4112b016904edfaad0c5)
