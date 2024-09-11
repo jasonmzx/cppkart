@@ -37,6 +37,7 @@ GameScene::GameScene(int WIN_W, int WIN_H, SDL_Window* window) {
       logger->log(Logger::ERROR, "Failed to load sound effect! SDL_mixer Error: " + std::string(Mix_GetError()));
     }
 
+    physicsWorld = PhysicsWorldSingleton::getInstance();
 }
 
 bool GameScene::bulletCollisionCallback(btManifoldPoint& cp,
@@ -102,19 +103,19 @@ void GameScene::updateImGui() {
                 ImGui::Spacing();
 
                 if (ImGui::Button("Reset Vehicle")) {
-                    ecManager.get()->resetPlayerVehicle();
+                    //ecManager.get()->resetPlayerVehicle();
                 }
 
                 if (ImGui::Button("Toggle Bullet Debug Draw")) {
-                    isBulletDebugDraw = !isBulletDebugDraw;
+                    //isBulletDebugDraw = !isBulletDebugDraw;
                 }
 
                 if (ImGui::Button("Activate AI Control")) {
-                    ecManager.get()->toggleAIVehicleControl();
+                    //ecManager.get()->toggleAIVehicleControl();
                 }
 
                 // This is the X,Y,Z Location of the vehicle
-                ImGui::Text("%s", ecManager.get()->debugStateSTR().c_str());
+//                ImGui::Text("%s", ecManager.get()->debugStateSTR().c_str());
    
                 // Input fields for x, y, z coordinates
                 static float cam_tp_x = 0.0f, cam_tp_y = 0.0f, cam_tp_z = 0.0f;
@@ -195,28 +196,6 @@ glm::vec3 GameScene::BulletRaycast() {
     return glm::vec3(0.0f, 0.0f, 0.0f);
 }
 
-
-void GameScene::makeBarrier(float x, float y, float z) {
-    std::shared_ptr<Entity> roadBarrierEntity = std::make_shared<Entity>();
-
-
-    auto roadBarrierComponent = std::make_shared<MovableObjectComponent>("../assets/road_barrier_01/road_barrier_01.obj",
-                                                           "../assets/road_barrier_01/road_barrier_01_tex2.jpg",
-                                                           std::vector<int>{0}, false, false, 1.0f, 0.5f);
-
-    // roadBarrierComponent->phyMesh->meshRigidBody->setCollisionFlags(roadBarrierComponent->phyMesh->meshRigidBody->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
-    // physicsWorld->dynamicsWorld->addRigidBody(roadBarrierComponent.get()->phyMesh->meshRigidBody, COLLISION_GROUP_ALL, COLLISION_GROUP_ALL);
-
-    roadBarrierComponent->SetRenderScale(10.0f);
-
-    roadBarrierEntity->addComponent(roadBarrierComponent);
-
-    entities.push_back(roadBarrierEntity);
-
-    roadBarrierComponent.get()->SetPosition(x, y, z);
-}
-
-
 void GameScene::render() {
 
     procGameInputs();
@@ -228,11 +207,9 @@ void GameScene::render() {
 
     vSpeed = 0.0f;
 
-    ecManager->componentSpecificPass(entities, gameInput); // ECS Component Specifics Pass
-    
-    ecManager->tick(entities); // ECS System Tick (All Components)
+    ecManager->tick(); // ECS System Tick (All Components)
 
-    ecManager->debugSetPlayerVehicleVelocity(vSpeed);
+    //ecManager->debugSetPlayerVehicleVelocity(vSpeed);
 
     auto end = std::chrono::high_resolution_clock::now();
     ecInferenceTimeMS = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
@@ -276,8 +253,6 @@ void GameScene::procGameInputs() {
       glm::vec3 rayHit = BulletRaycast();
 
       gameInputPtr->setDebugRaycastXYZ(rayHit.x, rayHit.y, rayHit.z);
-
-      //makeBarrier();      
 
     } else {
       gameInputPtr->setDebugRaycastXYZ(0.0f, 0.0f, 0.0f);
@@ -338,72 +313,6 @@ void GameScene::procGameInputs() {
 
 }
 
-void GameScene::load_HighRoadHills_Map(std::shared_ptr<Entity> terrainEntity) {
-    float terrainEntityScale = 15.0f;
-
-    auto terrainRenderComponent = std::make_shared<RenderComponent>("../src/ressources/DE_MAP0/MAPOI.obj",
-                                                           "../src/ressources/DE_Map1/Map01_Albedo.png",
-                                                            std::vector<int>{0}, true, false);
-
-    // auto terrainRenderComponent = std::make_shared<RenderComponent>("../assets/square_island/Square_island.obj",
-    //                                                        "../assets/square_island/Map_Base_Color.jpg",
-    //                                                         0, true, false);
-
-    terrainRenderComponent->SetRenderScale(terrainEntityScale);
-
-    auto terrainRoadRenderComponent = std::make_shared<RenderComponent>("../src/ressources/DE_MAP0/MAPOI.obj",
-                                                           "../src/ressources/DE_MAP0/BIG_ROAD_TEX.jpg",
-                                                            std::vector<int>{2}, true, false);
-    terrainRoadRenderComponent->SetRenderScale(terrainEntityScale);
-
-    auto terrainBottomRoadRenderComponent = std::make_shared<RenderComponent>("../src/ressources/DE_MAP0/MAPOI.obj",
-                                                           "../src/ressources/DE_MAP0/STONE_WALL_04.jpg",
-                                                            std::vector<int>{3}, false, false);
-    terrainBottomRoadRenderComponent->SetRenderScale(terrainEntityScale);
-
-    auto terrainChunks_physics_Component = std::make_shared<TerrainChunksComponent>("../src/ressources/DE_MAP0/chunks", terrainEntityScale);
-    ecManager.get()->setTerrainChunks(terrainChunks_physics_Component);
-
-    // Add Render Components:
-    terrainEntity->addComponent(terrainRenderComponent);
-    terrainEntity->addComponent(terrainRoadRenderComponent);
-    terrainEntity->addComponent(terrainBottomRoadRenderComponent);
-
-    // Add Physics Component:
-    terrainEntity->addComponent(terrainChunks_physics_Component);
-}
-
-void GameScene::load_SquareIsland_Map(std::shared_ptr<Entity> terrainEntity) {
-
-    float terrainEntityScale = 260.0f;
-    auto aiSplineComponent = std::make_shared<AISplineComponent>(terrainEntityScale);
-
-    auto terrainRenderComponent = std::make_shared<RenderComponent>("../assets/square_island/Square_island.obj",
-                                                           "../assets/square_island/Map_Base_Color.jpg",
-                                                            std::vector<int>{0}, true, false);
-
-    terrainRenderComponent->SetRenderScale(terrainEntityScale);
-
-    auto terrainRoadRenderComponent = std::make_shared<RenderComponent>("../assets/square_island/Square_island.obj",
-                                                           "../assets/square_island/High_Way_Tex.jpg",
-                                                          std::vector<int>{2}, true, false);
-
-    terrainRoadRenderComponent->SetRenderScale(terrainEntityScale);
-
-    auto terrainChunks_physics_Component = std::make_shared<TerrainChunksComponent>("../assets/square_island/chunks", terrainEntityScale);
-    ecManager.get()->setTerrainChunks(terrainChunks_physics_Component);
-
-    // Render Components:
-    terrainEntity->addComponent(terrainRenderComponent);
-    terrainEntity->addComponent(terrainRoadRenderComponent);
-    terrainEntity->addComponent(aiSplineComponent);
-
-    ecManager.get()->setAISpline(aiSplineComponent);
-
-    // Physics Component:
-    terrainEntity->addComponent(terrainChunks_physics_Component);
-}
-
 
 void GameScene::init() {
 
@@ -438,77 +347,12 @@ void GameScene::init() {
   }
 
   // ECS Init
-
   ecManager.get()->setCamera(camera);
 
-    // Init reference to physics singleton
+  ecManager.get()->buildRenderComponent("../assets/alien_moon_skybox/source/scene.gltf",
+                                        "../assets/alien_moon_skybox/textures/Skybox_baseColor.png",
+                                        std::vector<int>{0}, 1.0f, false, false);
 
-
-    physicsWorld = PhysicsWorldSingleton::getInstance();
-
-    //* ----------------- Terrain Entity Definition ----------------- *//
-
-    // std::shared_ptr<Entity> terrainEntity = std::make_shared<Entity>();
-    // load_HighRoadHills_Map(terrainEntity);
-    // entities.push_back(terrainEntity);
-
-    std::shared_ptr<Entity> terrainEntity2 = std::make_shared<Entity>();
-    load_SquareIsland_Map(terrainEntity2);
-    entities.push_back(terrainEntity2);
-
-    //* ----------------- Vehicle Entity Definition ----------------- *//
-
-    std::shared_ptr<Entity> playerVehicleEntity = std::make_shared<Entity>();
-
-
-    auto playerVehicleComponent = std::make_shared<VehicleControlComponent>(-2670.0f, 415.0f, 3752.0f);
-
-    auto aiVehicleComponent = std::make_shared<AIVehicleComponent>();
-
-    ecManager.get()->setPlayerVehicle(playerVehicleComponent);
-    ecManager.get()->setAIVehicle(aiVehicleComponent);
-
-    playerVehicleEntity->addComponent(playerVehicleComponent);
-    playerVehicleEntity->addComponent(aiVehicleComponent);
-
-    // auto playerVehicleRenderComponent = std::make_shared<VehicleRenderComponent>("../src/ressources/volga/volga.obj", "../src/ressources/first_car_wheel.obj",
-    //                                                        "../src/ressources/volga/volga.png",
-    //                                                        0, true);
-
-    auto playerVehicleRenderComponent = std::make_shared<VehicleRenderComponent>("../assets/dale_aristocrat_vehicle/source/Dale Aristocrat PS1.gltf", "../assets/dale_aristocrat_vehicle/source/Dale Aristocrat PS1.gltf",
-                                                           "../assets/dale_aristocrat_vehicle/textures/DaleAristocrat_PS1_Colored.png",
-                                                           std::vector<int>{1,2}, true);
-
-    playerVehicleRenderComponent->SetRenderScale(1.0f);
-
-    playerVehicleEntity->addComponent(playerVehicleRenderComponent);
-
-    entities.push_back(playerVehicleEntity);
-
-    //this->makeBarrier();
-
-    auto skyboxEntity = std::make_shared<Entity>();
-
-    auto skyboxRenderComponent = std::make_shared<RenderComponent>("../assets/alien_moon_skybox/source/scene.gltf",
-                                                           "../assets/alien_moon_skybox/textures/Skybox_baseColor.png",
-                                                           std::vector<int>{0}, false, false);
-
-    skyboxRenderComponent->SetRenderScale(300.0f);
-
-    skyboxEntity->addComponent(skyboxRenderComponent);
-
-    entities.push_back(skyboxEntity);
-
-    logger->log(Logger::INFO,"GameScene Loaded in " + std::to_string(entities.size()) + " entities");
-
-    auto cylinderEntity = std::make_shared<Entity>();
-
-    auto cylinderRenderComponent = std::make_shared<RenderCylinderComponent>();
-
-    cylinderEntity->addComponent(cylinderRenderComponent);
-
-    entities.push_back(cylinderEntity);
-    
 }
 
 void GameScene::initECS(std::shared_ptr<SceneManager> sceneManager) {

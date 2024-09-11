@@ -21,17 +21,9 @@
 
 #include "jx_engine/io/GameInput.hpp"
 
-// Component Includes:
+// ECS fuckery
 
-#include "jx_engine/component/RenderComponent.hpp"
-#include "jx_engine/component/VehicleControlComponent.hpp"
-#include "jx_engine/component/AIVehicleComponent.hpp"
-#include "jx_engine/component/TerrainChunksComponent.hpp"
-#include "jx_engine/component/VehicleRenderComponent.hpp"
-#include "jx_engine/component/MovableObjectComponent.hpp"
-#include "jx_engine/component/AISplineComponent.hpp"
-#include "jx_engine/component/RenderCylinderComponent.hpp"
-
+#include "jx_engine/system/RenderSystem.hpp"
 
 
 // ImGUI Imports:
@@ -44,7 +36,7 @@ class GameScene : public Scene {
     public:
 
         GameScene(int WIN_W, int WIN_H, SDL_Window* window);
-        void initECS(std::shared_ptr<SceneManager> sceneManager);
+        void initECS(std::shared_ptr<SceneManager> sceneManager); //TODO: very stupid, fix this
 
         // Scene Functions:
         void init() override;
@@ -54,8 +46,6 @@ class GameScene : public Scene {
         //Game Specific Functions:
         void update(float dt);
         void render();
-
-        void makeBarrier(float x, float y, float z);
 
         void updateImGui();
 

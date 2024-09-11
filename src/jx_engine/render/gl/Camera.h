@@ -23,7 +23,7 @@ public:
 	// Stores the main vectors of the camera
 	bool DEBUG;
 	
-	bool freeCamera = false;
+	bool freeCamera = true;
 
 	glm::vec3 Position;
 	glm::vec3 getCameraPosition();

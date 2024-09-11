@@ -65,6 +65,14 @@ add_executable(cppkart
      src/jx_engine/entity/Entity.hpp
      src/jx_engine/entity/Entity.cpp
 
+     # Systems:
+
+     src/jx_engine/system/System.hpp
+     src/jx_engine/system/System.cpp
+
+     src/jx_engine/system/RenderSystem.hpp
+     src/jx_engine/system/RenderSystem.cpp
+
      src/jx_engine/event/Event.hpp
 
      # Components:
@@ -72,29 +80,15 @@ add_executable(cppkart
      src/jx_engine/component/EComponent.hpp
      src/jx_engine/component/EComponent.cpp
 
-     src/jx_engine/component/RenderComponent.hpp
-     src/jx_engine/component/RenderComponent.cpp
-
-     src/jx_engine/component/VehicleRenderComponent.hpp
-     src/jx_engine/component/VehicleRenderComponent.cpp
-
      src/jx_engine/component/VehicleControlComponent.hpp
      src/jx_engine/component/VehicleControlComponent.cpp
 
      src/jx_engine/component/TerrainChunksComponent.hpp
      src/jx_engine/component/TerrainChunksComponent.cpp
 
-     src/jx_engine/component/MovableObjectComponent.hpp
-     src/jx_engine/component/MovableObjectComponent.cpp
-
-     src/jx_engine/component/AISplineComponent.hpp
-     src/jx_engine/component/AISplineComponent.cpp
-
      src/jx_engine/component/AIVehicleComponent.hpp
      src/jx_engine/component/AIVehicleComponent.cpp
 
-     src/jx_engine/component/RenderCylinderComponent.hpp
-     src/jx_engine/component/RenderCylinderComponent.cpp
 
      # I/O: 
 

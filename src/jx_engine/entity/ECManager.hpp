@@ -12,23 +12,23 @@
 #include "jx_engine/render/GameGLRenderer.hpp"
 
 // Entity Components:
-#include "jx_engine/component/EComponent.hpp"
-#include "jx_engine/component/RenderComponent.hpp"
-#include "jx_engine/component/VehicleControlComponent.hpp"
-#include "jx_engine/component/TerrainChunksComponent.hpp"
-#include "jx_engine/component/VehicleRenderComponent.hpp"
-#include "jx_engine/component/MovableObjectComponent.hpp"
 
-#include "jx_engine/component/AISplineComponent.hpp"
-#include "jx_engine/component/AIVehicleComponent.hpp"
+#include "jx_engine/io/GameInput.hpp"
 
 #include "jx_engine/render/gl/Camera.h"
 #include "jx_engine/logs/Logger.hpp"
 
 #include "jx_engine/event/Event.hpp"
 
+// Better ECS:
+
+#include "jx_engine/system/RenderSystem.hpp"
+
+
 class ECManager { // Entity Component Manager
     public:
+        
+        ECManager();
 
         using Callback = std::function<void(const Event&)>; // Constains a function that takes an Event as argument and returns void
 
@@ -43,40 +43,26 @@ class ECManager { // Entity Component Manager
         void setCamera(std::shared_ptr<Camera> camera);
         void setFreeCameraMode(bool freeCam);
 
-        void debugSetPlayerVehicleVelocity(float& velocity);
-
-        void toggleAIVehicleControl();
-        bool isAIVehicleControl = false;
-
         //* ------------------- Older Code ------------------- *//
 
         //void update(float dt);
-        void tick(std::vector<std::shared_ptr<Entity>>& entities);
-        void componentSpecificPass(std::vector<std::shared_ptr<Entity>>& entities, std::shared_ptr<GameInput> gameInput);
+        void tick();
 
-        void setTerrainChunks(std::shared_ptr<TerrainChunksComponent> terrainChunks);
-        void setPlayerVehicle(std::shared_ptr<VehicleControlComponent> playerVehicle);
-        void setAISpline(std::shared_ptr<AISplineComponent> aiSpline);
+        std::shared_ptr<RenderSystem> systemRender;
+        std::vector<RenderComponent> renderComponents;
 
-        void setAIVehicle(std::shared_ptr<AIVehicleComponent> aiVehicle);
-
-        void resetPlayerVehicle();
-        std::string debugStateSTR();
-
+        void buildRenderComponent(std::string modelPath, std::string texPath, std::vector<int> meshIndices, float scale, bool cD, bool isTexAlpha);
 
     private:
+
+
+
+        // old shit
+
+
         std::shared_ptr<SceneManager> sceneManager;
         std::shared_ptr<Scene> activeScene;
         std::shared_ptr<Camera> m_camera;
-
-        std::shared_ptr<TerrainChunksComponent> terrainChunksComponents;
-        std::shared_ptr<VehicleControlComponent> playerVehicleComponent;
-        
-        
-        std::shared_ptr<AISplineComponent> aiSplineComponent;
-        std::shared_ptr<AIVehicleComponent> aiVehicleComponent;
-
-        // Debug State:
 
         float dpX; // Debug Player X
         float dpY; // Debug Player Y
