@@ -214,10 +214,7 @@ void GameScene::render() {
     auto end = std::chrono::high_resolution_clock::now();
     ecInferenceTimeMS = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 
-    if(isBulletDebugDraw) {
-      
-      renderer->DebugRender();
-    }
+    renderer->DebugRender();
 
     camera.get()->Matrix(45.0f, 0.1f, 9000.0f, renderer->mainShader, "camMatrix"); //! IMPORTANT
 }
@@ -352,6 +349,25 @@ void GameScene::init() {
   ecManager.get()->buildRenderComponent("../assets/alien_moon_skybox/source/scene.gltf",
                                         "../assets/alien_moon_skybox/textures/Skybox_baseColor.png",
                                         std::vector<int>{0}, 1.0f, false, false);
+
+    //* ############ PROTOTYPE Collision Plane ############
+
+  btTransform protoPlaneTransform;
+  protoPlaneTransform.setIdentity();
+  protoPlaneTransform.setOrigin(btVector3(0, 0, 0));
+  btStaticPlaneShape *plane = new btStaticPlaneShape(btVector3(0, 1, 0), btScalar(0));
+
+  // Create Motion shape:
+  btMotionState *motion = new btDefaultMotionState(protoPlaneTransform); //! He put btDefaultMotionShape
+
+  btRigidBody::btRigidBodyConstructionInfo info(0.0, motion, plane);
+  info.m_friction = 2.0f;
+
+  btRigidBody *planeBody = new btRigidBody(info);
+  physicsWorld->dynamicsWorld->addRigidBody(planeBody);
+  
+
+  //* ############ PROTOTYPE Collision Plane ^^^ ############
 
 }
 

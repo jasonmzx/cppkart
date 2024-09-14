@@ -1,6 +1,6 @@
 #include"VBO.h"
 
-//* Geometry Buffer
+//* ==> Geometry Buffer
 
 // VBO stores vertex data (e.g., positions, normals, colors, texture coordinates) in GPU memory. 
 //This data is used by the vertex shader to render objects. (hence name: geom buffer)

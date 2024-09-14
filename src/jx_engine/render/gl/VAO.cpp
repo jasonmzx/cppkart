@@ -1,6 +1,6 @@
 #include"VAO.h"
 
-//* Draw Buffer
+//* ==> Draw Buffer
 
 // VAO stores the configuration of vertex attribute pointers. 
 //It keeps track of the relationship between VBOs and their attribute locations. 

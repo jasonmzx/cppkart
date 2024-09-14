@@ -73,6 +73,9 @@ add_executable(cppkart
      src/jx_engine/system/RenderSystem.hpp
      src/jx_engine/system/RenderSystem.cpp
 
+     src/jx_engine/system/VehicleRenderSystem.hpp 
+     src/jx_engine/system/VehicleRenderSystem.cpp
+
      src/jx_engine/event/Event.hpp
 
      # Components:
