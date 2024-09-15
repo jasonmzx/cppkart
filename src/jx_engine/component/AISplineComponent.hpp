@@ -17,7 +17,7 @@ class AISplineComponent : public EComponent {
         std::vector<glm::vec3> spline_verts_perpendicular_dirs;
 
          
-        void getNearestVertexFromPos(glm::vec3 position, glm::vec3 &nearestVertex, glm::vec3 &p_diddy);
+        void getNearestVertexFromPos(glm::vec3 position, glm::vec3 &nearestVertexPosition, glm::vec3 &nextNearestVertexPosition, glm::vec3 &nearestPerendicularDir);
         void tick() override;
 
         void Draw();

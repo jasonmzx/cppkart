@@ -102,7 +102,7 @@ void GameScene::updateImGui() {
                 ImGui::Spacing();
 
                 if (ImGui::Button("Reset Vehicle")) {
-                    ecManager.get()->resetPlayerVehicle();
+                    ecManager->resetPlayerVehicle();
                 }
 
                 if (ImGui::Button("Toggle Bullet Debug Draw")) {
@@ -110,11 +110,11 @@ void GameScene::updateImGui() {
                 }
 
                 if (ImGui::Button("Activate AI Control")) {
-                    ecManager.get()->toggleAIVehicleControl();
+                    ecManager->toggleAIVehicleControl();
                 }
 
                 // This is the X,Y,Z Location of the vehicle
-                ImGui::Text("%s", ecManager.get()->debugStateSTR().c_str());
+                ImGui::Text("%s", ecManager->debugStateSTR().c_str());
    
                 // Input fields for x, y, z coordinates
                 static float cam_tp_x = 0.0f, cam_tp_y = 0.0f, cam_tp_z = 0.0f;
@@ -126,7 +126,7 @@ void GameScene::updateImGui() {
                     printf("Teleporting Camera to: %f, %f, %f\n", cam_tp_x, cam_tp_y, cam_tp_z);
 
                     glm::vec3 teleport_to = glm::vec3(cam_tp_x, cam_tp_y, cam_tp_z);
-                    camera.get()->setCameraPosition(teleport_to);
+                    camera->setCameraPosition(teleport_to);
                 } 
 
                 ImGui::EndTabItem();
@@ -172,7 +172,7 @@ void GameScene::tickScene() { //* Main Game Loop Function (Scene Tick)
 void GameScene::update(float dt) {
 
     //TODO: Accumulate deltaTime and pass it to physicsWorld->dynamicsWorld->stepSimulation
-    //world.get()->physicsWorld->dynamicsWorld->stepSimulation(deltaTimeWithTimeScale, 2, deltaTime);
+    //world->physicsWorld->dynamicsWorld->stepSimulation(deltaTimeWithTimeScale, 2, deltaTime);
 
     physicsWorld->dynamicsWorld->stepSimulation(1.0f / 60.0f, 4, 1/240.0f);
 }
@@ -180,7 +180,7 @@ void GameScene::update(float dt) {
 glm::vec3 GameScene::BulletRaycast() {
 
     glm::vec3 rayStart, rayEnd;
-    camera.get()->GenerateRay(rayStart, rayEnd, 1000.0f);
+    camera->GenerateRay(rayStart, rayEnd, 1000.0f);
 
     btCollisionWorld::ClosestRayResultCallback rayCallback(btVector3(rayStart.x, rayStart.y, rayStart.z), btVector3(rayEnd.x, rayEnd.y, rayEnd.z));
     rayCallback.m_collisionFilterGroup = COLLISION_GROUP_ALL | COLLISION_GROUP_CHUNKS;
@@ -205,7 +205,7 @@ void GameScene::makeBarrier(float x, float y, float z) {
                                                            std::vector<int>{0}, false, false, 1.0f, 0.5f);
 
     // roadBarrierComponent->phyMesh->meshRigidBody->setCollisionFlags(roadBarrierComponent->phyMesh->meshRigidBody->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
-    // physicsWorld->dynamicsWorld->addRigidBody(roadBarrierComponent.get()->phyMesh->meshRigidBody, COLLISION_GROUP_ALL, COLLISION_GROUP_ALL);
+    // physicsWorld->dynamicsWorld->addRigidBody(roadBarrierComponent->phyMesh->meshRigidBody, COLLISION_GROUP_ALL, COLLISION_GROUP_ALL);
 
     roadBarrierComponent->SetRenderScale(10.0f);
 
@@ -213,7 +213,7 @@ void GameScene::makeBarrier(float x, float y, float z) {
 
     entities.push_back(roadBarrierEntity);
 
-    roadBarrierComponent.get()->SetPosition(x, y, z);
+    roadBarrierComponent->SetPosition(x, y, z);
 }
 
 
@@ -242,7 +242,12 @@ void GameScene::render() {
       renderer->DebugRender();
     }
 
-    camera.get()->Matrix(45.0f, 0.1f, 9000.0f, renderer->mainShader, "camMatrix"); //! IMPORTANT
+  // do multiple near/far plane passes
+
+  // 1- 100, 100- 10000 etc play arround
+
+
+    camera->Matrix(45.0f, 1.0f, 4000.0f, renderer->mainShader, "camMatrix"); //! IMPORTANT
 }
 
 void GameScene::procGameInputs() {
@@ -259,7 +264,7 @@ void GameScene::procGameInputs() {
 
   if(KB_InputState[SDL_SCANCODE_F1]) { // Toggle Vehicle Camera
     followPlayerVehicle = !followPlayerVehicle;
-    ecManager.get()->setFreeCameraMode(followPlayerVehicle);
+    ecManager->setFreeCameraMode(followPlayerVehicle);
   }
 
   if (trackMouse)
@@ -362,7 +367,7 @@ void GameScene::load_HighRoadHills_Map(std::shared_ptr<Entity> terrainEntity) {
     terrainBottomRoadRenderComponent->SetRenderScale(terrainEntityScale);
 
     auto terrainChunks_physics_Component = std::make_shared<TerrainChunksComponent>("../src/ressources/DE_MAP0/chunks", terrainEntityScale);
-    ecManager.get()->setTerrainChunks(terrainChunks_physics_Component);
+    ecManager->setTerrainChunks(terrainChunks_physics_Component);
 
     // Add Render Components:
     terrainEntity->addComponent(terrainRenderComponent);
@@ -391,14 +396,14 @@ void GameScene::load_SquareIsland_Map(std::shared_ptr<Entity> terrainEntity) {
     terrainRoadRenderComponent->SetRenderScale(terrainEntityScale);
 
     auto terrainChunks_physics_Component = std::make_shared<TerrainChunksComponent>("../assets/square_island/chunks", terrainEntityScale);
-    ecManager.get()->setTerrainChunks(terrainChunks_physics_Component);
+    ecManager->setTerrainChunks(terrainChunks_physics_Component);
 
     // Render Components:
     terrainEntity->addComponent(terrainRenderComponent);
     terrainEntity->addComponent(terrainRoadRenderComponent);
     terrainEntity->addComponent(aiSplineComponent);
 
-    ecManager.get()->setAISpline(aiSplineComponent);
+    ecManager->setAISpline(aiSplineComponent);
 
     // Physics Component:
     terrainEntity->addComponent(terrainChunks_physics_Component);
@@ -427,7 +432,7 @@ void GameScene::init() {
             gGameController = SDL_JoystickOpen( 0 );
             if( gGameController == nullptr )
             {
-                printf( "Warning: Unable to open game controller! SDL Error: %s\n", SDL_GetError() );
+                printf( "Warning: Unable4000 to open game controller! SDL Error: %s\n", SDL_GetError() );
             }
 
             //Load second joystick on xbox 360 controller
@@ -439,7 +444,7 @@ void GameScene::init() {
 
   // ECS Init
 
-  ecManager.get()->setCamera(camera);
+  ecManager->setCamera(camera);
 
     // Init reference to physics singleton
 
@@ -465,8 +470,8 @@ void GameScene::init() {
 
     auto aiVehicleComponent = std::make_shared<AIVehicleComponent>();
 
-    ecManager.get()->setPlayerVehicle(playerVehicleComponent);
-    ecManager.get()->setAIVehicle(aiVehicleComponent);
+    ecManager->setPlayerVehicle(playerVehicleComponent);
+    ecManager->setAIVehicle(aiVehicleComponent);
 
     playerVehicleEntity->addComponent(playerVehicleComponent);
     playerVehicleEntity->addComponent(aiVehicleComponent);
@@ -475,7 +480,7 @@ void GameScene::init() {
     //                                                        "../src/ressources/volga/volga.png",
     //                                                        0, true);
 
-    auto playerVehicleRenderComponent = std::make_shared<VehicleRenderComponent>("../assets/dale_aristocrat_vehicle/source/Dale Aristocrat PS1.gltf", "../assets/dale_aristocrat_vehicle/source/Dale Aristocrat PS1.gltf",
+    auto playerVehicleRenderComponent = std::make_shared<VehicleRenderComponent>("../assets/dale_aristocrat_vehicle/source/Dale Aristocrat PS1.gltf", "../src/ressources/first_car_wheel.obj",
                                                            "../assets/dale_aristocrat_vehicle/textures/DaleAristocrat_PS1_Colored.png",
                                                            std::vector<int>{1,2}, true);
 
@@ -518,6 +523,6 @@ void GameScene::initECS(std::shared_ptr<SceneManager> sceneManager) {
 void GameScene::updateScreenSize(int w, int h) {
     WIN_WIDTH = w;
     WIN_HEIGHT = h;
-    camera.get()->UpdateScreenSize(w, h);
+    camera->UpdateScreenSize(w, h);
     renderer->UpdateScreenSize(w, h);
 }

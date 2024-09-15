@@ -1,5 +1,7 @@
 #version 330 core
 
+precision highp float;
+
 // Outputs colors in RGBA
 out vec4 FragColor;
 
@@ -19,6 +21,8 @@ void main()
         // Sample the texture if useTexture is true
         
         vec4 textureColor = texture(tex0, texCoord);
+
+        // Discard should never be used in the fragment shader
 
         if (textureColor.a < 0.2) {
             discard;

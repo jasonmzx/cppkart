@@ -70,9 +70,9 @@ void RenderComponent::Draw()
         glDisable(GL_CULL_FACE);
     }
 
-    Tex.get()->Bind();
+    Tex->Bind();
     Geom->Draw(modelMatrixLOC, ObjmodelMatrix, colorUniformLOC, false);
-    Tex.get()->Unbind();
+    Tex->Unbind();
 
     // Restore the original culling state
     glEnable(GL_CULL_FACE);

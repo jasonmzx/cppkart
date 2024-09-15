@@ -80,7 +80,7 @@ AISplineComponent::AISplineComponent(float scale) {
     ObjmodelMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 }
 
-void AISplineComponent::getNearestVertexFromPos(glm::vec3 position, glm::vec3 &nearestVertexPosition, glm::vec3 &nearestPerendicularDir) {
+void AISplineComponent::getNearestVertexFromPos(glm::vec3 position, glm::vec3 &nearestVertexPosition, glm::vec3 &nextNearestVertexPosition, glm::vec3 &nearestPerendicularDir) {
     
     float minDist = 1000000.0f;
     
@@ -91,6 +91,9 @@ void AISplineComponent::getNearestVertexFromPos(glm::vec3 position, glm::vec3 &n
             minDist =     dist;
 
             nearestVertexPosition = spline_verts[i].position;
+            
+            nextNearestVertexPosition = spline_verts[(i+1) % spline_verts.size()].position;
+
             nearestPerendicularDir = spline_verts[i].xz_orthogonal_dir;
         }
     }

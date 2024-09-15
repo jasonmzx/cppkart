@@ -20,13 +20,13 @@ GameGLRenderer::GameGLRenderer(int winWidth, int winHeight, Camera *cam) : camer
   mainShader = std::make_shared<Shader>(vertexShaderPath.c_str(), fragmentShaderPath.c_str());
 
   // Get locations of uniforms in the shader
-  modelMatrixLOC = glGetUniformLocation(mainShader.get()->ID, "modelMatrix");
-  useTextureLOC = glGetUniformLocation(mainShader.get()->ID, "useTexture");
+  modelMatrixLOC = glGetUniformLocation(mainShader->ID, "modelMatrix");
+  useTextureLOC = glGetUniformLocation(mainShader->ID, "useTexture");
 
-  colorUniformLocation = glGetUniformLocation(mainShader.get()->ID, "FragColor");
+  colorUniformLocation = glGetUniformLocation(mainShader->ID, "FragColor");
 
   if (BULLET_DEBUG_DRAW == 1)
-    debugDrawer = new BulletDebugDrawer(mainShader.get()->ID); //TODO: Fix mem leak (dealloc this somewhere)
+    debugDrawer = new BulletDebugDrawer(mainShader->ID); //TODO: Fix mem leak (dealloc this somewhere)
     printf("Debug draw enabled\n");
     physicsWorld->dynamicsWorld->setDebugDrawer(debugDrawer);
 

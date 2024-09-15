@@ -105,7 +105,7 @@ void DemoGame::tick()
       {
         int newWidth = Event.window.data1;
         int newHeight = Event.window.data2;
-        sceneManager->getActiveScene().get()->updateScreenSize(newWidth, newHeight);
+        sceneManager->getActiveScene()->updateScreenSize(newWidth, newHeight);
       }
     }
 
@@ -115,7 +115,7 @@ void DemoGame::tick()
     }
   }
 
-  sceneManager->getActiveScene().get()->tickScene();
+  sceneManager->getActiveScene()->tickScene();
 
   if (IMGUI_MODE) // Setup, call Scene's ImGui Update & Render
   {
@@ -123,7 +123,7 @@ void DemoGame::tick()
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
 
-    sceneManager->getActiveScene().get()->updateImGui(); 
+    sceneManager->getActiveScene()->updateImGui(); 
 
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

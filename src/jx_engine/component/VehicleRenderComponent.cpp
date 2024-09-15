@@ -5,7 +5,7 @@ VehicleRenderComponent::VehicleRenderComponent
 : RenderComponent(modelPath, texPath, meshIndices, true, isTexAlpha)
 {
     // wheelModelPath = wheelModelPath;
-    WheelGeom = ressources->tryGetGeometry(wheelModelPath, 3);
+    WheelGeom = ressources->tryGetGeometry(wheelModelPath, 0);
 
     wheelModelMatrices.resize(wheelCount);
 }
@@ -28,16 +28,20 @@ void VehicleRenderComponent::UpdateChassisTransform(glm::vec3 glmVehiclePos, glm
     
     glm::mat4 rotation3x3 = glm::mat4_cast(glmVehicleRot);
 
-    glm::mat4 rotate90DEG_Adjustment = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::mat4 rotate90DEG_Adjustment = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)); 
     glm::mat rotation3x3_90_features = rotation3x3 * rotate90DEG_Adjustment;
 
-    glm::vec4 objectSpaceForward = glm::vec4(0.0f, 0.0f, 1.0f, 0.0f);
+    glm::vec4 modelDefaultForward = glm::vec4(0.0f, 0.0f, 1.0f, 0.0f);
 
-    glm::vec3 forward = glm::vec3(rotation3x3 * objectSpaceForward);
-    forward = glm::normalize(forward) * 10.0f;
+    glm::vec3 forward = glm::vec3(rotation3x3 * modelDefaultForward);
+    object_forward = glm::normalize(forward);
 
-    glm::vec3 right_side = glm::vec3(rotation3x3_90_features * objectSpaceForward);
-    right_side = glm::normalize(right_side) * 5.0f;
+    forward = object_forward * 10.0f;
+
+    glm::vec3 right_side = glm::vec3(rotation3x3_90_features * modelDefaultForward);
+    object_right = glm::normalize(right_side);
+
+    right_side = object_right * 5.0f;
 
     glm::vec3 relate_right = glmVehiclePos + right_side;     
     glm::vec3 relate_left = glmVehiclePos - right_side;
@@ -53,14 +57,20 @@ void VehicleRenderComponent::UpdateChassisTransform(glm::vec3 glmVehiclePos, glm
     // Draw a line to represent the forward direction of the vehicle
 
     renderer->DebugDrawLine(glmVehiclePos, relate_forward,  glm::vec3(1.0f, 0.0f, 0.0f));
-    renderer->DebugDrawLine(glmVehiclePos, relate_backward, glm::vec3(1.0f, 0.0f, 0.0f));
-    renderer->DebugDrawLine(glmVehiclePos, relate_right, glm::vec3(1.0f, 0.0f, 0.0f));
-    renderer->DebugDrawLine(glmVehiclePos, relate_left,  glm::vec3(1.0f, 0.0f, 0.0f));
+    renderer->DebugDrawLine(glmVehiclePos, relate_backward, glm::vec3(1.0f, 1.0f, 0.0f));
+    renderer->DebugDrawLine(glmVehiclePos, relate_right, glm::vec3(1.0f, 0.0f, 1.0f));
+    renderer->DebugDrawLine(glmVehiclePos, relate_left,  glm::vec3(1.0f, 0.5f, 0.5f));
 }
 
 
-void VehicleRenderComponent::getForwardVector(glm::vec3 &forward) {
-    forward = relative_forward;
+void VehicleRenderComponent::getForwardVector(glm::vec3 &out) {
+    out = relative_forward;
+}
+
+void VehicleRenderComponent::getObjectVectors(glm::vec3 &out_forward, glm::vec3 &out_right) {
+    out_forward = object_forward;
+    out_right = object_right;
+
 }
 
 void VehicleRenderComponent::UpdateWheelTransforms(VehiclePhysics* vehiclePhysics) {
@@ -110,13 +120,13 @@ void VehicleRenderComponent::DrawWheels()
         glDisable(GL_CULL_FACE);
     }
 
-    Tex.get()->Bind();
+    Tex->Bind();
 
     for(int i = 0; i < 4; i++) {
         WheelGeom->Draw(modelMatrixLOC, wheelModelMatrices[i], colorUniformLOC, false);
     }
 
-    Tex.get()->Unbind();
+    Tex->Unbind();
 
     // Restore the original culling state
     glEnable(GL_CULL_FACE);

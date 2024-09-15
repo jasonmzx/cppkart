@@ -214,7 +214,7 @@ void PhysicsChunkManager::ActiveAll()
             logger->log(Logger::WARN, "AA-DEBUG: Chunk activating at X: " + std::to_string(chunk.X_origin) + " Z: " + std::to_string(chunk.Z_origin));
 
             chunk.active = true;
-            physicsWorld->dynamicsWorld->addRigidBody(chunk.rigidMeshChunk.get()->meshRigidBody);
+            physicsWorld->dynamicsWorld->addRigidBody(chunk.rigidMeshChunk->meshRigidBody);
         }
     }
 }

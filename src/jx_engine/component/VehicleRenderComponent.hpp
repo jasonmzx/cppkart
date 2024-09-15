@@ -14,6 +14,7 @@ class VehicleRenderComponent : public RenderComponent
         void UpdateWheelTransforms(VehiclePhysics* vehiclePhysics);
         void DrawWheels();
         void getForwardVector(glm::vec3 &forward);
+        void getObjectVectors(glm::vec3 &out_forward, glm::vec3 &out_right);
 
     private:
         std::shared_ptr<Geometry> WheelGeom;
@@ -22,6 +23,9 @@ class VehicleRenderComponent : public RenderComponent
         std::vector<glm::mat4> wheelModelMatrices;
 
         glm::vec3 relative_forward;
+
+        glm::vec3 object_forward;
+        glm::vec3 object_right;
 
 };
 
