@@ -344,11 +344,18 @@ void GameScene::init() {
   }
 
   // ECS Init
-  ecManager.get()->setCamera(camera);
+  ecManager->setCamera(camera);
 
-  ecManager.get()->buildRenderComponent("../assets/alien_moon_skybox/source/scene.gltf",
+  ecManager->buildRenderComponent("../assets/alien_moon_skybox/source/scene.gltf",
                                         "../assets/alien_moon_skybox/textures/Skybox_baseColor.png",
                                         std::vector<int>{0}, 1.0f, false, false);
+
+  ecManager->buildVehicleComponent(
+    "../assets/dale_aristocrat_vehicle/source/Dale Aristocrat PS1.gltf", "../assets/dale_aristocrat_vehicle/textures/DaleAristocrat_PS1_Colored.png", std::vector<int>{1,2},
+    "../src/ressources/first_car_wheel.obj", "../src/ressources/volga/volga.png", std::vector<int>{0}, 1.0f, false, true);
+                                              
+
+
 
     //* ############ PROTOTYPE Collision Plane ############
 
@@ -364,7 +371,7 @@ void GameScene::init() {
   info.m_friction = 2.0f;
 
   btRigidBody *planeBody = new btRigidBody(info);
-  physicsWorld->dynamicsWorld->addRigidBody(planeBody);
+  physicsWorld->dynamicsWorld->addRigidBody(planeBody,7,7);
   
 
   //* ############ PROTOTYPE Collision Plane ^^^ ############

@@ -48,10 +48,10 @@ VehiclePhysics::VehiclePhysics(float xPos, float yPos, float zPos)
     vehicleRigidBody->setCollisionFlags(vehicleRigidBody->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
 
     physicsWorld->dynamicsWorld->addRigidBody(vehicleRigidBody, COLLISION_GROUP_ALL, COLLISION_GROUP_CHUNKS);
+    //physicsWorld->dynamicsWorld->addRigidBody(vehicleRigidBody);
 
     // vehicleRigidBody->getWorldTransform
-    // ^ use for rotation camera thingy
-
+    // ^ use for rotation camera thing
 
     // Raycaster and the actual vehicle
     vehicleRayCaster = new btFilterableVehicleRaycaster(physicsWorld->dynamicsWorld);

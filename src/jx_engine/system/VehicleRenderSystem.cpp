@@ -1,7 +1,7 @@
 #include "VehicleRenderSystem.hpp"
 
 
-VehicleRenderComponent VehicleRenderSystem::buildVehicleRenderComponent(
+VehicleComponent VehicleRenderSystem::buildVehicleComponent(
         std::string vehicleChassisModel, std::string vcmTexPath, std::vector<int> vcmMeshIndices,
         std::string vehicleWheelModel, std::string vwmTexPath, std::vector<int> vwmMeshIndices,
         float scale, bool cD, bool isTexAlpha) 
@@ -9,25 +9,41 @@ VehicleRenderComponent VehicleRenderSystem::buildVehicleRenderComponent(
     RenderComponent chassisRenderComponent = this->buildRenderComponent(vehicleChassisModel, vcmTexPath, vcmMeshIndices, scale, cD, isTexAlpha);
     RenderComponent wheelRenderComponent = this->buildRenderComponent(vehicleWheelModel, vwmTexPath, vwmMeshIndices, scale, cD, isTexAlpha);
     
-    VehicleRenderComponent vrc;
+    VehicleComponent vrc;
     vrc.chassisRenderComponent = chassisRenderComponent;
     vrc.wheelRenderComponent = wheelRenderComponent;
 
     vrc.wheelCount = 4;
     vrc.wheelModelMatrices.resize(vrc.wheelCount);
 
+    if (!vrc.vehiclePhysics.has_value()) {
+        vrc.vehiclePhysics.emplace(0,10,0); //TODO: Replace with actual vehicle position
+    }
+
     return vrc;
 }
 
-void VehicleRenderSystem::UpdateChassisModelMatrix(VehicleRenderComponent& vrc, glm::vec3 vehiclePos, glm::quat vehicleRot) 
-{
+void VehicleRenderSystem::UpdateChassisModelMatrix(VehicleComponent& vrc) 
+{   
+    // TODO: Move to an agnostic physics frontend
+
+    VehiclePhysics* vehiclePhysics = &vrc.vehiclePhysics.value();
+
+    btTransform vehicleTransform = vehiclePhysics->GetTransform();
+
+    btVector3 vehiclePosition = vehicleTransform.getOrigin();
+    btQuaternion vehicleRotation = vehicleTransform.getRotation();
+
+    // Convert to GLM
+
+    glm::vec3 vehiclePos(vehiclePosition.x(), vehiclePosition.y(), vehiclePosition.z());
+    glm::quat vehicleRot(vehicleRotation.w(), vehicleRotation.x(), vehicleRotation.y(), vehicleRotation.z());
 
     glm::mat4 translation = glm::translate(glm::mat4(1.0f), vehiclePos);
     glm::mat4 rotation = glm::mat4_cast(vehicleRot);
 
     // Translate down y axis
     glm::mat4 translateDown = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.5f, 0.0f));
-
     vrc.chassisRenderComponent.modelMatrix = translation * rotation * translateDown * glm::scale(glm::vec3(0.7f));
 
     //* ------------------- Get Forward, Backward and Side Vectors ------------------- *//
@@ -48,10 +64,12 @@ void VehicleRenderSystem::UpdateChassisModelMatrix(VehicleRenderComponent& vrc, 
 
 }
 
-void VehicleRenderSystem::UpdateWheelModelMatrices(VehicleRenderComponent& vrc, VehiclePhysics* vehiclePhysics) 
+void VehicleRenderSystem::UpdateWheelModelMatrices(VehicleComponent& vrc) 
 {
     float wheelRadius = 0.5f;
     vrc.wheelModelMatrices.clear();
+
+    VehiclePhysics* vehiclePhysics = &vrc.vehiclePhysics.value();
 
     for(int i = 0; i < vehiclePhysics->vehicle->getNumWheels(); i++) {
 
@@ -74,5 +92,16 @@ void VehicleRenderSystem::UpdateWheelModelMatrices(VehicleRenderComponent& vrc, 
         vrc.wheelModelMatrices.push_back(
             wheelModelMat 
         );
+    }
+}
+
+void VehicleRenderSystem::DrawVehicle(VehicleComponent& vrc) 
+{
+    this->Draw(vrc.chassisRenderComponent);
+
+    for (int i = 0; i < vrc.wheelCount; i++) {
+        RenderComponent wheelRC = vrc.wheelRenderComponent;
+        wheelRC.modelMatrix = vrc.wheelModelMatrices[i];
+        this->Draw(wheelRC);
     }
 }

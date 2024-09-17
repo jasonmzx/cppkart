@@ -11,6 +11,11 @@ RenderSystem::RenderSystem()
 RenderComponent RenderSystem::buildRenderComponent(std::string modelPath, std::string texPath, std::vector<int> meshIndices, float scale, bool cD, bool isTexAlpha)
 {
 
+    std::cout << "Model Path: " << modelPath << std::endl;
+    std::cout << "Texture Path: " << texPath << std::endl;
+    std::cout << "Mesh Indices Size: " << meshIndices.size() << std::endl;
+    std::cout << "Scale: " << scale << std::endl;
+
     ressources = RenderRsrcManager::getInstance();
     renderer = GameGLRenderer::getInstance();
 

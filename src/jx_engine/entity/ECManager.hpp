@@ -23,6 +23,7 @@
 // Better ECS:
 
 #include "jx_engine/system/RenderSystem.hpp"
+#include "jx_engine/system/VehicleRenderSystem.hpp"
 
 
 class ECManager { // Entity Component Manager
@@ -51,7 +52,14 @@ class ECManager { // Entity Component Manager
         std::shared_ptr<RenderSystem> systemRender;
         std::vector<RenderComponent> renderComponents;
 
+        std::shared_ptr<VehicleRenderSystem> systemVehicleRender;
+        std::vector<VehicleComponent> vehicleComponents;
+
         void buildRenderComponent(std::string modelPath, std::string texPath, std::vector<int> meshIndices, float scale, bool cD, bool isTexAlpha);
+
+        void buildVehicleComponent(std::string vehicleChassisModel, std::string vcmTexPath, std::vector<int> vcmMeshIndices,
+        std::string vehicleWheelModel, std::string vwmTexPath, std::vector<int> vwmMeshIndices,
+        float scale, bool cD, bool isTexAlpha);
 
     private:
 
