@@ -1,5 +1,3 @@
-*.mp3
-*.txt
 
 build*/
 .vscode/
