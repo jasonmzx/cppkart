@@ -45,6 +45,9 @@ class ECManager { // Entity Component Manager
 
         void debugSetPlayerVehicleVelocity(float& velocity);
 
+        void toggleNormalsShader();
+        bool isNormalsShader = false;
+
         void toggleAIVehicleControl();
         bool isAIVehicleControl = false;
 
@@ -59,6 +62,7 @@ class ECManager { // Entity Component Manager
         void setAISpline(std::shared_ptr<AISplineComponent> aiSpline);
 
         void setAIVehicle(std::shared_ptr<AIVehicleComponent> aiVehicle);
+        void setSkybox(std::shared_ptr<RenderComponent> skybox);
 
         void resetPlayerVehicle();
         std::string debugStateSTR();
@@ -75,6 +79,8 @@ class ECManager { // Entity Component Manager
         
         std::shared_ptr<AISplineComponent> aiSplineComponent;
         std::shared_ptr<AIVehicleComponent> aiVehicleComponent;
+
+        std::shared_ptr<RenderComponent> skyboxRenderComponent;
 
         // Debug State:
 

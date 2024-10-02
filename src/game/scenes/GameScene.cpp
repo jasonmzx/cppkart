@@ -113,6 +113,10 @@ void GameScene::updateImGui() {
                     ecManager->toggleAIVehicleControl();
                 }
 
+                 if (ImGui::Button("RENDER :: View Normals")) {
+                    ecManager->toggleNormalsShader();
+                  }
+
                 // This is the X,Y,Z Location of the vehicle
                 ImGui::Text("%s", ecManager->debugStateSTR().c_str());
    
@@ -480,11 +484,11 @@ void GameScene::init() {
     //                                                        "../src/ressources/volga/volga.png",
     //                                                        0, true);
 
-    auto playerVehicleRenderComponent = std::make_shared<VehicleRenderComponent>("../assets/dale_aristocrat_vehicle/source/Dale Aristocrat PS1.gltf", "../src/ressources/first_car_wheel.obj",
+    auto playerVehicleRenderComponent = std::make_shared<VehicleRenderComponent>("../assets/dale_aristocrat_vehicle/source/Dale Aristocrat PS1.gltf", "../assets/dale_aristocrat_vehicle/source/Dale Aristocrat PS1.gltf",
                                                            "../assets/dale_aristocrat_vehicle/textures/DaleAristocrat_PS1_Colored.png",
                                                            std::vector<int>{1,2}, true);
 
-    playerVehicleRenderComponent->SetRenderScale(1.0f);
+    playerVehicleRenderComponent->SetRenderScale(10.0f);
 
     playerVehicleEntity->addComponent(playerVehicleRenderComponent);
 
@@ -498,9 +502,11 @@ void GameScene::init() {
                                                            "../assets/alien_moon_skybox/textures/Skybox_baseColor.png",
                                                            std::vector<int>{0}, false, false);
 
-    skyboxRenderComponent->SetRenderScale(300.0f);
+    skyboxRenderComponent->SetRenderScale(110.0f);
 
     skyboxEntity->addComponent(skyboxRenderComponent);
+
+    ecManager->setSkybox(skyboxRenderComponent);
 
     entities.push_back(skyboxEntity);
 

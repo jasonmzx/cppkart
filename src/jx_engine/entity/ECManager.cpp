@@ -63,6 +63,8 @@ void ECManager::tick(std::vector<std::shared_ptr<Entity>> &entities)
     float pX = camPos.x;
     float pZ = camPos.z;
 
+    skyboxRenderComponent->CentreArroundXYZ(camPos);
+
     emitEvent(Event(EventType::UPDATE_TERRAIN_CHUNKS_XZ, std::make_pair(pX, pZ)));
 
     for (auto entity : entities)
@@ -70,12 +72,16 @@ void ECManager::tick(std::vector<std::shared_ptr<Entity>> &entities)
         for (auto &component : entity->components)
         {
             component->tick();
+
         }
     }
 }
 
 void ECManager::componentSpecificPass(std::vector<std::shared_ptr<Entity>> &entities, std::shared_ptr<GameInput> gameInput)
 {
+
+
+
 
     // --- Player Vehicle Movement ---
     if (!isAIVehicleControl)
@@ -173,6 +179,18 @@ void ECManager::toggleAIVehicleControl()
     isAIVehicleControl = !isAIVehicleControl;
 }
 
+void ECManager::toggleNormalsShader() {
+    GameGLRenderer* renderer = GameGLRenderer::getInstance();
+
+    isNormalsShader = !isNormalsShader;
+
+    if(isNormalsShader) {
+        renderer->changeShader("default_normal");
+    } else {
+        renderer->changeShader("default");
+    }
+}
+
 //* =============================== Getters/Setters to the "World" System ===============================
 
 void ECManager::setTerrainChunks(std::shared_ptr<TerrainChunksComponent> terrainChunks)
@@ -245,6 +263,7 @@ void ECManager::setPlayerVehicle(std::shared_ptr<VehicleControlComponent> player
             playerPosition = glm::vec3(pX, pY, pZ);
 
 
+            
             emitEvent(Event(EventType::PLAYER_VEHICLE_GET_SPEED, velocity)); });
 
         playerVehicleComponent->setPlayerDirectionCallback([this](float dirX, float dirY, float dirZ)
@@ -299,4 +318,9 @@ std::string ECManager::debugStateSTR()
 {
     std::string debugState = "Player VPOS: " + std::to_string(dpX) + ", " + std::to_string(dpY) + ", " + std::to_string(dpZ);
     return debugState;
+}
+
+void ECManager::setSkybox(std::shared_ptr<RenderComponent> skybox)
+{
+    skyboxRenderComponent = skybox;
 }

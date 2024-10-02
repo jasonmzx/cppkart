@@ -40,8 +40,29 @@ void RenderComponent::SetGLContext(GLint texLOCATION, GLint mmLOCATION, GLint co
 
 void RenderComponent::SetRenderScale(float scale)
 {
-    ObjmodelMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(scale, scale, scale));
+    // Set the scaling matrix for the object
+    IdentityScaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(scale, scale, scale));
+    
+    // Update the object model matrix with scaling only (for now)
+    ObjmodelMatrix = IdentityScaleMatrix;
 }
+
+// Model matrix getters and setters ----
+
+void RenderComponent::CentreArroundXYZ(glm::vec3 position)
+{
+    // Position is in world space
+    // Start with the scale (IdentityScaleMatrix) and apply the translation after scaling
+    glm::mat4 translation = glm::translate(glm::mat4(1.0f), position);
+    
+    glm::mat4 xy_rot_90 = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
+    // The final model matrix includes both scaling and translation
+    ObjmodelMatrix = translation * IdentityScaleMatrix * xy_rot_90;
+}
+
+// -------------------------------------
+
 
 void printMatrix(const glm::mat4& matrix) {
     const float* ptr = glm::value_ptr(matrix);

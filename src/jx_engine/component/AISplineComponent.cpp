@@ -16,10 +16,7 @@ AISplineComponent::AISplineComponent(float scale) {
     std::vector<GLfloat> vertices;
     std::vector<GLuint> indices;
 
-
-
     //TODO: Use SplineVertex Array to do shit properly 
-
     int base_vertex_count = base_vertices.size() / 11; // each vertex has 11 attributes (position, color, texture, normal)
 
 

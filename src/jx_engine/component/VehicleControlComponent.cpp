@@ -91,3 +91,5 @@ void VehicleControlComponent::tick() {
 
     setPlayerVehicleDirection(forward.x, forward.y, forward.z);
 }
+
+//nearestSplineVertex: -3189.981689, -1282.049683, 4.966000

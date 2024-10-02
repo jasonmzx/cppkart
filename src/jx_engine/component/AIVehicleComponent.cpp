@@ -43,14 +43,13 @@ void AIVehicleComponent::performControls(
     glm::vec3 alpha = nearestSplineVertex - worldSpaceforward;
 
     // Calculate the dot product of Alpha with the perpendicular direction
-    //float objectRelativeDot = glm::dot(objectSpaceForward, perpendicularDirection);
     float rightDot = glm::dot(alpha, objectSpaceRight);
 
     // if(rightDot > 0) left
     // if(rightDot < 0) right
 
     // Clamp rightdot from 0.03 to 0.0075
-    turnValue = 0.06f - std::pow(2, -std::abs(rightDot));
+    turnValue = 0.04f - std::pow(2, -std::abs(rightDot));
 
     if(rightDot < 0) {
         turnValue = -turnValue;

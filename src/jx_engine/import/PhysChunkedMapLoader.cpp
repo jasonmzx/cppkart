@@ -114,6 +114,8 @@ std::vector<SplineVertex> PhysChunkedMapLoader::loadAISpline(const std::string &
         line.erase(0, line.find_first_not_of(" \t\n\r\f\v"));
         glm::vec3 spline_vert = parseVec3(line);
 
+        spline_vert.y = spline_vert.y + 0.215f; // Offset Y to avoid clipping with terrain
+
         glm::vec3 scaled_vert = spline_vert * scale;
 
         spline_vert_positions.push_back(scaled_vert);

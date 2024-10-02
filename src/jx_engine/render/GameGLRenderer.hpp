@@ -34,6 +34,8 @@ class GameGLRenderer {
 
         void UpdateScreenSize(int winWidth, int winHeight);
 
+        void changeShader(const std::string &vertexShaderPath);
+
         // ** Geometric Shape Gens **
 
         std::vector<GLfloat> GetCylinderVertices(int n_sides, float height);

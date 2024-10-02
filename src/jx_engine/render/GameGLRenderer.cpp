@@ -76,6 +76,23 @@ void GameGLRenderer::UpdateScreenSize(int winWidth, int winHeight) {
     glViewport(0, 0, winWidth, winHeight);
 }
 
+void GameGLRenderer::changeShader(const std::string &shaderName) {
+    
+  std::string vertexShaderPath = SHADER_PATH + shaderName.c_str() + ".vert";
+  std::string fragmentShaderPath = SHADER_PATH + shaderName.c_str() + ".frag";
+  auto newShader = std::make_shared<Shader>(vertexShaderPath.c_str(), fragmentShaderPath.c_str());
+    
+    mainShader = newShader;
+
+    // Reset Debug Drawer too
+
+    if (BULLET_DEBUG_DRAW == 1) {
+        debugDrawer = new BulletDebugDrawer(mainShader->ID);
+        physicsWorld->dynamicsWorld->setDebugDrawer(debugDrawer);
+    }
+}
+
+
 // Singleton stuff
 
 GameGLRenderer* GameGLRenderer::instance = nullptr;

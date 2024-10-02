@@ -90,14 +90,14 @@ VehiclePhysics::VehiclePhysics(float xPos, float yPos, float zPos)
     btVector3 wheelConnectionPoint = btVector3(1.40 - 0.6, connectionHeight, 2.66 - 0.5);
 
     // Adds the front wheels
-    vehicle->addWheel(wheelConnectionPoint * btVector3(2, 0, 1), wheelDirection, wheelAxle, suspensionRestLength, wheelRadius, tuning, true);
+    vehicle->addWheel(wheelConnectionPoint * btVector3(2, 0, 1.2), wheelDirection, wheelAxle, suspensionRestLength, wheelRadius, tuning, true);
 
-    vehicle->addWheel(wheelConnectionPoint * btVector3(-2, 0, 1), wheelDirection, wheelAxle, suspensionRestLength, wheelRadius, tuning, true);
+    vehicle->addWheel(wheelConnectionPoint * btVector3(-2, 0, 1.2), wheelDirection, wheelAxle, suspensionRestLength, wheelRadius, tuning, true);
 
     // Adds the rear wheels
-    vehicle->addWheel(wheelConnectionPoint * btVector3(2.4, 0, -1), wheelDirection, wheelAxle, suspensionRestLength, wheelRadius, tuning, false);
+    vehicle->addWheel(wheelConnectionPoint * btVector3(2, 0, -1.1), wheelDirection, wheelAxle, suspensionRestLength, wheelRadius, tuning, false);
 
-    vehicle->addWheel(wheelConnectionPoint * btVector3(-2.4, 0, -1), wheelDirection, wheelAxle, suspensionRestLength, wheelRadius, tuning, false);
+    vehicle->addWheel(wheelConnectionPoint * btVector3(-2, 0, -1.1), wheelDirection, wheelAxle, suspensionRestLength, wheelRadius, tuning, false);
 
     for (int i = 0; i < vehicle->getNumWheels(); i++)
     {

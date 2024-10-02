@@ -24,6 +24,8 @@ class RenderComponent : public EComponent {
 
         void SetGLContext(GLint texLOCATION, GLint mmLOCATION, GLint colorUniformLOCATION);
         void SetRenderScale(float scale);
+        
+        void CentreArroundXYZ(glm::vec3 position);
 
         void Draw();
 
@@ -50,6 +52,7 @@ class RenderComponent : public EComponent {
         GLint currentFrontFace;
         
         glm::mat4 ObjmodelMatrix;
+        glm::mat4 IdentityScaleMatrix;
         
 };
 
