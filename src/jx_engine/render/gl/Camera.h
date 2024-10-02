@@ -56,11 +56,14 @@ public:
 	void ProcessMouseLook(int mouseXRel, int mouseYRel);
 	void UpdateScreenSize(int w, int h);
 
-	void VehicleFollowCamera(float pX, float pY, float pZ, float backX, float backY, float backZ);
+	void VehicleFollowCamera(float pX, float pY, float pZ, float backX, float backY, float backZ, bool IsLookingFront);
 
 	void handleVehicleFollowEvent(const Event& event);
 	void handleToggleFreeCamEvent(const Event& event);
 
 	void GenerateRay(glm::vec3& rayStart, glm::vec3& rayEnd, float rayLength);
+
+	void setFrontLook(bool fl);
+	bool frontLook = false;
 };
 #endif

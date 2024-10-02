@@ -16,6 +16,8 @@ class AISplineComponent : public EComponent {
         std::vector<SplineVertex> spline_verts;
         std::vector<glm::vec3> spline_verts_perpendicular_dirs;
 
+        void toggleShowCyl();
+
          
         void getNearestVertexFromPos(glm::vec3 position, glm::vec3 &nearestVertexPosition, glm::vec3 &nextNearestVertexPosition, glm::vec3 &nearestPerendicularDir);
         void tick() override;
@@ -36,6 +38,8 @@ class AISplineComponent : public EComponent {
         GLint currentFrontFace;
         
         glm::mat4 ObjmodelMatrix;
+
+        bool showDebugCylinder = false;
 };
 
 #endif // AISPLINECOMPONENT_HPP

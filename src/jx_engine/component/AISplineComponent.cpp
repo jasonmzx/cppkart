@@ -96,8 +96,16 @@ void AISplineComponent::getNearestVertexFromPos(glm::vec3 position, glm::vec3 &n
     }
 }
 
+void AISplineComponent::toggleShowCyl() {
+    showDebugCylinder = !showDebugCylinder;
+}
+
 void AISplineComponent::Draw()
 {
+
+    if( showDebugCylinder == false) {
+        return;
+    }
 
     glUniform1i(useTextureLOC, GL_FALSE);
 

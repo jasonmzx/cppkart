@@ -64,6 +64,7 @@ void ECManager::tick(std::vector<std::shared_ptr<Entity>> &entities)
     float pZ = camPos.z;
 
     skyboxRenderComponent->CentreArroundXYZ(camPos);
+    skyboxRenderComponent->tick();
 
     emitEvent(Event(EventType::UPDATE_TERRAIN_CHUNKS_XZ, std::make_pair(pX, pZ)));
 
@@ -189,6 +190,10 @@ void ECManager::toggleNormalsShader() {
     } else {
         renderer->changeShader("default");
     }
+}
+
+void ECManager::toggleAICylinders() {
+    aiSplineComponent->toggleShowCyl();
 }
 
 //* =============================== Getters/Setters to the "World" System ===============================
@@ -323,4 +328,8 @@ std::string ECManager::debugStateSTR()
 void ECManager::setSkybox(std::shared_ptr<RenderComponent> skybox)
 {
     skyboxRenderComponent = skybox;
+}
+
+glm::vec3 ECManager::getLastPlayerPos() {
+    return playerPosition;
 }

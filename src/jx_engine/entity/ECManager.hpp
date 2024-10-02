@@ -67,6 +67,9 @@ class ECManager { // Entity Component Manager
         void resetPlayerVehicle();
         std::string debugStateSTR();
 
+        glm::vec3 getLastPlayerPos();
+
+        void toggleAICylinders();
 
     private:
         std::shared_ptr<SceneManager> sceneManager;

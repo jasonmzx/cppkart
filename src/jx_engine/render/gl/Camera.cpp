@@ -66,13 +66,17 @@ void Camera::Inputs()
 
 }
 
-void Camera::VehicleFollowCamera(float pX, float pY, float pZ, float forwardX, float forwardY, float forwardZ) {
+void Camera::VehicleFollowCamera(float pX, float pY, float pZ, float forwardX, float forwardY, float forwardZ, bool IsLookingFront) {
 
     glm::vec3 normalizedForwardVec = glm::vec3(forwardX, forwardY, forwardZ);
 
     glm::vec3 offset = normalizedForwardVec * 6.0f; // Scale down that vector's direction
 
     glm::vec3 heightOffset = glm::vec3(0.0f, 2.5f, 0.0f); // Add Height, Y up 
+
+    if(IsLookingFront) {
+        offset = -offset;
+    }
 
     glm::vec3 targetVec = glm::vec3(pX, pY, pZ) - offset + heightOffset;
 
@@ -117,6 +121,10 @@ void Camera::GenerateRay(glm::vec3& rayStart, glm::vec3& rayEnd, float rayLength
 }
 
 
+void Camera::setFrontLook(bool fl) {
+    frontLook = fl;
+}
+
 void Camera::handleVehicleFollowEvent(const Event& event) {
     try {
         auto inputs = std::any_cast<std::tuple<float, float, float, float, float, float>>(event.data);
@@ -132,7 +140,7 @@ void Camera::handleVehicleFollowEvent(const Event& event) {
 
 
         if(!freeCamera) {
-            VehicleFollowCamera(pX, pY, pZ, bX, bY, bZ);
+            VehicleFollowCamera(pX, pY, pZ, bX, bY, bZ, frontLook);
         }
         
     } catch (const std::bad_any_cast& e) {

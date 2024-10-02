@@ -107,13 +107,24 @@ void GameScene::updateImGui() {
 
                 if (ImGui::Button("Toggle Bullet Debug Draw")) {
                     isBulletDebugDraw = !isBulletDebugDraw;
+                    ecManager->toggleAICylinders();
                 }
 
                 if (ImGui::Button("Activate AI Control")) {
                     ecManager->toggleAIVehicleControl();
                 }
 
-                 if (ImGui::Button("RENDER :: View Normals")) {
+                if (ImGui::Button("Spawn Barrier")) {
+                    glm::vec3 player_pos = ecManager->getLastPlayerPos();
+
+                    player_pos.y += 10.0f;
+
+                    makeBarrier(player_pos.x, player_pos.y, player_pos.z);
+                }
+
+
+
+                 if (ImGui::Button("RENDER :: View GGX Normals")) {
                     ecManager->toggleNormalsShader();
                   }
 
@@ -341,6 +352,15 @@ void GameScene::procGameInputs() {
         for (int i = 0; i < SDL_JoystickNumButtons(gGameController); i++) {
             if (SDL_JoystickGetButton(gGameController, i) == SDL_PRESSED) {
                 printf("Button %d pressed\n", i);
+
+
+                if(i == 4){ // LB
+                    printf("BOING");
+                    camera->setFrontLook(true);
+                } else {
+                    camera->setFrontLook(false);
+                }
+
             }
         }
   }
@@ -502,13 +522,13 @@ void GameScene::init() {
                                                            "../assets/alien_moon_skybox/textures/Skybox_baseColor.png",
                                                            std::vector<int>{0}, false, false);
 
-    skyboxRenderComponent->SetRenderScale(110.0f);
+    skyboxRenderComponent->SetRenderScale(130.0f);
 
-    skyboxEntity->addComponent(skyboxRenderComponent);
+    //skyboxEntity->addComponent(skyboxRenderComponent);
+    //entities.push_back(skyboxEntity);
 
     ecManager->setSkybox(skyboxRenderComponent);
 
-    entities.push_back(skyboxEntity);
 
     logger->log(Logger::INFO,"GameScene Loaded in " + std::to_string(entities.size()) + " entities");
 
