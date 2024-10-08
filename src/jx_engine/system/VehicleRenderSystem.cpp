@@ -17,7 +17,7 @@ VehicleComponent VehicleRenderSystem::buildVehicleComponent(
     vrc.wheelModelMatrices.resize(vrc.wheelCount);
 
     if (!vrc.vehiclePhysics.has_value()) {
-        vrc.vehiclePhysics.emplace(0,10,0); //TODO: Replace with actual vehicle position
+        vrc.vehiclePhysics.emplace(0,200,0); //TODO: Replace with actual vehicle position
     }
 
     return vrc;
@@ -38,6 +38,9 @@ void VehicleRenderSystem::UpdateChassisModelMatrix(VehicleComponent& vrc)
 
     glm::vec3 vehiclePos(vehiclePosition.x(), vehiclePosition.y(), vehiclePosition.z());
     glm::quat vehicleRot(vehicleRotation.w(), vehicleRotation.x(), vehicleRotation.y(), vehicleRotation.z());
+
+    // Save the last position
+    vrc.worldPosition = vehiclePos;
 
     glm::mat4 translation = glm::translate(glm::mat4(1.0f), vehiclePos);
     glm::mat4 rotation = glm::mat4_cast(vehicleRot);
@@ -105,3 +108,49 @@ void VehicleRenderSystem::DrawVehicle(VehicleComponent& vrc)
         this->Draw(wheelRC);
     }
 }
+
+// ----------------------------------------------------------------------------------------
+
+void VehicleRenderSystem::updateVehicleControl(GameInput::Control acceleration, GameInput::Control steer, VehicleComponent& vrc) {
+
+    VehiclePhysics& vehiclePhysics = vrc.vehiclePhysics.value(); //value() is safe here because we checked for has_value() in buildVehicleComponent
+
+
+    switch (acceleration) {
+        case GameInput::VehicleAccelerate:
+            vehiclePhysics.ApplyEngineForce(2000);
+            break;
+        case GameInput::VehicleBrake:
+            vehiclePhysics.ApplyEngineForce(-2500);
+            break;
+        default: // Covers IDLE and any other unspecified cases
+            vehiclePhysics.ApplyEngineForce(0);
+            break;
+    }
+
+    switch(steer) {
+        case GameInput::FullVehicleTurnLeft:
+            vehiclePhysics.ApplySteer(0.03);
+            break;
+        case GameInput::FullVehicleTurnRight:
+            vehiclePhysics.ApplySteer(-0.03);
+            break;
+        case GameInput::HalfVehicleTurnLeft:
+            vehiclePhysics.ApplySteer(0.015);
+            break;
+        case GameInput::HalfVehicleTurnRight:
+            vehiclePhysics.ApplySteer(-0.015);
+            break;
+        case GameInput::QuarterVehicleTurnLeft:
+            vehiclePhysics.ApplySteer(0.0075);
+            break;
+        case GameInput::QuarterVehicleTurnRight:
+            vehiclePhysics.ApplySteer(-0.0075);
+            break;    
+        default: // Covers IDLE and any other unspecified cases
+            vehiclePhysics.ApplySteer(0);
+            break;
+    }
+
+}
+

@@ -6,6 +6,8 @@
 #include "RenderSystem.hpp"
 #include "jx_engine/physics/VehiclePhysics.hpp"
 
+#include "jx_engine/io/GameInput.hpp"
+
 struct VehicleComponent {
 
     RenderComponent chassisRenderComponent;
@@ -17,6 +19,7 @@ struct VehicleComponent {
     glm::vec3 relativeForward;
 
     std::optional<VehiclePhysics> vehiclePhysics;
+    glm::vec3 worldPosition;
 
 };
 
@@ -32,6 +35,9 @@ public:
     void UpdateChassisModelMatrix(VehicleComponent& vrc);
     void UpdateWheelModelMatrices(VehicleComponent& vrc);
     void DrawVehicle(VehicleComponent& vrc);
+
+    void updateVehicleControl(GameInput::Control acceleration, GameInput::Control steer, VehicleComponent& vrc);
+
 };
 
 #endif // VEHICLE_RENDER_SYSTEM_HPP

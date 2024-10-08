@@ -233,7 +233,6 @@ void GameScene::procGameInputs() {
 
   if(KB_InputState[SDL_SCANCODE_F1]) { // Toggle Vehicle Camera
     followPlayerVehicle = !followPlayerVehicle;
-    ecManager.get()->setFreeCameraMode(followPlayerVehicle);
   }
 
   if (trackMouse)
@@ -350,12 +349,17 @@ void GameScene::init() {
                                         "../assets/alien_moon_skybox/textures/Skybox_baseColor.png",
                                         std::vector<int>{0}, 1.0f, false, false);
 
+  float VEHICLE_SCALE = 10.0f;
+
   ecManager->buildVehicleComponent(
     "../assets/dale_aristocrat_vehicle/source/Dale Aristocrat PS1.gltf", "../assets/dale_aristocrat_vehicle/textures/DaleAristocrat_PS1_Colored.png", std::vector<int>{1,2},
-    "../src/ressources/first_car_wheel.obj", "../src/ressources/volga/volga.png", std::vector<int>{0}, 1.0f, false, true);
+    "../src/ressources/first_car_wheel.obj", "../src/ressources/volga/volga.png", std::vector<int>{0}, VEHICLE_SCALE, false, true);
                                               
+  float SQUARE_ISLAND_SCALE = 260.0f;
 
+  ecManager->buildMapChunkComponent("../assets/square_island/chunks", SQUARE_ISLAND_SCALE);
 
+  ecManager->setGameInput(gameInput);
 
     //* ############ PROTOTYPE Collision Plane ############
 

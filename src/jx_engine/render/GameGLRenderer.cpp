@@ -67,7 +67,6 @@ void GameGLRenderer::DebugRender() {
     }
 }
 
-
 void GameGLRenderer::DebugDrawLine(glm::vec3 start, glm::vec3 end, glm::vec3 color) {
     debugDrawer->drawLine(btVector3(start.x, start.y, start.z), btVector3(end.x, end.y, end.z), btVector3(color.x, color.y, color.z));
 }

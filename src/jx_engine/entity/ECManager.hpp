@@ -24,25 +24,18 @@
 
 #include "jx_engine/system/RenderSystem.hpp"
 #include "jx_engine/system/VehicleRenderSystem.hpp"
+#include "jx_engine/system/MapChunkSystem.hpp"
 
+#include "jx_engine/io/GameInput.hpp"
 
 class ECManager { // Entity Component Manager
     public:
         
         ECManager();
 
-        using Callback = std::function<void(const Event&)>; // Constains a function that takes an Event as argument and returns void
 
-        void subscribeToEvent(EventType type, Callback callback);
-        void unsubscribeToEvent(EventType type, int id);
-        void emitEvent(const Event& event);
-
-        // Hash Map of Event Types and their uniquely identified Callbacks (ID, Callback)
-        std::unordered_map<EventType, std::vector<std::pair<int, Callback>>> eventCallbacks;
-        int nextId = 0;
 
         void setCamera(std::shared_ptr<Camera> camera);
-        void setFreeCameraMode(bool freeCam);
 
         //* ------------------- Older Code ------------------- *//
 
@@ -55,11 +48,20 @@ class ECManager { // Entity Component Manager
         std::shared_ptr<VehicleRenderSystem> systemVehicleRender;
         std::vector<VehicleComponent> vehicleComponents;
 
+        std::shared_ptr<MapChunkSystem> systemMapChunk;
+        std::vector<MapChunkComponent> mapChunkComponents;
+
+        std::shared_ptr<GameInput> systemGameInput;
+
         void buildRenderComponent(std::string modelPath, std::string texPath, std::vector<int> meshIndices, float scale, bool cD, bool isTexAlpha);
 
         void buildVehicleComponent(std::string vehicleChassisModel, std::string vcmTexPath, std::vector<int> vcmMeshIndices,
         std::string vehicleWheelModel, std::string vwmTexPath, std::vector<int> vwmMeshIndices,
         float scale, bool cD, bool isTexAlpha);
+
+        void buildMapChunkComponent(const std::string& filename, float scaleFactor);
+
+        void setGameInput(std::shared_ptr<GameInput> gameInput);
 
     private:
 

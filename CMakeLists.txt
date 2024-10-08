@@ -76,9 +76,12 @@ add_executable(cppkart
      src/jx_engine/system/VehicleRenderSystem.hpp 
      src/jx_engine/system/VehicleRenderSystem.cpp
 
-     src/jx_engine/event/Event.hpp
+     src/jx_engine/system/MapChunkSystem.hpp
+     src/jx_engine/system/MapChunkSystem.cpp
 
-     # Components:
+     # Components: (OLD, need to go)
+
+     src/jx_engine/event/Event.hpp
 
      src/jx_engine/component/EComponent.hpp
      src/jx_engine/component/EComponent.cpp
